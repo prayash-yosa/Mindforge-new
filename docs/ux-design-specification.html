@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Office Visitor Check-In App — UX Design Specification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f7f9;
+        --panel: #ffffff;
+        --border: #e0e0e5;
+        --text: #22222a;
+        --muted: #666676;
+        --accent: #2563eb;
+        --accent-soft: #dbeafe;
+        --code-bg: #111827;
+        --code-border: #1f2937;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem 1rem 4rem;
+        font-family: var(--sans);
+        background: radial-gradient(circle at top, #eef2ff 0, #f9fafb 40%, #f7f7f9 100%);
+        color: var(--text);
+      }
+
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--panel);
+        border-radius: 16px;
+        box-shadow:
+          0 18px 40px rgba(15, 23, 42, 0.12),
+          0 0 0 1px rgba(148, 163, 184, 0.3);
+        padding: 2.25rem 2.5rem 2.5rem;
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.9rem;
+        letter-spacing: -0.03em;
+      }
+
+      .meta {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      h2 {
+        margin-top: 2.2rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.2rem;
+        letter-spacing: -0.01em;
+      }
+
+      h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.35rem;
+        font-size: 1.05rem;
+      }
+
+      p {
+        line-height: 1.6;
+        margin: 0.35rem 0 0.75rem;
+      }
+
+      ul,
+      ol {
+        margin: 0.35rem 0 0.9rem 1.25rem;
+        padding: 0;
+      }
+
+      li {
+        margin: 0.15rem 0;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.15rem 0.7rem;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: #1d4ed8;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.35rem;
+      }
+
+      .pill {
+        font-size: 0.78rem;
+        padding: 0.12rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #f9fafb;
+        color: var(--muted);
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0.5rem 0 1.35rem;
+        font-size: 0.9rem;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 0.45rem 0.55rem;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f3f4f6;
+        font-weight: 600;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.9em;
+      }
+
+      pre {
+        margin: 0.75rem 0 1rem;
+        padding: 0.9rem 1rem;
+        border-radius: 10px;
+        background: var(--code-bg);
+        color: #e5e7eb;
+        border: 1px solid var(--code-border);
+        overflow-x: auto;
+        font-size: 0.86rem;
+        line-height: 1.5;
+      }
+
+      pre code {
+        font-family: var(--mono);
+      }
+
+      .section-intro {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 2.2fr) minmax(0, 2fr);
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin: 0.75rem 0 1.5rem;
+      }
+
+      .screen-card {
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #ffffff 0, #f9fafb 100%);
+        padding: 1rem 1.2rem 1.1rem;
+      }
+
+      .screen-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .screen-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+      }
+
+      .screenshot-frame {
+        border-radius: 18px;
+        padding: 0.75rem;
+        background: radial-gradient(circle at top, #e5e7eb 0, #d1d5db 35%, #9ca3af 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .screenshot-inner {
+        border-radius: 20px;
+        overflow: hidden;
+        background: #000;
+        box-shadow:
+          0 18px 35px rgba(15, 23, 42, 0.45),
+          0 0 0 1px rgba(15, 23, 42, 0.4);
+        max-width: 320px;
+      }
+
+      .screenshot-inner img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
+
+      .handoff {
+        margin-top: 2.25rem;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        border: 1px dashed #c4b5fd;
+        background: #f5f3ff;
+        font-family: var(--mono);
+        font-size: 0.83rem;
+        white-space: pre-wrap;
+      }
+
+      @media (max-width: 768px) {
+        .page {
+          padding: 1.5rem 1.3rem 2rem;
+        }
+        .grid-2 {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div class="tag">UX Design Spec</div>
+        <h1>Office Visitor Check-In App — UX Design Specification</h1>
+        <div class="meta">
+          Artifact produced by: <strong>UX/UI Designer AI Agent</strong><br />
+          Date: January 29, 2026<br />
+          Constraints Reference: <code>docs/constraints-and-risks.md</code> v1
+        </div>
+      </header>
+
+      <section>
+        <h2>1. User Flows</h2>
+        <p class="section-intro">
+          High-level flows for a single visitor using the kiosk: primary happy path plus key failure scenarios.
+        </p>
+
+        <h3>1.1 Happy Path (Primary Flow)</h3>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         HAPPY PATH                                  │
+└─────────────────────────────────────────────────────────────────────┘
+
+[START: Visitor arrives at kiosk]
+        │
+        ▼
+┌───────────────────┐
+│  WELCOME SCREEN   │  ← Idle state, touch to begin
+│  "Check In"       │
+└───────────────────┘
+        │ tap "Check In"
+        ▼
+┌───────────────────┐
+│  CHECK-IN FORM    │  ← Enter visitor details
+│  - Name           │
+│  - Purpose        │
+│  - Select Host    │
+└───────────────────┘
+        │ tap "Continue"
+        ▼
+┌───────────────────┐
+│  CONFIRMATION     │  ← Success state
+│  "You're checked  │
+│   in!"            │
+└───────────────────┘
+        │ auto-redirect (10s) OR tap "Done"
+        ▼
+[END: Return to Welcome Screen]</code></pre>
+
+        <h3>1.2 Failure Paths</h3>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                       FAILURE PATHS                                 │
+└─────────────────────────────────────────────────────────────────────┘
+
+FAILURE PATH A: Validation Error
+─────────────────────────────────
+[Check-In Form] → tap "Continue" with empty/invalid fields
+        │
+        ▼
+[Check-In Form] ← Inline validation errors displayed
+        │         "Please enter your name"
+        │         "Please select who you're visiting"
+        ▼
+[User corrects] → Continue to Confirmation
+
+FAILURE PATH B: Network Error
+─────────────────────────────────
+[Check-In Form] → tap "Continue"
+        │
+        ▼
+[Loading State] → Network request fails
+        │
+        ▼
+[Check-In Form] ← Error banner displayed
+        │         "Unable to check in. Please try again."
+        │         [Retry button]
+        ▼
+[User taps Retry] → Resubmit
+
+FAILURE PATH C: Session Timeout
+─────────────────────────────────
+[Check-In Form] → User inactive for 60 seconds
+        │
+        ▼
+[Timeout Modal] ← "Are you still there?"
+        │         [Continue] [Start Over]
+        │
+        ├─ tap "Continue" → Return to form (data preserved)
+        │
+        └─ tap "Start Over" OR 15s timeout → Welcome Screen (data cleared)
+
+FAILURE PATH D: No Host Found
+─────────────────────────────────
+[Check-In Form] → User searches employee list
+        │
+        ▼
+[Empty State] ← "No employees match your search"
+        │       "Please check spelling or ask reception for help"
+        ▼
+[User adjusts search] → Results appear</code></pre>
+      </section>
+
+      <section>
+        <h2>2. Navigation Map</h2>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                      NAVIGATION MAP                                 │
+│                    (3 Screens Total)                                │
+└─────────────────────────────────────────────────────────────────────┘
+
+                    ┌─────────────────┐
+                    │                 │
+           ┌────────│  1. WELCOME     │◄────────────┐
+           │        │                 │             │
+           │        └─────────────────┘             │
+           │                │                       │
+           │         tap "Check In"                 │
+           │                │                       │
+           │                ▼                       │
+           │        ┌─────────────────┐             │
+           │        │                 │             │
+  timeout/ │        │  2. CHECK-IN    │             │ auto-redirect
+  cancel   │        │     FORM        │             │ (10s) or
+           │        │                 │             │ tap "Done"
+           │        └─────────────────┘             │
+           │                │                       │
+           │         tap "Continue"                 │
+           │         (valid form)                   │
+           │                │                       │
+           │                ▼                       │
+           │        ┌─────────────────┐             │
+           │        │                 │             │
+           └───────►│ 3. CONFIRMATION │─────────────┘
+                    │                 │
+                    └─────────────────┘
+
+NAVIGATION RULES:
+─────────────────
+• Linear flow only (no sidebar, no hamburger menu)
+• No browser back button (kiosk mode)
+• Cancel on form → returns to Welcome (with confirmation if data entered)
+• Session auto-clears after Confirmation
+• Privacy policy link available on Welcome screen (opens modal)</code></pre>
+      </section>
+
+      <section>
+        <h2>3. Screen Specifications</h2>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 1: Welcome Screen</h3>
+            <p class="section-intro">Attract attention and start the check-in flow.</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Attract visitor attention; initiate check-in</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>"Check In" button</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Action</strong></td>
+                <td>"Privacy Policy" link (opens modal)</td>
+              </tr>
+            </table>
+
+            <p><strong>Content Hierarchy (wireframe):</strong></p>
+            <pre><code>┌────────────────────────────────────────────┐
+│                                            │
+│            [Company Logo]                  │
+│                                            │
+│         Welcome to [Company Name]          │
+│                                            │
+│    ┌──────────────────────────────────┐    │
+│    │                                  │    │
+│    │         CHECK IN                 │    │  ← Large touch target
+│    │                                  │    │     (min 48x48px, recommend 64px height)
+│    └──────────────────────────────────┘    │
+│                                            │
+│                                            │
+│          Privacy Policy                    │  ← Text link, smaller
+│                                            │
+└────────────────────────────────────────────┘</code></pre>
+
+            <p><strong>Interaction Notes:</strong></p>
+            <ul>
+              <li>Screen is idle/attract mode.</li>
+              <li>Primary button has strong visual affordance (contrast, size, shadow).</li>
+              <li>Optional subtle animation (gentle pulse) on CTA.</li>
+            </ul>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Welcome Screen — Visual Mockup</div>
+            <div class="screen-meta">Rendered tablet UI, portrait orientation.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/welcome-screen.png" alt="Welcome screen mockup of the visitor check-in kiosk" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/welcome-screen.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 2: Check-In Form</h3>
+            <p class="section-intro">Single-page form collecting all required visit details.</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Collect visitor name, purpose, and host selection</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/check-in</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>"Continue" button</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Action</strong></td>
+                <td>"Cancel" link</td>
+              </tr>
+            </table>
+
+            <p><strong>Content Hierarchy (wireframe):</strong></p>
+            <pre><code>┌────────────────────────────────────────────┐
+│  ← Cancel                    [Company Logo]│
+│                                            │
+│         Visitor Check-In                   │
+│                                            │
+│  Your Name *                               │
+│  ┌──────────────────────────────────────┐  │
+│  │                                      │  │  ← Text input
+│  └──────────────────────────────────────┘  │
+│                                            │
+│  Purpose of Visit *                        │
+│  ┌──────────────────────────────────────┐  │
+│  │ [Dropdown: Meeting / Interview /     │  │  ← Select dropdown
+│  │  Delivery / Personal / Other]        │  │
+│  └──────────────────────────────────────┘  │
+│                                            │
+│  Who are you visiting? *                   │
+│  ┌──────────────────────────────────────┐  │
+│  │ 🔍 Search employees...               │  │  ← Searchable select
+│  └──────────────────────────────────────┘  │
+│     ┌────────────────────────────────┐     │
+│     │ ○ Jane Smith - Engineering     │     │  ← Employee list
+│     │ ○ John Doe - Marketing         │     │     (radio selection)
+│     │ ○ Sarah Lee - HR               │     │
+│     └────────────────────────────────┘     │
+│                                            │
+│    ┌──────────────────────────────────┐    │
+│    │         CONTINUE                 │    │
+│    └──────────────────────────────────┘    │
+│                                            │
+└────────────────────────────────────────────┘</code></pre>
+
+            <p><strong>Form Fields:</strong></p>
+            <table>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Validation</th>
+              </tr>
+              <tr>
+                <td>Your Name</td>
+                <td>Text input</td>
+                <td>Yes</td>
+                <td>Min 2 chars, max 100 chars, common punctuation only</td>
+              </tr>
+              <tr>
+                <td>Purpose of Visit</td>
+                <td>Dropdown select</td>
+                <td>Yes</td>
+                <td>Must select one option</td>
+              </tr>
+              <tr>
+                <td>Who are you visiting</td>
+                <td>Searchable list</td>
+                <td>Yes</td>
+                <td>Must select one employee</td>
+              </tr>
+            </table>
+
+            <p><strong>Purpose Options:</strong></p>
+            <ul>
+              <li>Meeting</li>
+              <li>Interview</li>
+              <li>Delivery</li>
+              <li>Personal visit</li>
+              <li>Other</li>
+            </ul>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Check-In Form — Visual Mockup</div>
+            <div class="screen-meta">Single-step form with large touch targets.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/checkin-form-screen.png" alt="Visitor check-in form screen mockup" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/checkin-form-screen.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 3: Confirmation</h3>
+            <p class="section-intro">Confirm success and reassure the visitor.</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Confirm successful check-in; provide next steps</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/confirmation</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>"Done" button</td>
+              </tr>
+              <tr>
+                <td><strong>Auto-behavior</strong></td>
+                <td>Redirect to Welcome after 10 seconds</td>
+              </tr>
+            </table>
+
+            <p><strong>Content Hierarchy (wireframe):</strong></p>
+            <pre><code>┌────────────────────────────────────────────┐
+│                                            │
+│            [Company Logo]                  │
+│                                            │
+│              ✓                             │  ← Success icon (checkmark)
+│                                            │
+│        You're Checked In!                  │
+│                                            │
+│   ─────────────────────────────────────    │
+│                                            │
+│   Visitor:    John Visitor                 │
+│   Visiting:   Jane Smith                   │
+│   Purpose:    Meeting                      │
+│   Time:       10:34 AM                     │
+│                                            │
+│   ─────────────────────────────────────    │
+│                                            │
+│     Please have a seat.                    │
+│     Your host will be with you shortly.    │
+│                                            │
+│    ┌──────────────────────────────────┐    │
+│    │           DONE                   │    │
+│    └──────────────────────────────────┘    │
+│                                            │
+│      Returning to start in 10s...          │  ← Countdown timer
+│                                            │
+└────────────────────────────────────────────┘</code></pre>
+
+            <p><strong>Messaging Note:</strong></p>
+            <p>
+              Notifications are not implemented; copy states: <em>"Please have a seat. Your host will be with you shortly."</em> without
+              promising any automatic notification.
+            </p>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Confirmation — Visual Mockup</div>
+            <div class="screen-meta">Success state with visit summary and countdown.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/confirmation-screen.png" alt="Visitor check-in confirmation screen mockup" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/confirmation-screen.png</code></p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>4. Screen States</h2>
+
+        <h3>4.1 Welcome Screen States</h3>
+        <table>
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>Full screen, "Check In" button enabled</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>N/A (no async operations)</td>
+          </tr>
+          <tr>
+            <td><strong>Error</strong></td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Success</strong></td>
+            <td>N/A</td>
+          </tr>
+        </table>
+
+        <h3>4.2 Check-In Form States</h3>
+        <table>
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>Empty form, "Continue" button disabled until all required fields valid</td>
+          </tr>
+          <tr>
+            <td><strong>Typing</strong></td>
+            <td>Real-time validation; field highlights on focus</td>
+          </tr>
+          <tr>
+            <td><strong>Validation Error</strong></td>
+            <td>Inline error messages below invalid fields; red border on field</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>"Continue" button shows spinner; form inputs disabled; "Submitting..." text</td>
+          </tr>
+          <tr>
+            <td><strong>Network Error</strong></td>
+            <td>Banner: "Unable to check in. Please try again." plus Retry action</td>
+          </tr>
+          <tr>
+            <td><strong>Timeout Warning</strong></td>
+            <td>Modal overlay: "Are you still there?" with Continue / Start Over buttons</td>
+          </tr>
+        </table>
+
+        <p><strong>Validation Error Display (example):</strong></p>
+        <pre><code>  Your Name *
+  ┌──────────────────────────────────────┐
+  │                                      │  ← Red border
+  └──────────────────────────────────────┘
+  ⚠ Please enter your name                  ← Error text in red</code></pre>
+
+        <p><strong>Loading State (example):</strong></p>
+        <pre><code>    ┌──────────────────────────────────┐
+    │    ◠  Submitting...              │    ← Spinner + text
+    └──────────────────────────────────┘</code></pre>
+
+        <h3>4.3 Confirmation Screen States</h3>
+        <table>
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default/Success</strong></td>
+            <td>Shows check-in summary; countdown timer active</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>N/A (data passed from previous screen)</td>
+          </tr>
+          <tr>
+            <td><strong>Error</strong></td>
+            <td>N/A (errors handled on form screen)</td>
+          </tr>
+          <tr>
+            <td><strong>Countdown Active</strong></td>
+            <td>"Returning to start in Xs..." updates every second</td>
+          </tr>
+          <tr>
+            <td><strong>User Tap Done</strong></td>
+            <td>Immediately return to Welcome (clear countdown)</td>
+          </tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>5. Accessibility Notes</h2>
+
+        <h3>5.1 WCAG 2.1 AA Compliance Target</h3>
+        <table>
+          <tr>
+            <th>Category</th>
+            <th>Requirement</th>
+            <th>Implementation</th>
+          </tr>
+          <tr>
+            <td><strong>Color Contrast</strong></td>
+            <td>Min 4.5:1 for normal text, 3:1 for large text</td>
+            <td>Test all text/background combinations</td>
+          </tr>
+          <tr>
+            <td><strong>Touch Targets</strong></td>
+            <td>Min 44x44px (recommend 48x48px for kiosk)</td>
+            <td>All buttons, form fields, list items</td>
+          </tr>
+          <tr>
+            <td><strong>Focus Indicators</strong></td>
+            <td>Visible focus ring on all interactive elements</td>
+            <td>2px solid outline, high contrast color</td>
+          </tr>
+          <tr>
+            <td><strong>Screen Reader</strong></td>
+            <td>Full ARIA labels on all controls</td>
+            <td><code>aria-label</code>, <code>aria-describedby</code> for errors</td>
+          </tr>
+          <tr>
+            <td><strong>Keyboard Navigation</strong></td>
+            <td>Full keyboard operability</td>
+            <td>Tab order logical; Enter submits</td>
+          </tr>
+          <tr>
+            <td><strong>Error Identification</strong></td>
+            <td>Errors identified by more than color alone</td>
+            <td>Icon + text + border</td>
+          </tr>
+          <tr>
+            <td><strong>Timing</strong></td>
+            <td>User can extend/disable timeout</td>
+            <td>Timeout modal gives option to continue</td>
+          </tr>
+          <tr>
+            <td><strong>Text Resize</strong></td>
+            <td>Readable at 200% zoom</td>
+            <td>Responsive layout; no horizontal scroll</td>
+          </tr>
+        </table>
+
+        <h3>5.2 ARIA Examples</h3>
+        <pre><code>&lt;!-- Form Field --&gt;
+&lt;input 
+  aria-label="Your name"
+  aria-required="true"
+  aria-invalid="false"
+  aria-describedby="name-error"
+/&gt;
+&lt;span id="name-error" role="alert"&gt;Please enter your name&lt;/span&gt;
+
+&lt;!-- Employee List --&gt;
+&lt;fieldset&gt;
+  &lt;legend&gt;Who are you visiting?&lt;/legend&gt;
+  &lt;input type="radio" name="host" aria-label="Jane Smith, Engineering" /&gt;
+&lt;/fieldset&gt;
+
+&lt;!-- Loading State --&gt;
+&lt;button aria-busy="true" aria-live="polite"&gt;
+  Submitting...
+&lt;/button&gt;
+
+&lt;!-- Success Screen --&gt;
+&lt;div role="status" aria-live="polite"&gt;
+  You're checked in!
+&lt;/div&gt;</code></pre>
+
+        <h3>5.3 Kiosk-Specific Accessibility</h3>
+        <table>
+          <tr>
+            <th>Consideration</th>
+            <th>Recommendation</th>
+          </tr>
+          <tr>
+            <td><strong>Physical Height</strong></td>
+            <td>Mount kiosk at accessible height (wheelchair users)</td>
+          </tr>
+          <tr>
+            <td><strong>Glare</strong></td>
+            <td>Use an anti-glare screen protector</td>
+          </tr>
+          <tr>
+            <td><strong>Volume</strong></td>
+            <td>If audio feedback is added, provide volume control</td>
+          </tr>
+          <tr>
+            <td><strong>High Contrast Mode</strong></td>
+            <td>Provide toggle for high contrast theme</td>
+          </tr>
+          <tr>
+            <td><strong>Text Size</strong></td>
+            <td>Consider "Larger Text" toggle on Welcome screen</td>
+          </tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>STANDARD HANDOFF</h2>
+        <div class="handoff">============================================
+HANDOFF: UX/UI Designer Agent → Customer Approval → Architect Final
+============================================
+
+PROJECT: Office Visitor Check-In App
+
+COMPLETED:
+- [x] User flows defined (1 happy path, 4 failure paths)
+- [x] Navigation map created (3 screens, linear flow)
+- [x] Screen specifications documented (Welcome, Form, Confirmation)
+- [x] Screen states defined (default, loading, error, success, timeout)
+- [x] Accessibility notes (WCAG 2.1 AA compliance target)
+
+KEY UX DECISIONS:
+1. Linear 3-screen flow (no complex navigation)
+2. Single-page form (not multi-step wizard) — reduces friction
+3. Searchable employee list with radio selection
+4. 60-second inactivity timeout with warning modal
+5. 10-second auto-redirect after confirmation
+6. No promised notifications (messaging accurate to scope)
+
+CONSTRAINTS HONORED:
+- Tablet-first, touch-friendly design
+- No AI features (deterministic search only)
+- Privacy notice included on Welcome screen
+- Session auto-clear after check-in (kiosk security)
+
+PENDING CUSTOMER DECISIONS:
+1. Company logo and branding colors
+2. Exact "Purpose of Visit" options
+3. Welcome/confirmation screen copy
+4. Timeout duration preferences (60s/10s proposed)
+5. High contrast mode: include in v1?
+
+BLOCKERS: None
+
+NEXT STEPS:
+1. → CUSTOMER: Review and approve UX specification
+2. → Architect Agent (Full Mode): Define data models, API contracts based on approved UX
+3. → Developer Agent: Implement approved designs
+
+ARTIFACTS PRODUCED:
+- docs/ux-design-specification.md
+
+DEPENDENCIES:
+- Reads: docs/constraints-and-risks.md (Architect Light Mode)
+
+============================================</div>
+      </section>
+    </main>
+  </body>
+</html>
+

@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mindforge Student Experience — UX Design Specification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5fbef;
+        --panel: #ffffff;
+        --border: #c5d4be;
+        --text: #503d42;
+        --muted: #6b5a5e;
+        --accent: #748b75;
+        --accent-soft: #e2ebe0;
+        --accent-dark: #5a6b5a;
+        --success: #059669;
+        --success-soft: #d1fae5;
+        --warning: #d97706;
+        --warning-soft: #fef3c7;
+        --error: #dc2626;
+        --error-soft: #fee2e2;
+        --code-bg: #2d2527;
+        --code-border: #503d42;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem 1rem 4rem;
+        font-family: var(--sans);
+        background: radial-gradient(circle at top, #e2ebe0 0, #f5fbef 40%, #f0f5ec 100%);
+        color: var(--text);
+      }
+
+      .page {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--panel);
+        border-radius: 16px;
+        box-shadow:
+          0 18px 40px rgba(15, 23, 42, 0.12),
+          0 0 0 1px rgba(148, 163, 184, 0.3);
+        padding: 2.25rem 2.5rem 2.5rem;
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.9rem;
+        letter-spacing: -0.03em;
+        color: var(--accent-dark);
+      }
+
+      .meta {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      h2 {
+        margin-top: 2.2rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        letter-spacing: -0.01em;
+        color: var(--accent-dark);
+        border-bottom: 2px solid var(--accent-soft);
+        padding-bottom: 0.5rem;
+      }
+
+      h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.35rem;
+        font-size: 1.05rem;
+        color: var(--text);
+      }
+
+      h4 {
+        margin-top: 1.2rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      p {
+        line-height: 1.6;
+        margin: 0.35rem 0 0.75rem;
+      }
+
+      ul,
+      ol {
+        margin: 0.35rem 0 0.9rem 1.25rem;
+        padding: 0;
+      }
+
+      li {
+        margin: 0.15rem 0;
+        line-height: 1.5;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.15rem 0.7rem;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.35rem;
+      }
+
+      .pill {
+        font-size: 0.78rem;
+        padding: 0.12rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #f9fafb;
+        color: var(--muted);
+      }
+
+      .principle-card {
+        background: linear-gradient(135deg, var(--accent-soft) 0%, #f5fbef 100%);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin: 0.75rem 0;
+        border-left: 4px solid var(--accent);
+      }
+
+      .principle-card strong {
+        color: var(--accent-dark);
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0.5rem 0 1.35rem;
+        font-size: 0.9rem;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.65rem;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f3f4f6;
+        font-weight: 600;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+        background: #f3f4f6;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+      }
+
+      pre {
+        margin: 0.75rem 0 1rem;
+        padding: 1rem 1.2rem;
+        border-radius: 10px;
+        background: var(--code-bg);
+        color: #e5e7eb;
+        border: 1px solid var(--code-border);
+        overflow-x: auto;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      pre code {
+        font-family: var(--mono);
+        background: transparent;
+        padding: 0;
+      }
+
+      .section-intro {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 2.2fr) minmax(0, 2fr);
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin: 0.75rem 0 1.5rem;
+      }
+
+      .screen-card {
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #ffffff 0, #f9fafb 100%);
+        padding: 1rem 1.2rem 1.1rem;
+      }
+
+      .screen-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--accent-dark);
+      }
+
+      .screen-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+      }
+
+      .wireframe-box {
+        border-radius: 12px;
+        padding: 0.5rem;
+        background: linear-gradient(135deg, #e5e7eb 0, #d1d5db 100%);
+      }
+
+      .wireframe-inner {
+        border-radius: 8px;
+        background: var(--code-bg);
+        padding: 0.75rem 1rem;
+        overflow-x: auto;
+      }
+
+      .wireframe-inner pre {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        font-size: 0.78rem;
+        line-height: 1.4;
+      }
+
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
+
+      .state-table {
+        margin-top: 0.5rem;
+      }
+
+      .state-table th:first-child {
+        width: 25%;
+      }
+
+      .flow-section {
+        margin: 1rem 0;
+      }
+
+      .handoff {
+        margin-top: 2.25rem;
+        border-radius: 12px;
+        padding: 1.25rem 1.4rem;
+        border: 1px dashed #c4b5fd;
+        background: #f5f3ff;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        white-space: pre-wrap;
+        line-height: 1.55;
+      }
+
+      .success-badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        background: var(--success-soft);
+        color: var(--success);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .warning-badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        background: var(--warning-soft);
+        color: var(--warning);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .toc {
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0 1.5rem;
+        border: 1px solid var(--border);
+      }
+
+      .toc h4 {
+        margin: 0 0 0.5rem;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .toc ul {
+        margin: 0;
+        padding-left: 1rem;
+      }
+
+      .toc li {
+        margin: 0.25rem 0;
+      }
+
+      .toc a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .toc a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .page {
+          padding: 1.5rem 1.3rem 2rem;
+        }
+        .grid-2 {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        pre {
+          font-size: 0.72rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div class="tag">UX Design Spec</div>
+        <h1>Mindforge Student Experience — UX Design Specification</h1>
+        <div class="meta">
+          Artifact produced by: <strong>UX/UI Designer AI Agent</strong><br />
+          Date: February 4, 2026<br />
+          Constraints Reference: <code>docs/Mindforge_Student_Experience_Light_Architecture_v2.md</code><br />
+          Color scheme: <code>docs/images/color-palate.png</code> (#748b75, #503d42, #f5fbef) · Logo: <code>docs/images/logo.png</code> (transparent)
+        </div>
+      </header>
+
+      <nav class="toc">
+        <h4>Contents</h4>
+        <ul>
+          <li><a href="#ux-overview">1. UX System Overview</a></li>
+          <li><a href="#user-flows">2. User Flows</a></li>
+          <li><a href="#navigation">3. Navigation Map</a></li>
+          <li><a href="#screens">4. Screen Specifications</a></li>
+          <li><a href="#states">5. Screen States Summary</a></li>
+          <li><a href="#accessibility">6. Accessibility Notes</a></li>
+          <li><a href="#handoff">Standard Handoff</a></li>
+        </ul>
+      </nav>
+
+      <section id="ux-overview">
+        <h2>1. UX System Overview</h2>
+
+        <h3>UX Principles</h3>
+        <div class="principle-card">
+          <strong>Learning-first, not answer-first</strong> — Every AI interaction visually reinforces stepwise guidance
+        </div>
+        <div class="principle-card">
+          <strong>Mobile-first, cross-platform parity</strong> — Primary design for low-end Android, adapted for iOS and desktop
+        </div>
+        <div class="principle-card">
+          <strong>Progressive disclosure</strong> — Show only what's needed at each step; reduce cognitive load
+        </div>
+        <div class="principle-card">
+          <strong>Confidence through clarity</strong> — Students always know where they are and what to do next
+        </div>
+        <div class="principle-card">
+          <strong>Accessibility as default</strong> — Touch targets, contrast, and screen reader support built-in
+        </div>
+
+        <h3>Global Navigation Rules</h3>
+        <ul>
+          <li>Bottom navigation bar on mobile (Android/iOS)</li>
+          <li>Sidebar navigation on desktop</li>
+          <li>Maximum 4 primary destinations: <strong>Home</strong>, <strong>Attendance</strong>, <strong>Doubts</strong>, <strong>Profile</strong></li>
+          <li><strong>Syllabus</strong> (Class → Subject → Chapter → Topic) is integrated <strong>inside the Doubts (AI) screen</strong>—no separate Syllabus tab</li>
+          <li>Consistent back navigation; no dead ends</li>
+        </ul>
+
+        <h3>Error Handling Pattern</h3>
+        <ul>
+          <li>Inline validation with clear, actionable messages</li>
+          <li>Network errors show retry option with offline indicator</li>
+          <li>AI failures gracefully degrade to "Try again" with fallback content</li>
+        </ul>
+
+        <h3>Loading / Empty Patterns</h3>
+        <ul>
+          <li>Skeleton loaders for content areas (not spinners)</li>
+          <li>Empty states include illustration + helpful action</li>
+          <li>AI "thinking" state clearly visible with progress indicator</li>
+        </ul>
+
+        <h3>Accessibility Defaults</h3>
+        <ul>
+          <li>Minimum touch targets: 48×48px (mobile), 44×44px (desktop)</li>
+          <li>Color contrast: WCAG 2.1 AA minimum (4.5:1 for text)</li>
+          <li>All interactive elements keyboard accessible</li>
+          <li>Screen reader labels on all controls</li>
+        </ul>
+      </section>
+
+      <section id="user-flows">
+        <h2>2. User Flows</h2>
+        <p class="section-intro">
+          High-level flows for a student using the app: primary happy path plus key failure scenarios.
+        </p>
+
+        <h3>2.1 Happy Path: Daily Learning Session</h3>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         HAPPY PATH                                  │
+│                  Daily Learning Session                             │
+└─────────────────────────────────────────────────────────────────────┘
+
+[START: Student opens app]
+        │
+        ▼
+┌───────────────────┐
+│   LOGIN SCREEN    │  ← 6-digit MPIN entry
+│   Enter MPIN      │
+└───────────────────┘
+        │ enter valid MPIN
+        ▼
+┌───────────────────┐
+│   HOME SCREEN     │  ← Today's Plan overview
+│   "Today's Plan"  │     • Pending homework
+│   • Homework (3)  │     • Daily quiz ready
+│   • Quiz Ready    │     • My Attendance card
+└───────────────────┘
+        │ tap "Start Homework" (or "My Attendance" → Screen 5)
+        ▼
+┌───────────────────┐
+│  ACTIVITY SCREEN  │  ← Question displayed
+│  Question 1 of 5  │     Student attempts answer
+│  [Answer Input]   │
+└───────────────────┘
+        │ submit answer
+        ▼
+┌───────────────────┐
+│  AI FEEDBACK      │  ← Progressive guidance
+│  "Almost! Here's  │     Hints → Concepts → Solution
+│   a hint..."      │
+└───────────────────┘
+        │ continue / next question
+        ▼
+┌───────────────────┐
+│  RESULTS SCREEN   │  ← Summary + next steps
+│  "4/5 Correct"    │
+│  [Review] [Home]  │
+└───────────────────┘
+        │ tap "Home"
+        ▼
+[END: Return to Home Screen with updated progress]</code></pre>
+
+        <h3>2.2 Happy Path: View Attendance</h3>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         HAPPY PATH                                  │
+│                    View Attendance                                  │
+└─────────────────────────────────────────────────────────────────────┘
+
+[START: Student on Home Screen]
+        │
+        ▼
+┌───────────────────┐
+│   HOME SCREEN     │  ← "My Attendance" card visible
+└───────────────────┘
+        │ tap "My Attendance" (or Profile → Attendance)
+        ▼
+┌───────────────────┐
+│  ATTENDANCE       │  ← Summary: Present / Absent days
+│  SCREEN (5)       │     Calendar view (P / A / –)
+│                   │     Period selector (This month / Term)
+└───────────────────┘
+        │ tap back or change period
+        ▼
+[END: Return to Home or Profile]</code></pre>
+
+        <h3>2.3 Failure Paths</h3>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                       FAILURE PATHS                                 │
+└─────────────────────────────────────────────────────────────────────┘
+
+FAILURE PATH A: Invalid MPIN
+─────────────────────────────
+[Login Screen] → enter incorrect MPIN
+        │
+        ▼
+[Login Screen] ← Error displayed
+        │         "Incorrect MPIN. Please try again."
+        │         Attempts remaining: 4
+        ▼
+[User re-enters] → Continue to Home (if correct)
+        │
+        └─ After 5 failed attempts:
+           [Lockout Screen] ← "Too many attempts"
+           │                   "Try again in 15 minutes"
+           │                   [Contact Support] [Forgot MPIN?]
+           ▼
+           [User waits / recovers]
+
+
+FAILURE PATH B: Network Error During Activity
+─────────────────────────────────────────────
+[Activity Screen] → submit answer
+        │
+        ▼
+[Loading State] → Network request fails
+        │
+        ▼
+[Activity Screen] ← Error banner displayed
+        │           "Unable to save. Check your connection."
+        │           [Retry] [Save Offline]
+        ▼
+[User taps Retry] → Resubmit
+        │
+        └─ If offline mode:
+           [Offline Badge] ← "Answer saved locally"
+           │                  "Will sync when online"
+           ▼
+           [Continue to next question]
+
+
+FAILURE PATH C: AI Response Failure
+─────────────────────────────────────
+[Activity Screen] → request AI feedback
+        │
+        ▼
+[AI Thinking State] → AI service timeout/error
+        │
+        ▼
+[Activity Screen] ← Fallback displayed
+        │           "We couldn't generate feedback right now."
+        │           [View Standard Hint] [Try Again]
+        ▼
+[Fallback content] ← Pre-cached syllabus-based hint shown
+
+
+FAILURE PATH D: Session Timeout
+─────────────────────────────────
+[Activity Screen] → User inactive for 5 minutes
+        │
+        ▼
+[Timeout Modal] ← "Still working?"
+        │         "Your progress is saved."
+        │         [Continue] [Save & Exit]
+        │
+        ├─ tap "Continue" → Return to activity
+        │
+        └─ tap "Save & Exit" → Home Screen (progress saved)
+
+
+FAILURE PATH E: Sync Conflict (Multi-Device)
+────────────────────────────────────────────
+[Home Screen] → User switches device mid-activity
+        │
+        ▼
+[Sync Banner] ← "Syncing your progress..."
+        │
+        ├─ Sync successful → "All caught up!"
+        │
+        └─ Conflict detected:
+           [Conflict Modal] ← "Found newer progress on another device"
+                             "Use latest?" [Yes] [Keep Current]
+
+
+FAILURE PATH F: Attendance Data Unavailable
+────────────────────────────────────────────
+[Attendance Screen] → Load attendance
+        │
+        ▼
+[Loading State] → Network fails or no data for period
+        │
+        ▼
+[Attendance Screen] ← Empty state or error
+        │           "No attendance data for this period."
+        │           OR "Couldn't load attendance. Pull to refresh."
+        │           [Retry] [Change period]
+        ▼
+[User taps Retry or changes period] → Reload</code></pre>
+      </section>
+
+      <section id="navigation">
+        <h2>3. Navigation Map</h2>
+        <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                      NAVIGATION MAP                                 │
+│                    (5 Core Screens)                                 │
+└─────────────────────────────────────────────────────────────────────┘
+
+                    ┌─────────────────┐
+                    │                 │
+           ┌────────│    1. LOGIN     │
+           │        │                 │
+           │        └─────────────────┘
+           │                │
+           │         valid MPIN
+           │                │
+           │                ▼
+           │        ┌─────────────────┐
+           │        │                 │◄───────────────────────┐
+  logout   │        │    2. HOME      │                        │
+           │        │  (Today's Plan) │                        │
+           │        │                 │                        │
+           │        └─────────────────┘                        │
+           │                │                                  │
+           │    ┌───────────┼───────────┬──────────────┐       │
+           │    │           │           │              │       │
+           │    ▼           ▼           ▼              ▼       │
+           │  Homework    Quiz      Doubts       Attendance    │
+           │    │           │    (AI+Syllabus)      │       │
+           │    └─────┬─────┘           │              ▼       │
+           │          │                 │     ┌─────────────┐  │
+           │          ▼                 │     │  5. ATTEND  │  │
+           │  ┌─────────────────┐       │     │   (Calendar)│  │
+           │  │  3. ACTIVITY    │       │     └─────────────┘  │
+           │  │   (Learning)    │              ▲ from Profile  │
+           │  │                 │              └───────────────┘
+           │  └─────────────────┘
+           │          │
+           │    complete / exit
+           │          │
+           │          ▼
+           │  ┌─────────────────┐
+           │  │                 │
+           └──│   4. RESULTS    │──────────────────────────────┘
+              │                 │
+              └─────────────────┘
+
+
+BOTTOM NAVIGATION (Mobile)
+────────────────────────────
+┌──────────┬──────────┬──────────┬──────────┐
+│   🏠     │   📅     │   💬     │   👤     │
+│  Home    │Attendance│  Doubts  │ Profile  │
+└──────────┴──────────┴──────────┴──────────┘
+
+NAVIGATION RULES:
+─────────────────
+• Bottom nav persistent on all screens except Login and Activity
+• Activity screens use focused mode (hide bottom nav, show back arrow)
+• Attendance: Dedicated tab; opens Screen 5 (calendar + present/absent)
+• Doubts: AI chat with Syllabus context (Class → Subject → Chapter → Topic) inside the screen
+• Syllabus is not a separate tab; integrated inside Doubts (see Screen 6)
+• Profile: Settings, progress overview, logout
+• All platforms sync to same navigation state where applicable
+• Desktop: Left sidebar replaces bottom nav</code></pre>
+      </section>
+
+      <section id="screens">
+        <h2>4. Screen Specifications</h2>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 1: Login Screen</h3>
+            <p class="section-intro">Authenticate student with 6-digit MPIN</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Authenticate student with 6-digit MPIN</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/login</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>"Enter" button (submit MPIN)</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Action</strong></td>
+                <td>"Forgot MPIN?" link</td>
+              </tr>
+            </table>
+
+            <p><strong>Interaction Notes:</strong></p>
+            <ul>
+              <li>Auto-focus on MPIN input on screen load</li>
+              <li>Each digit entry advances to next box</li>
+              <li>Digits displayed as filled dots (•) for security</li>
+              <li>Support device biometrics as optional shortcut</li>
+              <li>5 failed attempts → 15 minute lockout</li>
+            </ul>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Login Screen — Visual Mockup</div>
+            <div class="screen-meta">6-digit MPIN with on-screen numeric keypad</div>
+            <div class="screenshot-frame" style="border-radius: 18px; padding: 0.75rem; background: radial-gradient(circle at top, #e5e7eb 0, #d1d5db 35%, #9ca3af 100%); display: flex; justify-content: center; align-items: center;">
+              <div class="screenshot-inner" style="border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 18px 35px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.4); max-width: 280px;">
+                <img src="images/login-screen.png" alt="Mindforge Login Screen with 6-digit MPIN entry" style="display: block; width: 100%; height: auto;" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/login-screen.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 2: Home Screen (Today's Plan)</h3>
+            <p class="section-intro">Central dashboard showing today's learning tasks and progress</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Dashboard showing today's tasks and progress</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/home</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>Start any pending learning activity</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Actions</strong></td>
+                <td>Navigate to Attendance, Doubts, Profile (Syllabus inside Doubts)</td>
+              </tr>
+            </table>
+
+            <p><strong>Content Areas:</strong></p>
+            <ul>
+              <li><strong>Header:</strong> Greeting, class/board info</li>
+              <li><strong>Progress bar:</strong> Today's completion status</li>
+              <li><strong>Task cards:</strong> Pending homework, quizzes, gap alerts</li>
+              <li><strong>Completed section:</strong> Today's finished tasks</li>
+              <li><strong>Bottom nav:</strong> Home, Attendance, Doubts, Profile</li>
+            </ul>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Home Screen — Visual Mockup</div>
+            <div class="screen-meta">Task cards with clear priorities</div>
+            <div class="screenshot-frame" style="border-radius: 18px; padding: 0.75rem; background: radial-gradient(circle at top, #e5e7eb 0, #d1d5db 35%, #9ca3af 100%); display: flex; justify-content: center; align-items: center;">
+              <div class="screenshot-inner" style="border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 18px 35px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.4); max-width: 280px;">
+                <img src="images/home-screen.png" alt="Mindforge Home Screen showing Today's Plan with task cards" style="display: block; width: 100%; height: auto;" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/home-screen.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 3: Activity Screen (Learning)</h3>
+            <p class="section-intro">Unified screen for Homework, Quiz, and Test questions with AI guidance</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Display questions and provide AI-guided feedback</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/activity/:type/:id</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>Submit answer / Request hint</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Actions</strong></td>
+                <td>Skip, Exit (with save)</td>
+              </tr>
+            </table>
+
+            <p><strong>AI Guidance Pattern:</strong></p>
+            <ol>
+              <li><strong>Level 1 — Hint:</strong> Gentle nudge in right direction</li>
+              <li><strong>Level 2 — Approach:</strong> How to tackle the problem</li>
+              <li><strong>Level 3 — Concept:</strong> Underlying theory explanation</li>
+              <li><strong>Level 4 — Solution:</strong> Worked solution (if needed)</li>
+            </ol>
+            <p class="hint">Visual indicator shows current guidance level (1-4)</p>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Activity Screen — Visual Mockup</div>
+            <div class="screen-meta">Question view with AI feedback panel</div>
+            <div class="screenshot-frame" style="border-radius: 18px; padding: 0.75rem; background: radial-gradient(circle at top, #e5e7eb 0, #d1d5db 35%, #9ca3af 100%); display: flex; justify-content: center; align-items: center;">
+              <div class="screenshot-inner" style="border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 18px 35px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.4); max-width: 280px;">
+                <img src="images/activity-screen.png" alt="Mindforge Activity Screen showing question with AI Tutor feedback" style="display: block; width: 100%; height: auto;" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/activity-screen.png</code></p>
+            <p class="hint" style="margin-top: 0.75rem;"><strong>Shows:</strong> Question display, answer inputs, AI Tutor panel with progressive guidance (Help level 1/4)</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 4: Results Screen</h3>
+            <p class="section-intro">Show activity completion summary and next steps</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Display score, breakdown, and next suggestions</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/results/:type/:id</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>"Continue" to next activity / "Home"</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Actions</strong></td>
+                <td>"Review Mistakes", "Share Progress"</td>
+              </tr>
+            </table>
+
+            <p><strong>Content Areas:</strong></p>
+            <ul>
+              <li><strong>Score display:</strong> X/Y correct with star rating</li>
+              <li><strong>Question breakdown:</strong> ✓/✗ for each question</li>
+              <li><strong>Review option:</strong> See incorrect answers with explanations</li>
+              <li><strong>Next suggestion:</strong> Recommended activity card</li>
+            </ul>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Results Screen — Visual Mockup</div>
+            <div class="screen-meta">Summary with performance breakdown</div>
+            <div class="screenshot-frame" style="border-radius: 18px; padding: 0.75rem; background: radial-gradient(circle at top, #e5e7eb 0, #d1d5db 35%, #9ca3af 100%); display: flex; justify-content: center; align-items: center;">
+              <div class="screenshot-inner" style="border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 18px 35px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.4); max-width: 280px;">
+                <img src="images/results-screen.png" alt="Mindforge Results Screen showing score and performance breakdown" style="display: block; width: 100%; height: auto;" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/results-screen.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Screen 5: Attendance & Calendar</h3>
+            <p class="section-intro">Show how many days the student is present and absent, integrated with a calendar view</p>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Specification</th>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>View attendance summary and calendar (read-only)</td>
+              </tr>
+              <tr>
+                <td><strong>URL Path</strong></td>
+                <td><code>/attendance</code> or <code>/profile/attendance</code></td>
+              </tr>
+              <tr>
+                <td><strong>Primary Action</strong></td>
+                <td>View summary and calendar</td>
+              </tr>
+              <tr>
+                <td><strong>Secondary Actions</strong></td>
+                <td>Change period (This month / Term), back to Home or Profile</td>
+              </tr>
+            </table>
+
+            <p><strong>Content Areas:</strong></p>
+            <ul>
+              <li><strong>Header:</strong> Back arrow, "My Attendance", period selector</li>
+              <li><strong>Summary card:</strong> Present days, Absent days, optional bar</li>
+              <li><strong>Calendar:</strong> Month grid with P (Present) / A (Absent) / – (No data)</li>
+              <li><strong>Legend:</strong> ● Present, ○ Absent, – No data</li>
+            </ul>
+          </div>
+
+          <div class="screen-card">
+            <div class="screen-title">Attendance Screen — Visual Mockup</div>
+            <div class="screen-meta">Summary + calendar with present/absent markers</div>
+            <div class="screenshot-frame" style="border-radius: 18px; padding: 0.75rem; background: radial-gradient(circle at top, #e2ebe0 0, #c5d4be 35%, #a8b8a0 100%); display: flex; justify-content: center; align-items: center;">
+              <div class="screenshot-inner" style="border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 18px 35px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.4); max-width: 280px;">
+                <img src="images/attendance-screen.png" alt="Mindforge Attendance Screen with calendar and present/absent summary" style="display: block; width: 100%; height: auto;" />
+              </div>
+            </div>
+            <p class="hint">File: <code>docs/images/attendance-screen.png</code></p>
+          </div>
+        </div>
+
+        <div>
+          <h3>Screen 6: Doubts (AI interface) with Syllabus integration</h3>
+          <p class="section-intro">AI doubt-solving with <strong>Class → Subject → Chapter → Topic</strong> context so the AI stays syllabus-aligned. Syllabus is not a separate tab—it lives inside this screen.</p>
+          <table>
+            <tr>
+              <th>Attribute</th>
+              <th>Specification</th>
+            </tr>
+            <tr>
+              <td><strong>Purpose</strong></td>
+              <td>Chat with AI Tutor; set syllabus context for curriculum-aligned help</td>
+            </tr>
+            <tr>
+              <td><strong>URL Path</strong></td>
+              <td><code>/doubts</code></td>
+            </tr>
+            <tr>
+              <td><strong>Primary Action</strong></td>
+              <td>Send message / ask doubt</td>
+            </tr>
+            <tr>
+              <td><strong>Secondary Actions</strong></td>
+              <td>Change context (Class, Subject, Chapter, Topic); view past threads</td>
+            </tr>
+          </table>
+          <p><strong>Syllabus integration (inside this screen):</strong></p>
+          <ul>
+            <li>At the top: context bar showing <strong>Class · Subject · Chapter · Topic</strong> with [Change] to drill down</li>
+            <li>AI responses are syllabus-scoped; same progressive guidance (Hints → Approach → Concept → Solution)</li>
+            <li>No separate "Syllabus" tab in bottom nav—syllabus is only here (and where activity needs topic context)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="states">
+        <h2>5. Screen States Summary</h2>
+
+        <h3>5.1 Login Screen States</h3>
+        <table class="state-table">
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>Empty MPIN fields, keypad enabled, "Enter" disabled</td>
+          </tr>
+          <tr>
+            <td><strong>Entering</strong></td>
+            <td>Digits appear as filled dots (•), "Enter" enabled when 6 digits</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>"Enter" shows spinner, keypad disabled</td>
+          </tr>
+          <tr>
+            <td><strong>Error</strong></td>
+            <td>Red border on MPIN fields, error message below, shake animation</td>
+          </tr>
+          <tr>
+            <td><strong>Locked</strong></td>
+            <td>Keypad disabled, lockout message with countdown timer</td>
+          </tr>
+        </table>
+
+        <h3>5.2 Home Screen States</h3>
+        <table class="state-table">
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>Task cards displayed, progress bar reflects current status</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>Skeleton loaders for task cards</td>
+          </tr>
+          <tr>
+            <td><strong>Empty</strong></td>
+            <td>"All caught up!" illustration with optional practice suggestions</td>
+          </tr>
+          <tr>
+            <td><strong>Syncing</strong></td>
+            <td>Top banner: "Syncing..." with subtle animation</td>
+          </tr>
+          <tr>
+            <td><strong>Offline</strong></td>
+            <td>Offline badge in header, cached tasks available</td>
+          </tr>
+        </table>
+
+        <h3>5.3 Activity Screen States</h3>
+        <table class="state-table">
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>Question displayed, answer input empty, "Check" disabled</td>
+          </tr>
+          <tr>
+            <td><strong>Answering</strong></td>
+            <td>Input active, "Check" enabled when answer provided</td>
+          </tr>
+          <tr>
+            <td><strong>Checking</strong></td>
+            <td>"Check" shows spinner, input locked</td>
+          </tr>
+          <tr>
+            <td><strong>Correct</strong></td>
+            <td>Green success state, celebration animation, "Next" button</td>
+          </tr>
+          <tr>
+            <td><strong>Incorrect</strong></td>
+            <td>AI feedback panel slides up, "Try Again" + "More Help" options</td>
+          </tr>
+          <tr>
+            <td><strong>AI Thinking</strong></td>
+            <td>"AI Tutor is thinking..." with animated dots</td>
+          </tr>
+          <tr>
+            <td><strong>AI Error</strong></td>
+            <td>"Couldn't get feedback. [View Standard Hint] [Try Again]"</td>
+          </tr>
+        </table>
+
+        <h3>5.4 Results Screen States</h3>
+        <table class="state-table">
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default/Success</strong></td>
+            <td>Score displayed, breakdown visible, next suggestions shown</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>Skeleton loader while computing results</td>
+          </tr>
+          <tr>
+            <td><strong>Perfect Score</strong></td>
+            <td>Celebration animation, "Perfect!" badge</td>
+          </tr>
+          <tr>
+            <td><strong>Needs Improvement</strong></td>
+            <td>Gap identified, remedial suggestion prioritized</td>
+          </tr>
+        </table>
+
+        <h3>5.5 Attendance Screen States</h3>
+        <table class="state-table">
+          <tr>
+            <th>State</th>
+            <th>Behavior</th>
+          </tr>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>Summary and calendar displayed with present/absent markers</td>
+          </tr>
+          <tr>
+            <td><strong>Loading</strong></td>
+            <td>Skeleton for summary and calendar grid</td>
+          </tr>
+          <tr>
+            <td><strong>Empty</strong></td>
+            <td>"No attendance data for this period." with period selector</td>
+          </tr>
+          <tr>
+            <td><strong>Error</strong></td>
+            <td>"Couldn't load attendance. Pull to refresh." with Retry</td>
+          </tr>
+          <tr>
+            <td><strong>Offline</strong></td>
+            <td>Cached attendance if available; otherwise "Attendance will load when you're back online."</td>
+          </tr>
+        </table>
+      </section>
+
+      <section id="accessibility">
+        <h2>6. Accessibility Notes</h2>
+
+        <h3>6.1 WCAG 2.1 AA Compliance Target</h3>
+        <table>
+          <tr>
+            <th>Category</th>
+            <th>Requirement</th>
+            <th>Implementation</th>
+          </tr>
+          <tr>
+            <td><strong>Color Contrast</strong></td>
+            <td>Min 4.5:1 for normal text, 3:1 for large text</td>
+            <td>Test all text/background combinations</td>
+          </tr>
+          <tr>
+            <td><strong>Touch Targets</strong></td>
+            <td>Min 48×48px (mobile), 44×44px (desktop)</td>
+            <td>All buttons, inputs, nav items</td>
+          </tr>
+          <tr>
+            <td><strong>Focus Indicators</strong></td>
+            <td>Visible focus ring on all interactive elements</td>
+            <td>2px solid outline, high contrast</td>
+          </tr>
+          <tr>
+            <td><strong>Screen Reader</strong></td>
+            <td>Full ARIA labels on all controls</td>
+            <td><code>aria-label</code>, <code>aria-describedby</code></td>
+          </tr>
+          <tr>
+            <td><strong>Keyboard Navigation</strong></td>
+            <td>Full keyboard operability</td>
+            <td>Tab order logical; Enter submits</td>
+          </tr>
+          <tr>
+            <td><strong>Error Identification</strong></td>
+            <td>Errors identified by more than color alone</td>
+            <td>Icon + text + border</td>
+          </tr>
+          <tr>
+            <td><strong>Timing</strong></td>
+            <td>User can extend/disable timeout</td>
+            <td>Timeout modal gives option to continue</td>
+          </tr>
+          <tr>
+            <td><strong>Text Resize</strong></td>
+            <td>Readable at 200% zoom</td>
+            <td>Responsive layout; no horizontal scroll</td>
+          </tr>
+        </table>
+
+        <h3>6.2 ARIA Examples</h3>
+        <pre><code>&lt;!-- MPIN Input --&gt;
+&lt;input 
+  type="tel"
+  inputmode="numeric"
+  aria-label="MPIN digit 1 of 6"
+  aria-required="true"
+  aria-invalid="false"
+/&gt;
+
+&lt;!-- Error State --&gt;
+&lt;div role="alert" aria-live="assertive"&gt;
+  Incorrect MPIN. 4 attempts remaining.
+&lt;/div&gt;
+
+&lt;!-- AI Feedback --&gt;
+&lt;section aria-live="polite" aria-label="AI Tutor feedback"&gt;
+  &lt;p&gt;Almost there! Here's a hint...&lt;/p&gt;
+&lt;/section&gt;
+
+&lt;!-- Progress Indicator --&gt;
+&lt;progress 
+  aria-label="Help level"
+  value="1" 
+  max="4"
+&gt;&lt;/progress&gt;
+
+&lt;!-- Results Announcement --&gt;
+&lt;div role="status" aria-live="polite"&gt;
+  You scored 4 out of 5 correct.
+&lt;/div&gt;</code></pre>
+
+        <h3>6.3 AI Interaction Accessibility</h3>
+        <table>
+          <tr>
+            <th>Consideration</th>
+            <th>Implementation</th>
+          </tr>
+          <tr>
+            <td><strong>AI Thinking State</strong></td>
+            <td>Announce "AI is thinking" to screen readers</td>
+          </tr>
+          <tr>
+            <td><strong>Confidence Signals</strong></td>
+            <td>Text-based, not just visual indicators</td>
+          </tr>
+          <tr>
+            <td><strong>Progressive Guidance</strong></td>
+            <td>Clear labeling: "Hint", "Approach", "Concept"</td>
+          </tr>
+          <tr>
+            <td><strong>Plain Language</strong></td>
+            <td>AI explanations use grade-appropriate vocabulary</td>
+          </tr>
+          <tr>
+            <td><strong>Override Options</strong></td>
+            <td>Clear buttons to skip AI help or try again</td>
+          </tr>
+        </table>
+      </section>
+
+      <section id="handoff">
+        <h2>STANDARD HANDOFF</h2>
+        <div class="handoff">============================================
+HANDOFF: UX/UI Designer Agent → Customer Approval → Architect Final
+============================================
+
+PROJECT: Mindforge Student Experience
+
+COMPLETED:
+- [x] UX System Overview (principles, patterns, accessibility defaults)
+- [x] User flows defined (1 happy path, 5 failure paths)
+- [x] Navigation map created (5 screens + Doubts with Syllabus; bottom nav: Home, Attendance, Doubts, Profile)
+- [x] Screen specifications documented (Login, Home, Activity, Results)
+- [x] Screen states defined (default, loading, error, success, offline, AI states)
+- [x] Accessibility notes (WCAG 2.1 AA compliance target)
+- [x] Interaction contract for Dev Agent
+
+KEY UX DECISIONS:
+1. Mobile-first with bottom nav: Home, Attendance, Doubts, Profile (Syllabus inside Doubts)
+2. 6-digit MPIN with on-screen numeric keypad
+3. Progressive AI guidance with visible "help level" indicator
+4. Unified Activity screen for homework/quiz/test
+5. Task-card based Home screen with clear priorities
+6. Offline-first approach with sync indicators
+
+CONSTRAINTS HONORED:
+- Learning-first AI (Hints → Approaches → Concepts → Solutions)
+- Multi-platform parity (Android, iOS, Desktop)
+- Low-bandwidth optimization (skeleton loaders, minimal assets)
+- Privacy-conscious (MPIN-only, no unnecessary PII in prompts)
+- Accessibility as mandatory baseline
+
+PENDING CUSTOMER DECISIONS:
+1. Branding: Logo, color palette, typography
+2. Lockout duration preferences (15 min proposed)
+3. Session timeout duration (5 min proposed)
+4. AI guidance level labels (current: Hint/Approach/Concept/Solution)
+5. Gamification elements: stars, streaks, badges?
+6. Sound effects / haptic feedback preferences
+
+BLOCKERS: None
+
+NEXT STEPS:
+1. → CUSTOMER: Review and approve UX specification
+2. → Architect Agent (Full Mode): Define data models, API contracts
+3. → Developer Agent: Implement approved designs
+
+ARTIFACTS PRODUCED:
+- docs/Mindforge_Student_Experience_UX_Design_Specification.md
+- docs/Mindforge_Student_Experience_UX_Design_Specification.html
+
+DEPENDENCIES:
+- Reads: docs/Mindforge_Student_Experience_Light_Architecture_v2.md
+
+============================================</div>
+      </section>
+    </main>
+  </body>
+</html>
