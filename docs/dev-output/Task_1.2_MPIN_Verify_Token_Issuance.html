@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task 1.2 — MPIN Verify and Token Issuance | Mindforge</title>
+  <style>
+    :root { --sage: #748b75; --brown: #503d42; --cream: #f5fbef; --white: #fff; --border: #d4d8d4; --green: #5cb85c; --amber: #f0ad4e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--cream); color: var(--brown); line-height: 1.6; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+    h1 { color: var(--sage); margin-bottom: .5rem; font-size: 1.8rem; }
+    h2 { color: var(--sage); margin: 2rem 0 .75rem; border-bottom: 2px solid var(--sage); padding-bottom: .4rem; }
+    .meta { color: #777; font-size: .9rem; margin-bottom: 1.5rem; }
+    .meta span { display: inline-block; margin-right: 1.5rem; }
+    .badge { display: inline-block; padding: .2rem .7rem; border-radius: 4px; font-size: .85rem; font-weight: 600; }
+    .badge-done { background: var(--green); color: var(--white); }
+    .badge-v2 { background: var(--sage); color: var(--white); }
+    .badge-medium { background: var(--amber); color: var(--brown); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: .6rem .8rem; text-align: left; border: 1px solid var(--border); font-size: .9rem; }
+    th { background: var(--sage); color: var(--white); }
+    tr:nth-child(even) { background: #eef5e8; }
+    code, pre { font-family: 'Fira Code', Consolas, monospace; background: #e8ece6; border-radius: 3px; }
+    code { padding: .15rem .4rem; font-size: .85rem; }
+    pre { padding: 1rem; overflow-x: auto; margin: 1rem 0; font-size: .82rem; line-height: 1.5; }
+    pre code { background: none; padding: 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>Task 1.2 — MPIN Verify and Token/Session Issuance</h1>
+  <div class="meta">
+    <span><strong>Sprint:</strong> 1 — Foundation &amp; Auth</span>
+    <span><strong>Risk:</strong> <span class="badge badge-medium">Medium</span></span>
+    <span><strong>Mode:</strong> <span class="badge badge-v2">V2 Enterprise</span></span>
+    <span><strong>Status:</strong> <span class="badge badge-done">Done</span></span>
+    <span><strong>Date:</strong> 2026-02-11</span>
+    <span><strong>SP:</strong> 3</span>
+  </div>
+
+  <h2>Acceptance Criteria</h2>
+  <table>
+    <tr><th>#</th><th>Criterion</th><th>Status</th></tr>
+    <tr><td>1</td><td><code>POST /auth/mpin/verify</code> accepts 6-digit MPIN; validates against stored hash (no MPIN in logs or client)</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>2</td><td>On success: issue short-lived token (Bearer); client can use for subsequent requests</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>3</td><td>On failure: 401 with clear error; do not leak whether MPIN or identity was wrong</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>4</td><td>Rate limiting and lockout (5 attempts &rarr; lockout 15 min) documented and implemented</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>5</td><td>Sensitive operations (failed/success login) written to audit_log</td><td><span class="badge badge-done">Done</span></td></tr>
+  </table>
+
+  <h2>Success Response</h2>
+  <pre><code>POST /v1/auth/mpin/verify  { "mpin": "123456" }
+
+200 OK
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "tokenType": "Bearer",
+  "expiresIn": "1h",
+  "student": {
+    "id": "a1b2c3d4-...",
+    "displayName": "Aarav",
+    "class": "8",
+    "board": "CBSE"
+  }
+}</code></pre>
+
+  <h2>Failure Response (no identity leak)</h2>
+  <pre><code>401 Unauthorized
+{
+  "code": "INVALID_CREDENTIALS",
+  "message": "Invalid MPIN. Please try again."
+}</code></pre>
+
+  <h2>Lockout Response</h2>
+  <pre><code>403 Forbidden
+{
+  "code": "ACCOUNT_LOCKED",
+  "message": "Too many failed attempts. Please try again later.",
+  "details": {
+    "lockedUntil": "2026-02-11T07:00:00.000Z",
+    "attemptsRemaining": 0
+  }
+}</code></pre>
+
+  <h2>Lockout Policy</h2>
+  <table>
+    <tr><th>Parameter</th><th>Value</th></tr>
+    <tr><td>Max attempts</td><td>5</td></tr>
+    <tr><td>Lockout duration</td><td>15 minutes</td></tr>
+    <tr><td>Reset on success</td><td>Yes</td></tr>
+    <tr><td>Rate limit (per IP)</td><td>10 req / 60s on mpin/verify</td></tr>
+  </table>
+
+  <h2>Audit Trail</h2>
+  <pre><code>{
+  "requestId": "c017a1bf-...",
+  "action": "LOGIN_SUCCESS",
+  "studentId": "a1b2c3d4-...",
+  "ip": "::1",
+  "metadata": { "sessionId": "af4e620e-..." },
+  "timestamp": "2026-02-11T06:37:06.677Z"
+}</code></pre>
+  <p>Actions: <code>LOGIN_SUCCESS</code> | <code>LOGIN_FAILURE</code> | <code>LOGIN_BLOCKED_LOCKOUT</code></p>
+
+  <h2>Verification Results</h2>
+  <table>
+    <tr><th>Test</th><th>Result</th></tr>
+    <tr><td>Correct MPIN &rarr; JWT + student info</td><td>Pass</td></tr>
+    <tr><td>Wrong MPIN &rarr; 401, no leak</td><td>Pass</td></tr>
+    <tr><td>Lockout status (unlocked)</td><td>Pass</td></tr>
+    <tr><td>Rate limit: X-RateLimit-Limit: 10</td><td>Pass</td></tr>
+    <tr><td>No mpin/mpinHash in response</td><td>Pass</td></tr>
+    <tr><td>JWT payload: sub, studentId, iss</td><td>Pass</td></tr>
+    <tr><td>Audit log: LOGIN_SUCCESS/FAILURE</td><td>Pass</td></tr>
+    <tr><td>TypeScript build: zero errors</td><td>Pass</td></tr>
+  </table>
+
+  <hr />
+  <p style="font-size:.85rem; color:#999;">Dev Agent — Mindforge Student Experience | Task 1.2 | 2026-02-11</p>
+
+</body>
+</html>
