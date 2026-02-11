@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mindforge Student Experience — Planner Backlog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5fbef;
+        --panel: #ffffff;
+        --border: #c5d4be;
+        --text: #503d42;
+        --muted: #6b5a5e;
+        --accent: #748b75;
+        --accent-soft: #e2ebe0;
+        --accent-dark: #5a6b5a;
+        --code-bg: #2d2527;
+        --code-border: #503d42;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 2rem 1rem 4rem;
+        font-family: var(--sans);
+        background: radial-gradient(circle at top, #e2ebe0 0, #f5fbef 40%, #f0f5ec 100%);
+        color: var(--text);
+      }
+      .page {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--panel);
+        border-radius: 16px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(148, 163, 184, 0.3);
+        padding: 2.25rem 2.5rem 2.5rem;
+      }
+      header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 1.75rem; }
+      h1 { margin: 0 0 0.5rem; font-size: 1.9rem; letter-spacing: -0.03em; color: var(--accent-dark); }
+      .meta { font-size: 0.9rem; color: var(--muted); }
+      h2 {
+        margin-top: 2.2rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        letter-spacing: -0.01em;
+        color: var(--accent-dark);
+        border-bottom: 2px solid var(--accent-soft);
+        padding-bottom: 0.5rem;
+      }
+      h3 { margin-top: 1.5rem; margin-bottom: 0.35rem; font-size: 1.05rem; color: var(--text); }
+      h4 { margin-top: 1.2rem; margin-bottom: 0.25rem; font-size: 0.95rem; color: var(--muted); }
+      p { line-height: 1.6; margin: 0.35rem 0 0.75rem; }
+      ul, ol { margin: 0.35rem 0 0.9rem 1.25rem; padding: 0; }
+      li { margin: 0.15rem 0; line-height: 1.5; }
+      table { border-collapse: collapse; width: 100%; margin: 0.5rem 0 1.35rem; font-size: 0.9rem; }
+      th, td { border: 1px solid var(--border); padding: 0.55rem 0.65rem; text-align: left; vertical-align: top; }
+      th { background: #f3f4f6; font-weight: 600; }
+      code { font-family: var(--mono); font-size: 0.88em; background: #f3f4f6; padding: 0.1rem 0.35rem; border-radius: 4px; }
+      .task { margin: 1.25rem 0; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 10px; background: #fafbf9; }
+      .task-title { font-weight: 700; color: var(--accent-dark); margin-bottom: 0.5rem; }
+      .labels { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; }
+      .notes { font-size: 0.9rem; margin: 0.5rem 0; padding-left: 0.5rem; border-left: 3px solid var(--accent-soft); }
+      .checklist { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+      .checklist li { padding-left: 1.5rem; position: relative; margin: 0.25rem 0; }
+      .checklist li::before { content: "☐"; position: absolute; left: 0; }
+      .handoff {
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        font-family: var(--mono);
+      }
+      .sprint-total { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>Mindforge Student Experience — Planner Backlog</h1>
+        <p class="meta">
+          Artifact: Mindforge_Student_Experience_Planner_Backlog · Role: Planner / Scrum Master AI Agent · Date: February 6, 2026 · Mode: Enterprise (V2)
+        </p>
+        <p class="meta">
+          Sources (no scope expansion): Architecture Final · UX Specification Approved. Capacity: 1 eng = 8–10 SP/sprint · 20% buffer · AI work = probabilistic.
+        </p>
+      </header>
+
+      <h2>Plan: Mindforge Student Experience — Release 1</h2>
+      <table>
+        <thead>
+          <tr><th>Bucket</th><th>Type</th><th>Focus</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sprint 1</td><td>Sprint</td><td>Foundation &amp; Auth</td></tr>
+          <tr><td>Sprint 2</td><td>Sprint</td><td>Data &amp; Backend Core</td></tr>
+          <tr><td>Sprint 3</td><td>Sprint</td><td>Today's Plan &amp; Activities API</td></tr>
+          <tr><td>Sprint 4</td><td>Sprint</td><td>AI Integration &amp; Grading</td></tr>
+          <tr><td>Sprint 5</td><td>Sprint</td><td>Attendance &amp; Doubts API</td></tr>
+          <tr><td>Sprint 6</td><td>Sprint</td><td>Client — Login, Home, Activity, Results</td></tr>
+          <tr><td>Sprint 7</td><td>Sprint</td><td>Client — Attendance, Doubts, Profile &amp; Sync</td></tr>
+          <tr><td>Sprint 8</td><td>Sprint</td><td>DevOps, Security Hardening &amp; NotebookLM</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Sprint 1 — Foundation &amp; Auth</h2>
+      <p><strong>Capacity:</strong> 10 SP (1 eng) · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 1.1 — API gateway and request validation</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: Backend — API</div>
+        <div class="notes">
+          <strong>As a</strong> backend system <strong>I want</strong> a REST API gateway with request validation and consistent error shape <strong>So that</strong> all clients get validated input and predictable { code, message, details? } and HTTP status. Mode: V2 · Type: Hardening · Dependencies: None · Risks: None.
+        </div>
+        <ul class="checklist">
+          <li>REST API layer accepts HTTPS only; JSON request/response.</li>
+          <li>Request body and query validation in place; invalid input returns 400 and consistent error shape.</li>
+          <li>Error response shape { code, message, details? } for 400, 401, 403, 404, 429, 500.</li>
+          <li>Health check endpoint for load balancer.</li>
+          <li>No business or DB logic in API layer; delegates to business layer.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 1.2 — MPIN verify and token/session issuance</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Medium | Area: Backend — Auth</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> to enter my 6-digit MPIN and receive a session/token when correct <strong>So that</strong> I can access the app. Dependencies: Task 1.1; Data layer (stub OK). Risks: R7 MPIN brute-force — rate limiting and lockout mandatory; audit failed attempts.
+        </div>
+        <ul class="checklist">
+          <li>POST /auth/mpin/verify implemented; 6-digit MPIN; validates against stored hash; no MPIN in logs or client.</li>
+          <li>On success: issue short-lived token/session; return Bearer; client uses for subsequent requests.</li>
+          <li>On failure: 401 and clear error; do not leak MPIN vs identity.</li>
+          <li>Rate limiting and lockout (e.g. 5 attempts → lockout); audit_log for sensitive operations.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 1.3 — Lockout status and Forgot MPIN entry points</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Auth</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> lockout status and Forgot MPIN path <strong>So that</strong> I know when I can retry and can recover. Dependencies: Task 1.2.
+        </div>
+        <ul class="checklist">
+          <li>POST /auth/lockout/status returns current lockout state.</li>
+          <li>POST /auth/forgot-mpin initiates recovery; endpoint exists; documented behavior.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 1.4 — Auth middleware and Bearer token validation</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: Backend — API</div>
+        <div class="notes">
+          <strong>As a</strong> backend <strong>I want</strong> protected routes to validate Bearer token/session <strong>So that</strong> only authenticated students call student endpoints. Dependencies: Task 1.2.
+        </div>
+        <ul class="checklist">
+          <li>Middleware validates token on all routes except /auth/* and health.</li>
+          <li>Invalid/expired token → 401; authenticated student_id available to business layer.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 1 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 1 total: 8 SP</strong></p>
+
+      <h2>Sprint 2 — Data &amp; Backend Core</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 2.1 — Database schema and migrations</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: Backend — Data</div>
+        <div class="notes">
+          <strong>As a</strong> system <strong>I want</strong> versioned schema for students, syllabus, activities, questions, responses, attendance, doubts, sessions, audit <strong>So that</strong> migrations are repeatable. Dependencies: None.
+        </div>
+        <ul class="checklist">
+          <li>Tables per architecture §5.1; indexes on student_id, activity_id, date, syllabus keys.</li>
+          <li>Migrations versioned and idempotent; applied via CI/deploy.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 2.2 — Data access layer (repositories/DAOs)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Data</div>
+        <div class="notes">
+          <strong>As a</strong> business layer <strong>I want</strong> repositories for students, syllabus, activities, questions, responses, attendance, doubts, sessions <strong>So that</strong> I can read/write without SQL in business logic. Dependencies: Task 2.1.
+        </div>
+        <ul class="checklist">
+          <li>CRUD and queries; scoped by student_id; parameterized; retry/backoff for transient errors.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 2.3 — Business layer skeleton and dependency injection</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> API layer <strong>I want</strong> business logic layer that calls data access only <strong>So that</strong> no DB access in API. Dependencies: Task 2.2.
+        </div>
+        <ul class="checklist">
+          <li>Business services for auth, today's plan, activities, grading, attendance, doubts (stubs OK).</li>
+          <li>Domain exceptions mapped to API codes; no stack to client.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 2 total: 8 SP</strong></p>
+
+      <h2>Sprint 3 — Today's Plan &amp; Activities API</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 3.1 — GET /student/today (today's plan)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> today's tasks (homework, quiz, gaps) and progress summary <strong>So that</strong> I see Home screen content. Dependencies: Task 2.2, 2.3.
+        </div>
+        <ul class="checklist">
+          <li>GET /student/today returns tasks, progress; auth; scoped by student_id; empty state supported.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 3.2 — GET /student/activities/:type/:id and POST pause</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> to open activity and pause/save progress <strong>So that</strong> I can resume later. Dependencies: Task 2.2, 2.3.
+        </div>
+        <ul class="checklist">
+          <li>GET returns activity + questions; POST pause saves progress; types: homework, quiz, test.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 3.3 — POST /student/activities/:type/:id/respond (submit answer, deterministic grading)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> to submit answer and get correct/incorrect (and optional AI feedback later) <strong>So that</strong> progress is saved. Dependencies: Task 3.2; AI deferred to Sprint 4.
+        </div>
+        <ul class="checklist">
+          <li>POST accept questionId, answer, optional requestFeedbackLevel; business layer evaluates (deterministic); persists response; returns result and next question or completion.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 3.4 — GET /student/results/:type/:id</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> activity result (score, breakdown, next suggestions) <strong>So that</strong> I see Results screen. Dependencies: Task 3.3.
+        </div>
+        <ul class="checklist">
+          <li>GET returns score, per-question breakdown, suggested next; auth; scoped by student_id.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 1 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 3 total: 8 SP</strong></p>
+
+      <h2>Sprint 4 — AI Integration &amp; Grading</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target · <strong>AI confidence:</strong> ~75% (probabilistic)</p>
+
+      <div class="task">
+        <div class="task-title">Task 4.1 — AI provider integration and timeout/fallback</div>
+        <div class="labels">Labels: Type: Feature | AI: AI | Risk: Medium | Area: Backend — Integration</div>
+        <div class="notes">
+          <strong>As a</strong> business layer <strong>I want</strong> to call AI provider with timeout and fallback <strong>So that</strong> we get AI feedback without exposing raw errors. Risks: R1, R6. Timeout → fallback hint; provider error → user-friendly message.
+        </div>
+        <ul class="checklist">
+          <li>Outbound HTTP to AI provider; prompts minimal context (pseudonymous ID, syllabus); no PII.</li>
+          <li>Timeout (e.g. 10s) → fallback; provider error → "Couldn't get feedback. Try again?" and optional cached hint.</li>
+          <li>Responses validated (syllabus alignment) before storage/display.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 4.2 — GET /student/activities/:type/:id/feedback (progressive guidance levels)</div>
+        <div class="labels">Labels: Type: Feature | AI: AI | Risk: Medium | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> next level of AI guidance (Hint → Approach → Concept → Solution) <strong>So that</strong> I get progressive help. Risks: R2 over-helping — enforce levels; full solution gated.
+        </div>
+        <ul class="checklist">
+          <li>GET (or equivalent) returns next guidance level; level 1–4 tracked; business layer enforces order.</li>
+          <li>Prompt includes syllabus context and question/attempt only; fallback on AI failure.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 4.3 — Deterministic and AI-assisted grading rules</div>
+        <div class="labels">Labels: Type: Feature | AI: AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> system <strong>I want</strong> deterministic scoring for objective and optional AI for open-ended with rubric <strong>So that</strong> grading is fair (R3).
+        </div>
+        <ul class="checklist">
+          <li>MCQs use deterministic or cheap evaluation; open-ended may use AI with rubric; rubric stored.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 4 total: 8 SP</strong></p>
+
+      <h2>Sprint 5 — Attendance &amp; Doubts API</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 5.1 — GET /student/attendance (summary and calendar data)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> attendance summary and calendar for selected period <strong>So that</strong> I see Screen 5. Risks: R8 — read-only; label period/source.
+        </div>
+        <ul class="checklist">
+          <li>GET /student/attendance with period; returns summary (present/absent counts) and per-day calendar (P/A/–); auth; read-only.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 5.2 — Doubts: GET list, GET thread, POST message with syllabus context</div>
+        <div class="labels">Labels: Type: Feature | AI: AI | Risk: Medium | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> doubt threads with Class → Subject → Chapter → Topic context <strong>So that</strong> AI answers are syllabus-aligned. Risks: R1 — context passed to AI; validation.
+        </div>
+        <ul class="checklist">
+          <li>GET /student/doubts, GET /student/doubts/:threadId, POST /student/doubts with context; GET /student/syllabus/tree for selector.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 5.3 — GET /student/profile and GET /student/sync/status</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Backend — Business</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> profile and sync status <strong>So that</strong> Profile screen and sync conflict UX work.
+        </div>
+        <ul class="checklist">
+          <li>GET /student/profile returns display_name, class, board, progress; GET /student/sync/status returns last sync and optional conflict hint.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 5 total: 7 SP</strong></p>
+
+      <h2>Sprint 6 — Client: Login, Home, Activity, Results</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 6.1 — Client app shell and API client (auth, REST, error shape)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> client app <strong>I want</strong> API client with Bearer token, consistent error shape, retry <strong>So that</strong> all screens call backend consistently.
+        </div>
+        <ul class="checklist">
+          <li>API client: base URL, auth header, JSON; parse { code, message, details? } on error; retry and timeout; optional offline queue stub.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 6.2 — Login screen (Screen 1) per UX spec</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> 6-digit MPIN entry with keypad and error/lockout states <strong>So that</strong> I can authenticate. Dependencies: Task 6.1; API 1.2, 1.3.
+        </div>
+        <ul class="checklist">
+          <li>Route /login; MPIN input, keypad, Enter, Forgot MPIN; states: default, entering, loading, error, locked; success → store token, navigate Home; accessibility.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 6.3 — Home screen (Screen 2) — Today's Plan</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> Today's Plan with task cards and progress <strong>So that</strong> I can start homework/quiz/gap-bridge. Dependencies: Task 6.1; API 3.1.
+        </div>
+        <ul class="checklist">
+          <li>Route /home; GET /student/today; greeting, progress bar, task cards, completed today, gap alert; bottom nav; states: loading, default, empty, syncing, offline, error.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 6.4 — Activity screen (Screen 3) — question, answer submit, AI feedback panel</div>
+        <div class="labels">Labels: Type: Feature | AI: AI | Risk: Medium | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> question, submit answer, see AI feedback (progressive levels) or fallback <strong>So that</strong> I learn with hints. Risks: AI failure UX — "View Standard Hint" / "Try Again".
+        </div>
+        <ul class="checklist">
+          <li>Route /activity/:type/:id; load activity and questions; Check Answer; correct (green, Next) or incorrect (AI panel, Try Again / More Help); help level 1–4; AI thinking and error states; pause/exit saves; accessibility.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 6.5 — Results screen (Screen 4)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> score, breakdown, suggested next after activity <strong>So that</strong> I know how I did. Dependencies: Task 6.1; API 3.4.
+        </div>
+        <ul class="checklist">
+          <li>Route /results/:type/:id; GET results; score, star rating, question breakdown, Review Mistakes, Suggested Next, Back to Home; states and accessibility.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 1 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 6 total: 10 SP</strong></p>
+
+      <h2>Sprint 7 — Client: Attendance, Doubts, Profile &amp; Sync</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 7.1 — Attendance screen (Screen 5) — calendar and summary</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> attendance summary and calendar for selected period <strong>So that</strong> I see present/absent. Dependencies: Task 6.1; API 5.1.
+        </div>
+        <ul class="checklist">
+          <li>Route /attendance; GET /student/attendance; summary, calendar grid (P/A/–), period selector, legend; states and accessibility; read-only.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 7.2 — Doubts screen (Screen 6) with syllabus context selector</div>
+        <div class="labels">Labels: Type: Feature | AI: AI | Risk: Medium | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> AI chat with Class → Subject → Chapter → Topic context <strong>So that</strong> answers are syllabus-aligned. Risks: R1 — context mandatory.
+        </div>
+        <ul class="checklist">
+          <li>Route /doubts; syllabus context at top; GET syllabus tree; GET/POST doubts; thread messages; states; context change does not clear thread; accessibility.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 3 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 7.3 — Profile screen and logout</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> profile (name, class, board, progress) and logout <strong>So that</strong> I confirm identity and end session.
+        </div>
+        <ul class="checklist">
+          <li>GET /student/profile; display name, class, board, progress; logout clears token, navigate Login; link to Attendance if in UX.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 1 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 7.4 — Sync status and conflict modal</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Low | Area: Frontend</div>
+        <div class="notes">
+          <strong>As a</strong> student <strong>I want</strong> sync status and conflict choice "Use latest?" / "Keep current" <strong>So that</strong> multi-device is safe.
+        </div>
+        <ul class="checklist">
+          <li>GET /student/sync/status; "Syncing..." / "All caught up!"; conflict modal per UX; optional offline queue/sync.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 7 total: 8 SP</strong></p>
+
+      <h2>Sprint 8 — DevOps, Security Hardening &amp; NotebookLM</h2>
+      <p><strong>Capacity:</strong> 10 SP · Buffer 20% → 8 SP target</p>
+
+      <div class="task">
+        <div class="task-title">Task 8.1 — Deployment pipeline and single-region (India) hosting</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: DevOps</div>
+        <div class="notes">
+          <strong>As a</strong> team <strong>I want</strong> CI/CD that builds, tests, deploys to staging then production in one region (India) <strong>So that</strong> releases are repeatable.
+        </div>
+        <ul class="checklist">
+          <li>Build and test on commit; deploy staging → production; DB migrations in deploy; API behind HTTPS LB; containers; managed DB; single region.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 8.2 — Secrets vault and no secrets in code/client</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Medium | Area: DevOps / Security</div>
+        <div class="notes">
+          <strong>As a</strong> system <strong>I want</strong> API keys, DB credentials, AI keys in vault <strong>So that</strong> no secrets in repo or client.
+        </div>
+        <ul class="checklist">
+          <li>All secrets in vault; app reads at startup/request; DB encryption at rest.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 1 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 8.3 — Rate limiting and audit logging</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: Backend — Security</div>
+        <div class="notes">
+          <strong>As a</strong> system <strong>I want</strong> rate limiting on auth and audit log for sensitive operations <strong>So that</strong> we mitigate brute-force and meet compliance.
+        </div>
+        <ul class="checklist">
+          <li>Rate limiting on /auth/mpin/verify; 429 when exceeded; audit_log for login/lockouts; no PII in logs.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 8.4 — Monitoring and alerting</div>
+        <div class="labels">Labels: Type: Hardening | AI: Non-AI | Risk: Low | Area: DevOps</div>
+        <div class="notes">
+          <strong>As a</strong> team <strong>I want</strong> health checks, latency/error metrics, alerting on 5xx and auth failures <strong>So that</strong> we detect regressions quickly.
+        </div>
+        <ul class="checklist">
+          <li>Health check for LB; latency and error metrics; alerts on 5xx and auth failure spike; request id in logs.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 1 SP</p>
+      </div>
+
+      <div class="task">
+        <div class="task-title">Task 8.5 — NotebookLM read-only integration (teaching feed)</div>
+        <div class="labels">Labels: Type: Feature | AI: Non-AI | Risk: Medium | Area: Backend — Integration</div>
+        <div class="notes">
+          <strong>As a</strong> business layer <strong>I want</strong> to consume daily teaching feed from NotebookLM for homework/quiz generation <strong>So that</strong> content is aligned to today's class. Risks: R5 — fallback to syllabus; label source.
+        </div>
+        <ul class="checklist">
+          <li>Read-only HTTP to NotebookLM (or stub); ingest into teaching_feed; business layer uses when available; fallback when missing; schema/API deferred if needed.</li>
+        </ul>
+        <p class="sprint-total">Estimate: 2 SP</p>
+      </div>
+      <p class="sprint-total"><strong>Sprint 8 total: 8 SP</strong></p>
+
+      <h2>Risk Register (Planner)</h2>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Risk</th><th>Mitigation</th><th>Owner</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>R1</td><td>AI hallucination / off-syllabus</td><td>Ground prompts in syllabus + NotebookLM; validation; flag uncertainty in UI</td><td>Backend + Frontend</td></tr>
+          <tr><td>R2</td><td>Over-helping</td><td>Enforce guidance levels; full solution gated; UX shows level</td><td>Backend + Frontend</td></tr>
+          <tr><td>R3</td><td>Grading fairness</td><td>Deterministic for objective; rubric storage</td><td>Backend</td></tr>
+          <tr><td>R4</td><td>Data privacy (minors)</td><td>Minimize PII to AI; consent; encryption; deletion path</td><td>Backend + DevOps</td></tr>
+          <tr><td>R5</td><td>NotebookLM feed quality</td><td>Fallback to syllabus-level; label source</td><td>Backend</td></tr>
+          <tr><td>R6</td><td>Connectivity / latency</td><td>Cache, retry, offline/sync states in UI</td><td>Backend + Frontend</td></tr>
+          <tr><td>R7</td><td>MPIN brute-force</td><td>Rate limiting, lockout, audit failed attempts</td><td>Backend</td></tr>
+          <tr><td>R8</td><td>Attendance accuracy</td><td>Read-only for student; label period/source</td><td>Backend</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Forecast Summary</h2>
+      <table>
+        <thead>
+          <tr><th>Sprint</th><th>Focus</th><th>SP</th><th>Confidence</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Foundation &amp; Auth</td><td>8</td><td>95%</td></tr>
+          <tr><td>2</td><td>Data &amp; Backend Core</td><td>8</td><td>95%</td></tr>
+          <tr><td>3</td><td>Today's Plan &amp; Activities</td><td>8</td><td>90%</td></tr>
+          <tr><td>4</td><td>AI Integration</td><td>8</td><td>75% (AI probabilistic)</td></tr>
+          <tr><td>5</td><td>Attendance &amp; Doubts API</td><td>7</td><td>85%</td></tr>
+          <tr><td>6</td><td>Client — Login, Home, Activity, Results</td><td>10</td><td>85%</td></tr>
+          <tr><td>7</td><td>Client — Attendance, Doubts, Profile</td><td>8</td><td>85%</td></tr>
+          <tr><td>8</td><td>DevOps, Security, NotebookLM</td><td>8</td><td>80%</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Total:</strong> ~65 SP over 8 sprints. <strong>No scope expansion;</strong> all items trace to Architecture + UX only.</p>
+
+      <h2>STANDARD HANDOFF – To Dev Agent</h2>
+      <div class="handoff">============================================
+HANDOFF: Planner / Scrum Master AI Agent → Dev Agent
+============================================
+
+PROJECT: Mindforge Student Experience
+
+ARTIFACT SOURCE: docs/planning/Mindforge_Student_Experience_Planner_Backlog.md
+
+PLANNING STATUS: Backlog and sprints defined; no architecture or UX changes.
+
+WHAT THE DEV RECEIVES:
+- Plan: Mindforge Student Experience — Release 1
+- Buckets: Sprints 1–8 (Foundation & Auth → Data Core → Today's Plan & Activities → AI Integration → Attendance & Doubts API → Client Login/Home/Activity/Results → Client Attendance/Doubts/Profile → DevOps & NotebookLM)
+- Tasks: Each task has Title, User story (As/I want/So that), Acceptance criteria (Checklist), Dependencies, Risks, Labels (Type | AI/Non-AI | Risk | Area)
+- Notes: Full details in each task's Notes block
+- Capacity: 1 engineer = 8–10 SP/sprint; 20% buffer; AI work treated as probabilistic (confidence % in forecast)
+- Risk register: R1–R8 with mitigations and owner area
+
+CONSTRAINTS (DO NOT BREAK):
+- UX is locked (docs/Mindforge_Student_Experience_UX_Design_Specification.md). No screen, flow, or feature changes.
+- Architecture is locked (docs/architecture/final/Mindforge_Student_Experience_Technical_Architecture_Final.md). Implement as specified; no new endpoints or layers.
+- No scope expansion; only implement approved design.
+
+DEV NEXT STEPS:
+1. Implement in sprint order (Sprint 1 → 2 → … → 8) or as directed by PM; respect dependencies in task Notes.
+2. Use Checklist per task as acceptance criteria; satisfy all items before marking done.
+3. Surface AI uncertainty (timeouts, fallbacks) in UI and logs; use confidence/labels where applicable.
+4. Run tests and migrations per CI/CD; adhere to coding standards and security (secrets, rate limit, audit).
+
+BLOCKERS: None.
+
+DEPENDENCIES:
+- Reads: docs/architecture/final/Mindforge_Student_Experience_Technical_Architecture_Final.md
+- Reads: docs/Mindforge_Student_Experience_UX_Design_Specification.md
+- Reads: docs/Mindforge_Student_Experience_Light_Architecture_v2.md (constraints)
+
+============================================
+Signature: Planner / Scrum Master AI Agent – Mindforge Student Experience
+============================================</div>
+    </div>
+  </body>
+</html>

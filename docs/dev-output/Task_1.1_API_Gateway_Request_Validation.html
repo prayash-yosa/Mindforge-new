@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task 1.1 — API Gateway and Request Validation | Mindforge</title>
+  <style>
+    :root {
+      --sage: #748b75;
+      --brown: #503d42;
+      --cream: #f5fbef;
+      --white: #ffffff;
+      --border: #d4d8d4;
+      --red: #d9534f;
+      --green: #5cb85c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--cream);
+      color: var(--brown);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { color: var(--sage); margin-bottom: 0.5rem; font-size: 1.8rem; }
+    h2 { color: var(--sage); margin: 2rem 0 0.75rem; border-bottom: 2px solid var(--sage); padding-bottom: 0.4rem; }
+    h3 { color: var(--brown); margin: 1.5rem 0 0.5rem; }
+    .meta { color: #777; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .meta span { display: inline-block; margin-right: 1.5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .badge-done { background: var(--green); color: var(--white); }
+    .badge-v2 { background: var(--sage); color: var(--white); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.6rem 0.8rem; text-align: left; border: 1px solid var(--border); font-size: 0.9rem; }
+    th { background: var(--sage); color: var(--white); }
+    tr:nth-child(even) { background: #eef5e8; }
+    code, pre {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      background: #e8ece6;
+      border-radius: 3px;
+    }
+    code { padding: 0.15rem 0.4rem; font-size: 0.85rem; }
+    pre { padding: 1rem; overflow-x: auto; margin: 1rem 0; font-size: 0.85rem; }
+    pre code { background: none; padding: 0; }
+    .checklist { list-style: none; }
+    .checklist li { padding: 0.3rem 0; }
+    .checklist li::before { content: '✅ '; }
+    .file-tree { background: #e8ece6; padding: 1rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; line-height: 1.8; }
+    .section { margin-bottom: 2rem; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1>Task 1.1 — API Gateway and Request Validation</h1>
+  <div class="meta">
+    <span><strong>Sprint:</strong> 1 — Foundation &amp; Auth</span>
+    <span><strong>Mode:</strong> <span class="badge badge-v2">V2 Enterprise</span></span>
+    <span><strong>Status:</strong> <span class="badge badge-done">Done</span></span>
+    <span><strong>Date:</strong> 2026-02-10</span>
+    <span><strong>SP:</strong> 2</span>
+  </div>
+
+  <div class="section">
+    <h2>Summary</h2>
+    <p>Implemented the REST API gateway layer for the Mindforge Student Experience backend using <strong>Node.js / Express</strong>. This establishes the foundational API layer that all subsequent tasks build upon. The API layer is strictly a routing and validation layer — it delegates to the business layer with no database or business logic.</p>
+  </div>
+
+  <div class="section">
+    <h2>Acceptance Criteria</h2>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Criterion</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>REST API layer accepts HTTPS only; JSON request/response</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>2</td><td>Request body and query validation in place; invalid input returns 400 and consistent error shape</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>3</td><td>Error response shape <code>{ code, message, details? }</code> for 400, 401, 403, 404, 429, 500</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>4</td><td>Health check endpoint for load balancer</td><td><span class="badge badge-done">Done</span></td></tr>
+        <tr><td>5</td><td>No business or DB logic in API layer; delegates to business layer</td><td><span class="badge badge-done">Done</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Files Created</h2>
+    <div class="file-tree">
+      backend/<br>
+      ├── package.json<br>
+      ├── .env.example<br>
+      ├── .gitignore<br>
+      ├── README.md<br>
+      └── src/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── server.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── app.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── config/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── index.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── errors/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── AppError.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── api/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── routes/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── index.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── health.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── auth.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── middleware/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── requestId.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── httpsEnforce.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── validateRequest.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── notFound.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── errorHandler.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── validators/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── auth.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── common.js<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;└── business/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── index.js
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Error Response Shape</h2>
+    <p>All errors follow the architecture-specified shape:</p>
+    <pre><code>{
+  "code": "VALIDATION_ERROR",
+  "message": "Request validation failed",
+  "details": [
+    {
+      "field": "mpin",
+      "message": "MPIN must be exactly 6 digits",
+      "type": "string.length"
+    }
+  ]
+}</code></pre>
+
+    <table>
+      <thead>
+        <tr><th>HTTP Code</th><th>Error Code</th><th>When</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>400</td><td><code>VALIDATION_ERROR</code> / <code>BAD_REQUEST</code> / <code>INVALID_JSON</code></td><td>Invalid input, malformed JSON</td></tr>
+        <tr><td>401</td><td><code>UNAUTHORIZED</code></td><td>Missing or invalid auth (Task 1.4)</td></tr>
+        <tr><td>403</td><td><code>FORBIDDEN</code></td><td>Access denied</td></tr>
+        <tr><td>404</td><td><code>NOT_FOUND</code></td><td>Unknown route or resource</td></tr>
+        <tr><td>415</td><td><code>UNSUPPORTED_MEDIA_TYPE</code></td><td>Non-JSON content type</td></tr>
+        <tr><td>429</td><td><code>TOO_MANY_REQUESTS</code></td><td>Rate limit exceeded (Task 8.3)</td></tr>
+        <tr><td>500</td><td><code>INTERNAL_ERROR</code></td><td>Unhandled server errors</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Verification Results</h2>
+    <table>
+      <thead>
+        <tr><th>Test</th><th>Expected</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>GET /health</code></td><td>200 + JSON status</td><td>Pass</td></tr>
+        <tr><td><code>GET /nonexistent</code></td><td>404 + error shape</td><td>Pass</td></tr>
+        <tr><td>MPIN too short (<code>"123"</code>)</td><td>400 + validation details</td><td>Pass</td></tr>
+        <tr><td>Missing MPIN (<code>{}</code>)</td><td>400 + required error</td><td>Pass</td></tr>
+        <tr><td>Invalid JSON body</td><td>400 + <code>INVALID_JSON</code></td><td>Pass</td></tr>
+        <tr><td>Wrong Content-Type (<code>text/plain</code>)</td><td>415</td><td>Pass</td></tr>
+        <tr><td>Valid MPIN (<code>"123456"</code>)</td><td>Delegates to business layer</td><td>Pass</td></tr>
+        <tr><td>Response headers</td><td>Security headers + X-Request-Id</td><td>Pass</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Technology Choices</h2>
+    <table>
+      <thead>
+        <tr><th>Area</th><th>Choice</th><th>Rationale</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Runtime</td><td>Node.js &ge;18</td><td>Architecture lists Node.js/Express as primary option</td></tr>
+        <tr><td>Framework</td><td>Express 4.x</td><td>Stateless API service; clear middleware pipeline</td></tr>
+        <tr><td>Validation</td><td>Joi 17</td><td>Robust schema validation with detailed error messages</td></tr>
+        <tr><td>Security</td><td>Helmet 8</td><td>Security headers (CSP, HSTS, X-Frame-Options, etc.)</td></tr>
+        <tr><td>CORS</td><td>cors 2.x</td><td>Configurable cross-origin support</td></tr>
+        <tr><td>Logging</td><td>Morgan</td><td>HTTP request logging with request ID; no PII</td></tr>
+        <tr><td>Request ID</td><td>uuid v4</td><td>Unique X-Request-Id for log correlation and audit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+  <p style="font-size: 0.85rem; color: #999;">
+    Dev Agent — Mindforge Student Experience | Task 1.1 completed 2026-02-10
+  </p>
+
+</body>
+</html>
