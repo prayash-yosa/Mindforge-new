@@ -1,0 +1,75 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 3.2 — GET /student/activities/:type/:id and POST pause</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 3.2 — GET /student/activities/:type/:id and POST pause</h1>
+<p><strong>Sprint</strong>: 3 — Today's Plan &amp; Activities API
+<strong>Status</strong>: Done
+<strong>Date</strong>: 2026-02-13
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>GET /v1/student/activities/:type/:id</code> returns activity metadata and questions; auth; scoped by student_id.</li>
+<li>[x] <code>POST /v1/student/activities/:type/:id/pause</code> saves progress and marks pause; client can resume later.</li>
+<li>[x] Types: homework, quiz, test, gap_bridge; 404 if not found or not assigned to student.</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>GET /v1/student/activities/:type/:id</h3>
+<p><strong>Controller</strong>: <code>ActivitiesController.getActivity()</code> — validates path params, delegates to <code>ActivitiesService</code>.</p>
+<p><strong>Response shape</strong>:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;uuid&quot;,
+  &quot;type&quot;: &quot;homework&quot;,
+  &quot;title&quot;: &quot;Ch 3 — Linear Equations&quot;,
+  &quot;status&quot;: &quot;in_progress&quot;,
+  &quot;questionCount&quot;: 3,
+  &quot;estimatedMinutes&quot;: 15,
+  &quot;syllabusRef&quot;: { &quot;subject&quot;: &quot;Mathematics&quot;, &quot;chapter&quot;: &quot;Linear Equations&quot;, &quot;topic&quot;: &quot;One Variable&quot; },
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;uuid&quot;,
+      &quot;type&quot;: &quot;mcq&quot;,
+      &quot;content&quot;: &quot;Solve: 2x + 5 = 13. What is x?&quot;,
+      &quot;options&quot;: [&quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;],
+      &quot;difficulty&quot;: 2,
+      &quot;sortOrder&quot;: 1,
+      &quot;answered&quot;: false
+    }
+  ],
+  &quot;answeredCount&quot;: 0
+}
+</code></pre>
+<p><strong>Security</strong>: Correct answers are never exposed to the client.</p>
+<p><strong>Status transitions</strong>: <code>PENDING → IN_PROGRESS</code> on first access.</p>
+<h3>POST /v1/student/activities/:type/:id/pause</h3>
+<p>Returns <code>{ status: "paused", activityId: "uuid" }</code>.
+No-op if activity is already completed.</p>
+<hr />
+<h2>Files Modified/Created</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/modules/activities/activities.controller.ts</code></td>
+<td>Created: <code>getActivity()</code>, <code>pauseActivity()</code></td>
+</tr>
+<tr>
+<td><code>src/modules/activities/dto/activity-params.dto.ts</code></td>
+<td>Created: path param validation</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.service.ts</code></td>
+<td>Updated: enhanced <code>getActivity()</code>, <code>pauseActivity()</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<pre><code>GET /v1/student/activities/homework/:id → 200: activity with 3 questions
+GET /v1/student/activities/homework/00000000-... → 404 NOT_FOUND
+POST /v1/student/activities/quiz/:id/pause → 200: { status: &quot;paused&quot; }
+GET /v1/student/today → quiz now shows &quot;paused&quot; status
+</code></pre></body></html>

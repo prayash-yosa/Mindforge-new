@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 2.2 Data Access Layer</title>
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#1a1a1a}
+table{border-collapse:collapse;width:100%;margin:1rem 0}
+th,td{border:1px solid #d0d0d0;padding:0.5rem 0.75rem;text-align:left}
+th{background:#f5f5f5;font-weight:600}
+code{background:#f0f0f0;padding:0.15rem 0.3rem;border-radius:3px;font-size:0.9em}
+pre{background:#f5f5f5;padding:1rem;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+h1{border-bottom:2px solid #333;padding-bottom:0.5rem}
+h2{color:#333;margin-top:2rem}
+h3{color:#555}
+</style>
+</head>
+<body><h1>Task 2.2 — Data Access Layer (Repositories/DAOs)</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sprint</strong></td>
+<td>2 — Data &amp; Backend Core</td>
+</tr>
+<tr>
+<td><strong>Task</strong></td>
+<td>2.2</td>
+</tr>
+<tr>
+<td><strong>Title</strong></td>
+<td>Data access layer (repositories/DAOs)</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Feature</td>
+</tr>
+<tr>
+<td><strong>Stack</strong></td>
+<td>TypeORM Repositories</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Done</td>
+</tr>
+<tr>
+<td><strong>Started</strong></td>
+<td>2026-02-12</td>
+</tr>
+<tr>
+<td><strong>Completed</strong></td>
+<td>2026-02-12</td>
+</tr>
+<tr>
+<td><strong>Dependencies</strong></td>
+<td>Task 2.1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] CRUD and queries for students, sessions, syllabus_metadata, activities, questions, responses, attendance, doubt_threads</li>
+<li>[x] All queries scoped by student_id or tenant where applicable; parameterized; no raw concatenation</li>
+<li>[x] Transient DB errors handled with retry/backoff; duplicate/key errors mapped to 409 or domain message</li>
+</ul>
+<hr />
+<h2>Implementation Details</h2>
+<h3>Repositories (10 total)</h3>
+<table>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Entity</th>
+<th>Key Methods</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StudentRepository</code></td>
+<td>students</td>
+<td>findById, findByExternalId, findByClassAndBoard, create, update</td>
+</tr>
+<tr>
+<td><code>SyllabusRepository</code></td>
+<td>syllabus_metadata</td>
+<td>findByClassAndBoard, getSubjects, getChapters, getTopics</td>
+</tr>
+<tr>
+<td><code>TeachingFeedRepository</code></td>
+<td>teaching_feed</td>
+<td>findByClassAndDate, findRecentByClass</td>
+</tr>
+<tr>
+<td><code>ActivityRepository</code></td>
+<td>activities</td>
+<td>findByIdForStudent, findTodayForStudent, findByStatusForStudent, countCompleted</td>
+</tr>
+<tr>
+<td><code>QuestionRepository</code></td>
+<td>questions</td>
+<td>findById, findByActivityId, createMany</td>
+</tr>
+<tr>
+<td><code>ResponseRepository</code></td>
+<td>responses</td>
+<td>findByStudentAndActivity, findByStudentAndQuestion, countCorrectForActivity</td>
+</tr>
+<tr>
+<td><code>AttendanceRepository</code></td>
+<td>attendance</td>
+<td>findByStudentAndDateRange, getSummaryForStudent, createMany</td>
+</tr>
+<tr>
+<td><code>DoubtRepository</code></td>
+<td>doubt_threads + messages</td>
+<td>findThreadsByStudent, findThreadByIdForStudent, createThread, addMessage</td>
+</tr>
+<tr>
+<td><code>SessionRepository</code></td>
+<td>sessions</td>
+<td>findActiveByStudent, revokeAllForStudent, deleteExpired</td>
+</tr>
+<tr>
+<td><code>AuditLogRepository</code></td>
+<td>audit_log</td>
+<td>create, findByAction, findByStudent</td>
+</tr>
+</tbody>
+</table>
+<h3>BaseRepository — Error Handling</h3>
+<p>All repositories extend <code>BaseRepository</code> which provides <code>withErrorHandling()</code>:</p>
+<ul>
+<li><strong>Transient errors</strong> (deadlock, connection failure, serialization): Retry up to 3 times with exponential backoff (200ms → 400ms → 800ms)</li>
+<li><strong>Duplicate/unique constraint</strong>: Mapped to <code>409 ConflictException</code> with <code>DUPLICATE_ENTRY</code> code</li>
+<li><strong>All retries exhausted</strong>: <code>503 ServiceUnavailableException</code> with <code>DATABASE_UNAVAILABLE</code> code</li>
+<li><strong>All queries</strong>: Parameterized via TypeORM (no raw SQL concatenation)</li>
+</ul>
+<h3>Student Scoping</h3>
+<p>All activity, response, attendance, and doubt queries include <code>studentId</code> in their WHERE clause — enforced at the repository level. No cross-student access possible.</p>
+<h3>AuthRepository Migration</h3>
+<p>The Sprint 1 in-memory <code>AuthRepository</code> now delegates to:
+- <code>StudentRepository</code> for student CRUD
+- <code>SessionRepository</code> for session management
+- Lockout state remains in-memory (migrated to Redis in Task 8.3)</p>
+<h3>AuditService Persistence</h3>
+<p><code>AuditService.log()</code> now persists to the <code>audit_log</code> table via <code>AuditLogRepository</code> (best-effort — never blocks the caller on DB failure).</p>
+<hr />
+<h2>Files Created/Modified</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/database/repositories/base.repository.ts</code></td>
+<td>Shared error handling (retry, conflict mapping)</td>
+</tr>
+<tr>
+<td><code>src/database/repositories/*.ts</code> (10 files)</td>
+<td>Repository implementations</td>
+</tr>
+<tr>
+<td><code>src/database/repositories/index.ts</code></td>
+<td>Barrel export</td>
+</tr>
+<tr>
+<td><code>src/modules/auth/auth.repository.ts</code></td>
+<td><strong>Modified</strong> — now uses TypeORM repos</td>
+</tr>
+<tr>
+<td><code>src/shared/audit/audit.service.ts</code></td>
+<td><strong>Modified</strong> — persists to audit_log table</td>
+</tr>
+<tr>
+<td><code>src/database/database.module.ts</code></td>
+<td><strong>Modified</strong> — registers and exports all repos globally</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Login via TypeORM-backed StudentRepository</td>
+<td>Pass — MPIN hash compare works</td>
+</tr>
+<tr>
+<td>Session persisted to sessions table</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Audit log persisted to audit_log table</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Lockout status via in-memory (pending Redis)</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>Protected route with JWT still works</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>TypeScript build clean</td>
+<td>Pass</td>
+</tr>
+</tbody>
+</table></body>
+</html>

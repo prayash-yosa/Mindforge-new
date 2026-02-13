@@ -1,16 +1,18 @@
 /**
- * Mindforge Backend — Attendance Module (Stub)
+ * Mindforge Backend — Attendance Module (Task 2.3)
  *
- * Placeholder for attendance-related endpoints:
- *   GET /v1/student/attendance
+ * Wires attendance service.
+ * Repositories come from the global DatabaseModule.
  *
- * Will be implemented in Sprint 5 (Task 5.1).
+ * Full controller added in Sprint 5 (Task 5.1).
  */
 
 import { Module } from '@nestjs/common';
+import { AttendanceService } from './attendance.service';
 
 @Module({
   controllers: [],
-  providers: [],
+  providers: [AttendanceService],
+  exports: [AttendanceService],
 })
 export class AttendanceModule {}

@@ -45,8 +45,7 @@ export class AuthorizationGuard implements CanActivate {
       });
     }
 
-    // TODO (Task 1.4+): Check student roles/permissions against requiredRoles
-    // For now, students have role 'student' by default
+    // Students have role 'student'; additional roles from provisioning system
     const userRoles = student.roles ?? ['student'];
     const hasRole = requiredRoles.some((role: string) => userRoles.includes(role));
 

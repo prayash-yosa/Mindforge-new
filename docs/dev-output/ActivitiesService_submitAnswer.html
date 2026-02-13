@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>submitAnswer — ActivitiesService</title>
+  <style>
+    :root { --bg: #fdfdfd; --fg: #1e1e1e; --accent: #2563eb; --border: #e2e8f0; --code-bg: #f1f5f9; --tag-bg: #eff6ff; --tag-fg: #1e40af; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Inter", system-ui, -apple-system, sans-serif; color: var(--fg); background: var(--bg); line-height: 1.7; max-width: 820px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.15rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.6rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.3rem; display: inline-block; }
+    h3 { font-size: 0.95rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.3rem; }
+    p, li { font-size: 0.92rem; }
+    ul { padding-left: 1.3rem; margin-bottom: 0.6rem; }
+    li { margin-bottom: 0.3rem; }
+    code { font-family: "JetBrains Mono", "Fira Code", monospace; font-size: 0.84rem; background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 0.8rem 0; }
+    pre code { background: none; padding: 0; }
+    .meta { color: #64748b; font-size: 0.82rem; margin-bottom: 1.6rem; }
+    .tag { display: inline-block; font-size: 0.72rem; font-weight: 600; background: var(--tag-bg); color: var(--tag-fg); padding: 0.15rem 0.55rem; border-radius: 999px; margin-right: 0.4rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border: 1px solid var(--border); }
+    th { background: var(--code-bg); font-weight: 600; }
+    .note { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 0.7rem 1rem; border-radius: 4px; margin: 0.8rem 0; font-size: 0.88rem; }
+    .section { margin-bottom: 1.4rem; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+  <h1><code>submitAnswer()</code></h1>
+  <p class="meta">
+    <span class="tag">Business Logic</span>
+    <span class="tag">Grading</span>
+    <span class="tag">Activity Lifecycle</span>
+    <br />
+    <code>ActivitiesService</code> &middot; <code>backend/src/modules/activities/activities.service.ts</code> &middot; Lines 133–175
+  </p>
+
+  <!-- 1. Overview -->
+  <div class="section">
+    <h2>1. Overview</h2>
+    <p>
+      Accepts a student's answer for a single question within an activity, validates ownership and activity state,
+      applies deterministic grading where possible, and persists the response.
+    </p>
+    <p>
+      This is the primary write operation in the activity flow&mdash;it bridges the student-facing answer submission
+      with the internal scoring and persistence layers.
+    </p>
+  </div>
+
+  <!-- 2. Responsibilities -->
+  <div class="section">
+    <h2>2. Responsibilities</h2>
+    <h3>Handles</h3>
+    <ul>
+      <li>Verifying the activity exists and belongs to the requesting student.</li>
+      <li>Rejecting submissions to already-completed activities.</li>
+      <li>Verifying the question exists and belongs to the target activity.</li>
+      <li>Deterministic grading for objective question types (MCQ, true/false, fill-in-the-blank).</li>
+      <li>Persisting the student response via <code>ResponseRepository</code>.</li>
+      <li>Returning immediate feedback to the caller.</li>
+    </ul>
+    <h3>Does NOT Handle</h3>
+    <ul>
+      <li>AI-based grading for open-ended / long-answer questions (deferred to Task&nbsp;4.3).</li>
+      <li>HTTP request parsing or response formatting (controller responsibility).</li>
+      <li>Automatic activity completion after the last question.</li>
+    </ul>
+  </div>
+
+  <!-- 3. Inputs & Outputs -->
+  <div class="section">
+    <h2>3. Inputs &amp; Outputs</h2>
+
+    <h3>Parameters</h3>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>activityId</code></td><td><code>string</code></td><td>UUID of the target activity.</td></tr>
+        <tr><td><code>questionId</code></td><td><code>string</code></td><td>UUID of the question being answered.</td></tr>
+        <tr><td><code>answer</code></td><td><code>string</code></td><td>The student's raw answer text.</td></tr>
+        <tr><td><code>studentId</code></td><td><code>string</code></td><td>UUID of the authenticated student (from JWT context).</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Return Value &mdash; <code>AnswerResult</code></h3>
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>questionId</code></td><td><code>string</code></td><td>Echo of the answered question ID.</td></tr>
+        <tr><td><code>isCorrect</code></td><td><code>boolean | null</code></td><td><code>true</code>/<code>false</code> for objective types; <code>null</code> when AI grading is pending.</td></tr>
+        <tr><td><code>score</code></td><td><code>number | null</code></td><td><code>100</code> if correct, <code>0</code> if wrong, <code>null</code> if ungraded.</td></tr>
+        <tr><td><code>feedback</code></td><td><code>string?</code></td><td>"Correct!" / "Incorrect." for graded answers; omitted for ungraded.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. Logic Explanation -->
+  <div class="section">
+    <h2>4. Logic Explanation</h2>
+    <ol style="padding-left:1.3rem;">
+      <li><strong>Activity lookup &amp; ownership check</strong> &mdash; Fetches the activity scoped to <code>studentId</code>. Throws <code>ActivityNotFoundException</code> if missing or not owned.</li>
+      <li><strong>Completion guard</strong> &mdash; If the activity status is <code>COMPLETED</code>, throws <code>ActivityAlreadyCompletedException</code> to prevent late submissions.</li>
+      <li><strong>Question lookup &amp; parent check</strong> &mdash; Fetches the question by ID, then confirms it belongs to the same activity. Throws <code>QuestionNotFoundException</code> on mismatch.</li>
+      <li><strong>Deterministic grading</strong> &mdash; If the question has a <code>correctAnswer</code>, performs a case-insensitive, trimmed comparison. Assigns <code>score = 100</code> (correct) or <code>0</code> (incorrect). For questions without a known correct answer, both fields remain <code>null</code>.</li>
+      <li><strong>Persist response</strong> &mdash; Creates a new response record via <code>ResponseRepository.create()</code>.</li>
+      <li><strong>Return feedback</strong> &mdash; Constructs and returns an <code>AnswerResult</code> with immediate feedback.</li>
+    </ol>
+  </div>
+
+  <!-- 5. Data Flow -->
+  <div class="section">
+    <h2>5. Data Flow</h2>
+    <pre><code>Controller (HTTP)
+  │
+  ▼
+submitAnswer(activityId, questionId, answer, studentId)
+  │
+  ├─► ActivityRepository.findByIdForStudent()   → validate ownership
+  ├─► QuestionRepository.findById()             → validate question
+  ├─► Deterministic grading logic               → compute isCorrect, score
+  ├─► ResponseRepository.create()               → persist answer
+  │
+  ▼
+AnswerResult returned to controller → HTTP response to client</code></pre>
+  </div>
+
+  <!-- 6. Usage Context -->
+  <div class="section">
+    <h2>6. Usage Context</h2>
+    <ul>
+      <li>Called by the activities controller handling <code>POST /student/activities/:type/:id/respond</code>.</li>
+      <li>Depends on three repositories: <code>ActivityRepository</code>, <code>QuestionRepository</code>, <code>ResponseRepository</code>.</li>
+      <li>Downstream of authentication middleware that provides <code>studentId</code>.</li>
+      <li>Results from this method feed into <code>getResult()</code> for the score breakdown screen.</li>
+    </ul>
+  </div>
+
+  <!-- 7. Edge Cases & Pitfalls -->
+  <div class="section">
+    <h2>7. Edge Cases &amp; Pitfalls</h2>
+    <ul>
+      <li><strong>Duplicate submissions</strong> &mdash; The method does not currently check if a student has already answered the same question. A second call will create a duplicate response record.</li>
+      <li><strong>Open-ended questions</strong> &mdash; <code>isCorrect</code> and <code>score</code> are <code>null</code> until AI grading is implemented (Task&nbsp;4.3). Consumers must handle the <code>null</code> state gracefully.</li>
+      <li><strong>Case sensitivity</strong> &mdash; Grading uses <code>.trim().toLowerCase()</code> comparison, which works for single-word answers but may produce false negatives for answers with varied whitespace or formatting.</li>
+      <li><strong>No auto-completion</strong> &mdash; Submitting the last answer does not automatically transition the activity to <code>COMPLETED</code>. A separate step or future enhancement is needed.</li>
+    </ul>
+  </div>
+
+  <hr />
+  <p style="font-size:0.78rem; color:#94a3b8;">
+    Generated for <code>ActivitiesService.submitAnswer</code> &middot; Scope: <code>activities.service.ts</code> lines 133–175
+  </p>
+
+</body>
+</html>

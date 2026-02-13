@@ -23,8 +23,14 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { HttpsEnforceMiddleware } from './common/middleware/https-enforce.middleware';
 import { JsonOnlyMiddleware } from './common/middleware/json-only.middleware';
 
+// Database (Task 2.1)
+import { DatabaseModule } from './database/database.module';
+
 // Shared
 import { AuditModule } from './shared/audit/audit.module';
+
+// Seeders
+import { SeederModule } from './database/seeders/seeder.module';
 
 // Feature modules
 import { HealthModule } from './modules/health/health.module';
@@ -48,15 +54,21 @@ import { ActivitiesModule } from './modules/activities/activities.module';
       }]),
     }),
 
+    // ── Database (Task 2.1) ─────────────────────────────────────────
+    DatabaseModule,
+
     // ── Shared Services ───────────────────────────────────────────
     AuditModule,
+
+    // ── Data Seeders (dev only) ──────────────────────────────────
+    SeederModule,
 
     // ── Feature Modules ───────────────────────────────────────────
     HealthModule,
     AuthModule,
-    StudentModule,       // Stub — Sprint 3/5
-    AttendanceModule,    // Stub — Sprint 5
-    ActivitiesModule,    // Stub — Sprint 3/4
+    StudentModule,
+    AttendanceModule,
+    ActivitiesModule,
   ],
   providers: [
     // ── Global Exception Filter ───────────────────────────────────

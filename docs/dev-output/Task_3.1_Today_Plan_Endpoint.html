@@ -1,0 +1,95 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 3.1 — GET /student/today (Today's Plan)</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 3.1 — GET /student/today (Today's Plan)</h1>
+<p><strong>Sprint</strong>: 3 — Today's Plan &amp; Activities API
+<strong>Status</strong>: Done
+<strong>Date</strong>: 2026-02-13
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>GET /v1/student/today</code> returns today's tasks (homework, quiz, gap-bridge), progress summary; auth required; scoped by student_id.</li>
+<li>[x] Response shape supports UX: task cards (title, type, syllabus ref, question count, estimated time), completed today, progress numerator/denominator.</li>
+<li>[x] Empty state supported (e.g. no tasks); consistent JSON and HTTP status.</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Endpoint: <code>GET /v1/student/today</code></h3>
+<p><strong>Controller</strong>: <code>StudentController.getToday()</code> — HTTP-only, delegates to <code>StudentService.getTodayPlan()</code>.</p>
+<p><strong>Response shape</strong>:</p>
+<pre><code class="language-json">{
+  &quot;student&quot;: { &quot;id&quot;: &quot;...&quot;, &quot;displayName&quot;: &quot;Aarav&quot;, &quot;class&quot;: &quot;8&quot;, &quot;board&quot;: &quot;CBSE&quot; },
+  &quot;tasks&quot;: [
+    {
+      &quot;id&quot;: &quot;uuid&quot;,
+      &quot;type&quot;: &quot;homework&quot;,
+      &quot;title&quot;: &quot;Ch 3 — Linear Equations in One Variable&quot;,
+      &quot;syllabusRef&quot;: { &quot;subject&quot;: &quot;Mathematics&quot;, &quot;chapter&quot;: &quot;Linear Equations&quot;, &quot;topic&quot;: &quot;One Variable&quot; },
+      &quot;questionCount&quot;: 3,
+      &quot;estimatedMinutes&quot;: 15,
+      &quot;status&quot;: &quot;pending&quot;,
+      &quot;score&quot;: null
+    }
+  ],
+  &quot;completedToday&quot;: 0,
+  &quot;totalToday&quot;: 3,
+  &quot;progressPercent&quot;: 0
+}
+</code></pre>
+<p><strong>Empty state</strong>: returns <code>tasks: []</code> with <code>completedToday: 0</code>, <code>totalToday: 0</code>, <code>progressPercent: 0</code>.</p>
+<h3>Additional Endpoint: <code>GET /v1/student/profile</code></h3>
+<p>Returns student profile with <code>totalActivitiesCompleted</code> count.</p>
+<h3>Dev Data Seeder</h3>
+<p><code>DevSeederService</code> (runs <code>OnApplicationBootstrap</code> in dev only):
+- 6 syllabus entries (Class 8 CBSE Math + Science)
+- 3 activities (homework + quiz + gap_bridge) with 5 questions
+- 10 attendance records
+- Idempotent: skips if already seeded</p>
+<h3>Coding Standards Applied</h3>
+<ul>
+<li>No TODOs or dead code</li>
+<li>Removed last remaining TODO from <code>AuthorizationGuard</code></li>
+<li>Explicit edge cases: student not found → 404, empty tasks → valid empty response</li>
+<li>Domain exceptions only: <code>StudentNotFoundException</code></li>
+<li>Deterministic behavior: same input → same output</li>
+</ul>
+<hr />
+<h2>Files Modified/Created</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/modules/student/student.controller.ts</code></td>
+<td>Updated: added <code>getToday()</code> and <code>getProfile()</code> endpoints</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.controller.ts</code></td>
+<td>Created: all activity endpoints</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.module.ts</code></td>
+<td>Updated: registered controller</td>
+</tr>
+<tr>
+<td><code>src/database/seeders/dev-seeder.service.ts</code></td>
+<td>Created: development data seeder</td>
+</tr>
+<tr>
+<td><code>src/database/seeders/seeder.module.ts</code></td>
+<td>Created: seeder module</td>
+</tr>
+<tr>
+<td><code>src/app.module.ts</code></td>
+<td>Updated: imported SeederModule</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<pre><code>GET /v1/student/today → 200: tasks + progress (3 tasks, 0 completed)
+GET /v1/student/today (no token) → 401 UNAUTHORIZED
+GET /v1/student/profile → 200: student profile + totalActivitiesCompleted
+</code></pre></body></html>

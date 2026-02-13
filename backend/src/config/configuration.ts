@@ -32,4 +32,15 @@ export default () => ({
     secret: process.env.JWT_SECRET ?? 'CHANGE_ME_IN_PRODUCTION_use_vault',
     expiresIn: process.env.JWT_EXPIRES_IN ?? '1h',
   },
+
+  /** Database configuration (Task 2.1) */
+  database: {
+    url: process.env.DATABASE_URL,
+    host: process.env.DB_HOST ?? 'localhost',
+    port: parseInt(process.env.DB_PORT ?? '5432', 10),
+    username: process.env.DB_USERNAME ?? 'mindforge',
+    password: process.env.DB_PASSWORD ?? '',
+    name: process.env.DB_NAME ?? 'mindforge',
+    sqlitePath: process.env.SQLITE_PATH ?? ':memory:',
+  },
 });

@@ -1,0 +1,71 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 3.3 — POST /student/activities/:type/:id/respond (Submit Answer, Deterministic Grading)</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 3.3 — POST /student/activities/:type/:id/respond (Submit Answer, Deterministic Grading)</h1>
+<p><strong>Sprint</strong>: 3 — Today's Plan &amp; Activities API
+<strong>Status</strong>: Done
+<strong>Date</strong>: 2026-02-13
+<strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>POST /v1/student/activities/:type/:id/respond</code> accepts questionId, answer, optional requestFeedbackLevel.</li>
+<li>[x] Business layer evaluates answer (deterministic for MCQs and simple types); persists response; returns correct/incorrect and next question or completion.</li>
+<li>[x] If requestFeedbackLevel present, returns placeholder (AI feedback deferred to Task 4.x).</li>
+<li>[x] Progress and attempt stored; idempotency considered for duplicate submit.</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>POST /v1/student/activities/:type/:id/respond</h3>
+<p><strong>DTO</strong>: <code>RespondDto</code> — validates <code>questionId</code> (UUID), <code>answer</code> (non-empty, max 10000 chars), optional <code>requestFeedbackLevel</code> (enum: none, hint, approach, concept, solution).</p>
+<p><strong>Grading logic (deterministic)</strong>:
+- MCQ / TRUE_FALSE / FILL_BLANK: case-insensitive string comparison against <code>correctAnswer</code>
+- SHORT_ANSWER / LONG_ANSWER: <code>isCorrect = null</code>, <code>score = null</code> (AI grading in Sprint 4)</p>
+<p><strong>Response shape</strong>:</p>
+<pre><code class="language-json">{
+  &quot;questionId&quot;: &quot;uuid&quot;,
+  &quot;isCorrect&quot;: true,
+  &quot;score&quot;: 100,
+  &quot;feedback&quot;: &quot;Correct!&quot;,
+  &quot;feedbackLevel&quot;: &quot;none&quot;,
+  &quot;isComplete&quot;: false,
+  &quot;nextQuestionId&quot;: &quot;uuid-of-next&quot;
+}
+</code></pre>
+<p><strong>Idempotency</strong>: Re-submitting for an already-answered question returns the existing result without creating a duplicate response.</p>
+<p><strong>Auto-completion</strong>: When all questions are answered, the activity is auto-marked as <code>COMPLETED</code> with an overall score computed as <code>(correct / total) * 100</code>.</p>
+<p><strong>Error cases</strong>:
+- 404 <code>ACTIVITY_NOT_FOUND</code> — activity doesn't exist or not assigned to student
+- 404 <code>QUESTION_NOT_FOUND</code> — question doesn't belong to activity
+- 409 <code>ACTIVITY_ALREADY_COMPLETED</code> — cannot submit to a completed activity
+- 400 <code>VALIDATION_ERROR</code> — invalid DTO fields</p>
+<hr />
+<h2>Files Modified/Created</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/modules/activities/dto/respond.dto.ts</code></td>
+<td>Created: DTO with class-validator</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.service.ts</code></td>
+<td>Updated: idempotency, auto-complete, nextQuestionId, feedbackLevel</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.controller.ts</code></td>
+<td>Updated: <code>respond()</code> endpoint</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<pre><code>POST respond (Q1, correct answer &quot;4&quot;) → 200: isCorrect=true, score=100, nextQuestionId=Q2
+POST respond (Q2, wrong answer &quot;5&quot;)   → 200: isCorrect=false, score=0, nextQuestionId=Q3
+POST respond (Q1, duplicate)          → 200: returns existing result (idempotent)
+POST respond (Q3, correct answer &quot;6&quot;) → 200: isComplete=true, nextQuestionId=null
+POST respond (Q1, after completion)   → 409: ACTIVITY_ALREADY_COMPLETED
+POST respond (invalid DTO)            → 400: VALIDATION_ERROR with details
+</code></pre></body></html>

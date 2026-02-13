@@ -1,38 +1,72 @@
 /**
- * Mindforge Backend — Student Controller (Stub)
+ * Mindforge Backend — Student Controller (Sprint 3)
  *
- * Protected endpoints requiring Bearer token.
- * Used in Task 1.4 to verify AuthGuard works on protected routes.
+ * HTTP-only layer. No business logic. Delegates to StudentService.
  *
- * Full implementation in Sprint 3 (Task 3.1).
+ * Endpoints:
+ *   GET /v1/student/me      — authenticated student context
+ *   GET /v1/student/today   — today's plan (Task 3.1)
+ *   GET /v1/student/profile — student profile
  */
 
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { Student } from '../../common/decorators/student.decorator';
 import { AuthenticatedStudent } from '../../common/guards/auth.guard';
 import { ErrorResponseDto } from '../../common/dto/error-response.dto';
+import { StudentService } from './student.service';
 
 @ApiTags('Student')
 @ApiBearerAuth()
 @Controller('v1/student')
 export class StudentController {
+  constructor(private readonly studentService: StudentService) {}
+
   /**
-   * GET /v1/student/me — Returns the authenticated student context.
-   * Demonstrates that AuthGuard extracts student_id from JWT and attaches to request.
-   *
-   * Checklist 1.4: "Authenticated student_id available to business layer for scope"
+   * GET /v1/student/me — Returns the authenticated student context from JWT.
    */
   @Get('me')
-  @ApiOperation({ summary: 'Get authenticated student context (from JWT)' })
+  @ApiOperation({ summary: 'Get authenticated student context' })
   @ApiResponse({ status: 200, description: 'Authenticated student info' })
-  @ApiResponse({ status: 401, description: 'Missing or invalid token', type: ErrorResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized', type: ErrorResponseDto })
   getMe(@Student() student: AuthenticatedStudent) {
     return {
       studentId: student.id,
       class: student.class,
       board: student.board,
-      message: 'Authenticated via JWT (AuthGuard Task 1.4)',
     };
+  }
+
+  /**
+   * GET /v1/student/today — Today's plan.
+   *
+   * Returns today's tasks (homework, quiz, gap-bridge), progress summary.
+   * Auth required; scoped by student_id.
+   * Empty state supported: returns empty tasks array with zero progress.
+   */
+  @Get('today')
+  @ApiOperation({ summary: "Get today's plan (tasks + progress)" })
+  @ApiResponse({ status: 200, description: "Today's plan with task cards and progress" })
+  @ApiResponse({ status: 401, description: 'Unauthorized', type: ErrorResponseDto })
+  @ApiResponse({ status: 404, description: 'Student not found', type: ErrorResponseDto })
+  async getToday(@Student() student: AuthenticatedStudent) {
+    return this.studentService.getTodayPlan(student.id);
+  }
+
+  /**
+   * GET /v1/student/profile — Student profile.
+   */
+  @Get('profile')
+  @ApiOperation({ summary: 'Get student profile' })
+  @ApiResponse({ status: 200, description: 'Student profile' })
+  @ApiResponse({ status: 401, description: 'Unauthorized', type: ErrorResponseDto })
+  @ApiResponse({ status: 404, description: 'Student not found', type: ErrorResponseDto })
+  async getProfile(@Student() student: AuthenticatedStudent) {
+    return this.studentService.getProfile(student.id);
   }
 }
