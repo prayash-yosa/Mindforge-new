@@ -37,6 +37,14 @@ export interface TaskCard {
   score?: number | null;
 }
 
+/** Activity type progress entry */
+export interface ActivityTypeProgress {
+  type: string;
+  total: number;
+  completed: number;
+  averageScore: number | null;
+}
+
 /** Student profile shape */
 export interface StudentProfile {
   id: string;
@@ -45,6 +53,7 @@ export interface StudentProfile {
   board: string;
   school: string | null;
   totalActivitiesCompleted: number;
+  progressOverview: ActivityTypeProgress[];
 }
 
 /** Sync status shape */
@@ -117,6 +126,7 @@ export class StudentService {
     if (!student) throw new StudentNotFoundException();
 
     const totalCompleted = await this.activityRepo.countCompletedForStudent(studentId);
+    const progressOverview = await this.activityRepo.getProgressOverviewForStudent(studentId);
 
     return {
       id: student.id,
@@ -125,6 +135,7 @@ export class StudentService {
       board: student.board,
       school: student.school,
       totalActivitiesCompleted: totalCompleted,
+      progressOverview,
     };
   }
 

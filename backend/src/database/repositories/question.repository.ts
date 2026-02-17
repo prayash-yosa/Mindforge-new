@@ -21,7 +21,7 @@ export class QuestionRepository extends BaseRepository {
 
   async findById(id: string): Promise<QuestionEntity | null> {
     return this.withErrorHandling(
-      () => this.repo.findOne({ where: { id } }),
+      () => this.repo.findOne({ where: { id }, relations: ['syllabus'] }),
       'findById',
     );
   }

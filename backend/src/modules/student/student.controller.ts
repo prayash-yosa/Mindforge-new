@@ -1,12 +1,13 @@
 /**
- * Mindforge Backend — Student Controller (Sprint 3)
+ * Mindforge Backend — Student Controller (Sprint 3 + 5)
  *
  * HTTP-only layer. No business logic. Delegates to StudentService.
  *
  * Endpoints:
- *   GET /v1/student/me      — authenticated student context
- *   GET /v1/student/today   — today's plan (Task 3.1)
- *   GET /v1/student/profile — student profile
+ *   GET /v1/student/me          — authenticated student context
+ *   GET /v1/student/today       — today's plan (Task 3.1)
+ *   GET /v1/student/profile     — student profile with progress overview (Task 5.3)
+ *   GET /v1/student/sync/status — sync status with conflict hint (Task 5.3)
  */
 
 import { Controller, Get } from '@nestjs/common';
@@ -68,5 +69,19 @@ export class StudentController {
   @ApiResponse({ status: 404, description: 'Student not found', type: ErrorResponseDto })
   async getProfile(@Student() student: AuthenticatedStudent) {
     return this.studentService.getProfile(student.id);
+  }
+
+  /**
+   * GET /v1/student/sync/status — Sync status.
+   *
+   * Returns last sync timestamp and optional conflict hint
+   * (e.g. "newer progress on another device").
+   */
+  @Get('sync/status')
+  @ApiOperation({ summary: 'Get sync status and conflict hint' })
+  @ApiResponse({ status: 200, description: 'Sync status' })
+  @ApiResponse({ status: 401, description: 'Unauthorized', type: ErrorResponseDto })
+  async getSyncStatus(@Student() student: AuthenticatedStudent) {
+    return this.studentService.getSyncStatus(student.id);
   }
 }

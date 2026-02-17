@@ -1,13 +1,14 @@
 /**
- * Mindforge Backend — Activities Controller (Sprint 3)
+ * Mindforge Backend — Activities Controller (Sprint 3 + 4)
  *
- * HTTP-only layer. No business logic. Delegates to ActivitiesService.
+ * HTTP-only layer. No business logic. Delegates to services.
  *
  * Endpoints:
- *   GET  /v1/student/activities/:type/:id       — get activity + questions
- *   POST /v1/student/activities/:type/:id/pause  — save progress
- *   POST /v1/student/activities/:type/:id/respond — submit answer
- *   GET  /v1/student/results/:type/:id           — get result
+ *   GET  /v1/student/activities/:type/:id          — get activity + questions
+ *   POST /v1/student/activities/:type/:id/pause     — save progress
+ *   POST /v1/student/activities/:type/:id/respond   — submit answer
+ *   GET  /v1/student/activities/:type/:id/feedback  — progressive guidance (Task 4.2)
+ *   GET  /v1/student/results/:type/:id              — get result
  */
 
 import {
@@ -16,6 +17,7 @@ import {
   Post,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -25,19 +27,25 @@ import {
   ApiBearerAuth,
   ApiResponse,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Student } from '../../common/decorators/student.decorator';
 import { AuthenticatedStudent } from '../../common/guards/auth.guard';
 import { ErrorResponseDto } from '../../common/dto/error-response.dto';
 import { ActivitiesService } from './activities.service';
+import { FeedbackService } from './feedback.service';
 import { RespondDto } from './dto/respond.dto';
 import { ActivityType } from '../../database/entities/activity.entity';
+import { FeedbackLevel } from '../../database/entities/response.entity';
 
 @ApiTags('Activities')
 @ApiBearerAuth()
 @Controller('v1/student')
 export class ActivitiesController {
-  constructor(private readonly activitiesService: ActivitiesService) {}
+  constructor(
+    private readonly activitiesService: ActivitiesService,
+    private readonly feedbackService: FeedbackService,
+  ) {}
 
   /**
    * GET /v1/student/activities/:type/:id
@@ -108,6 +116,32 @@ export class ActivitiesController {
       student.id,
       dto.requestFeedbackLevel,
     );
+  }
+
+  /**
+   * GET /v1/student/activities/:type/:id/feedback (Task 4.2)
+   *
+   * Returns the next guidance level for the specified question.
+   * Progressive: Hint → Approach → Concept → Solution.
+   * Level order enforced — no skipping to solution.
+   * AI prompt uses syllabus context only (no PII).
+   * Fallback to static hint on AI failure.
+   */
+  @Get('activities/:type/:id/feedback')
+  @ApiOperation({ summary: 'Get progressive AI feedback for a question' })
+  @ApiParam({ name: 'type', enum: ActivityType })
+  @ApiParam({ name: 'id', description: 'Activity UUID' })
+  @ApiQuery({ name: 'questionId', description: 'Question UUID', required: true })
+  @ApiQuery({ name: 'level', enum: FeedbackLevel, required: false, description: 'Request specific level (auto-advances if omitted)' })
+  @ApiResponse({ status: 200, description: 'Feedback at the requested guidance level' })
+  @ApiResponse({ status: 404, description: 'Activity or question not found', type: ErrorResponseDto })
+  async getFeedback(
+    @Param('id') id: string,
+    @Query('questionId') questionId: string,
+    @Query('level') level: FeedbackLevel | undefined,
+    @Student() student: AuthenticatedStudent,
+  ) {
+    return this.feedbackService.getFeedback(id, questionId, student.id, level);
   }
 
   /**

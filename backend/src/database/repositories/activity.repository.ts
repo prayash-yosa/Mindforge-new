@@ -132,4 +132,34 @@ export class ActivityRepository extends BaseRepository {
       'countCompletedForStudent',
     );
   }
+
+  /** Get activity breakdown by type with average scores */
+  async getProgressOverviewForStudent(
+    studentId: string,
+  ): Promise<{ type: string; total: number; completed: number; averageScore: number | null }[]> {
+    return this.withErrorHandling(async () => {
+      const result = await this.repo
+        .createQueryBuilder('a')
+        .select('a.type', 'type')
+        .addSelect('COUNT(*)', 'total')
+        .addSelect(
+          `SUM(CASE WHEN a.status = '${ActivityStatus.COMPLETED}' THEN 1 ELSE 0 END)`,
+          'completed',
+        )
+        .addSelect(
+          `AVG(CASE WHEN a.status = '${ActivityStatus.COMPLETED}' THEN a.score ELSE NULL END)`,
+          'averageScore',
+        )
+        .where('a.student_id = :studentId', { studentId })
+        .groupBy('a.type')
+        .getRawMany();
+
+      return result.map((r: any) => ({
+        type: r.type,
+        total: parseInt(r.total, 10),
+        completed: parseInt(r.completed, 10),
+        averageScore: r.averageScore !== null ? Math.round(parseFloat(r.averageScore)) : null,
+      }));
+    }, 'getProgressOverviewForStudent');
+  }
 }

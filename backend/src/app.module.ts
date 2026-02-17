@@ -32,12 +32,16 @@ import { AuditModule } from './shared/audit/audit.module';
 // Seeders
 import { SeederModule } from './database/seeders/seeder.module';
 
+// AI (Task 4.1)
+import { AiModule } from './modules/ai/ai.module';
+
 // Feature modules
 import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { StudentModule } from './modules/student/student.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
+import { SyllabusModule } from './modules/syllabus/syllabus.module';
 
 @Module({
   imports: [
@@ -57,6 +61,9 @@ import { ActivitiesModule } from './modules/activities/activities.module';
     // ── Database (Task 2.1) ─────────────────────────────────────────
     DatabaseModule,
 
+    // ── AI Provider (Task 4.1) ──────────────────────────────────
+    AiModule,
+
     // ── Shared Services ───────────────────────────────────────────
     AuditModule,
 
@@ -69,6 +76,7 @@ import { ActivitiesModule } from './modules/activities/activities.module';
     StudentModule,
     AttendanceModule,
     ActivitiesModule,
+    SyllabusModule,
   ],
   providers: [
     // ── Global Exception Filter ───────────────────────────────────

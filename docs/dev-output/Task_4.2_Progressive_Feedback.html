@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 4.2 — GET /student/activities/:type/:id/feedback (Progressive Guidance)</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 4.2 — GET /student/activities/:type/:id/feedback (Progressive Guidance)</h1>
+<p><strong>Sprint</strong>: 4 — AI Integration &amp; Grading
+<strong>Status</strong>: Done
+<strong>Date</strong>: 2026-02-16
+<strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>GET /student/activities/:type/:id/feedback</code> returns next guidance level for current question; level tracked (1–4: Hint, Approach, Concept, Solution).</li>
+<li>[x] Business layer enforces level order; no skipping to solution unless allowed; response includes help level and content.</li>
+<li>[x] AI prompt includes syllabus context and question/attempt only; response persisted via data access; fallback on AI failure per Task 4.1.</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>FeedbackService (<code>src/modules/activities/feedback.service.ts</code>)</h3>
+<p><strong>Level progression</strong>: <code>Hint → Approach → Concept → Solution</code></p>
+<p><strong>Rules</strong>:
+- Auto-advances to next level if no <code>level</code> query param specified
+- Monotonic: cannot go back to a lower level
+- <code>maxLevelReached: true</code> when Solution is reached
+- <code>nextLevel: null</code> at Solution</p>
+<p><strong>Response shape</strong>:</p>
+<pre><code class="language-json">{
+  &quot;questionId&quot;: &quot;uuid&quot;,
+  &quot;level&quot;: &quot;hint&quot;,
+  &quot;content&quot;: &quot;Think about the key concepts in Types of Forces...&quot;,
+  &quot;fromAi&quot;: false,
+  &quot;nextLevel&quot;: &quot;approach&quot;,
+  &quot;maxLevelReached&quot;: false
+}
+</code></pre>
+<p><strong>Persistence</strong>: Updates <code>feedbackLevel</code>, <code>aiFeedback</code>, <code>aiConversationRef</code> on the response entity.</p>
+<p><strong>Fallback</strong>: Static syllabus-aware hints per level when AI is unavailable.</p>
+<hr />
+<h2>Files Created/Modified</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/modules/activities/feedback.service.ts</code></td>
+<td>Created: progressive feedback logic</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/dto/feedback-query.dto.ts</code></td>
+<td>Created: query param validation</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.controller.ts</code></td>
+<td>Updated: added <code>/feedback</code> GET endpoint</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.module.ts</code></td>
+<td>Updated: registered FeedbackService</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<pre><code>GET feedback (no level)       → 200: level=hint, nextLevel=approach
+GET feedback (auto-advance)   → 200: level=approach, nextLevel=concept
+GET feedback (level=concept)  → 200: level=concept, nextLevel=solution
+GET feedback (level=solution) → 200: level=solution, maxLevelReached=true, nextLevel=null
+GET feedback (unknown q)      → 404: QUESTION_NOT_FOUND
+</code></pre></body></html>

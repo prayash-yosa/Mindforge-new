@@ -1,0 +1,122 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 4.1 — AI Provider Integration and Timeout/Fallback</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 4.1 — AI Provider Integration and Timeout/Fallback</h1>
+<p><strong>Sprint</strong>: 4 — AI Integration &amp; Grading
+<strong>Status</strong>: Done
+<strong>Date</strong>: 2026-02-16
+<strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] Outbound HTTP to AI provider (OpenAI-compatible); prompts use minimal context (pseudonymous ID, syllabus scope); no raw PII.</li>
+<li>[x] Timeout (10s); on timeout return fallback; on provider error return user-friendly message and optional cached hint.</li>
+<li>[x] Responses validated before storage/display; no raw AI errors to client.</li>
+<li>[x] Token usage and caps considered; cost tiering (cheap for grading, higher for doubt/concept).</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>AiProviderService (<code>src/modules/ai/ai-provider.service.ts</code>)</h3>
+<ul>
+<li><strong>HTTP client</strong>: Native <code>fetch</code> + <code>AbortController</code> for timeout (platform-native, no external deps)</li>
+<li><strong>Timeout</strong>: Configurable (default 10s); <code>AbortError</code> caught → fallback</li>
+<li><strong>Fallback</strong>: Every call site provides a <code>FallbackConfig { content, reason }</code>; on failure the fallback content is returned with <code>fromFallback: true</code></li>
+<li><strong>Response validation</strong>: <code>sanitizeContent()</code> removes excessive whitespace, rejects raw error objects</li>
+<li><strong>Token logging</strong>: Logs <code>model</code>, <code>tier</code>, <code>tokensUsed.total</code>, <code>latencyMs</code> per call</li>
+<li><strong>Cost tiering</strong>: <code>grading</code> tier → cheap model (gpt-4o-mini); <code>feedback</code> tier → higher model</li>
+</ul>
+<h3>PromptBuilderService (<code>src/modules/ai/prompt-builder.service.ts</code>)</h3>
+<ul>
+<li><strong>Grading prompts</strong>: Syllabus context + rubric + question + answer → JSON response</li>
+<li><strong>Feedback prompts</strong>: Level-specific instructions (Hint/Approach/Concept/Solution)</li>
+<li><strong>Doubt prompts</strong>: Conversation history (last 10 messages) + syllabus context</li>
+<li><strong>No PII</strong>: All prompts use subject/chapter/topic only; no student names, emails, or personal data</li>
+<li><strong>Static fallbacks</strong>: Syllabus-aware fallback text per feedback level</li>
+</ul>
+<h3>Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AI_BASE_URL</code></td>
+<td><code>https://api.openai.com/v1</code></td>
+<td>OpenAI-compatible endpoint</td>
+</tr>
+<tr>
+<td><code>AI_API_KEY</code></td>
+<td>(empty)</td>
+<td>API key; no key → fallback mode</td>
+</tr>
+<tr>
+<td><code>AI_GRADING_MODEL</code></td>
+<td><code>gpt-4o-mini</code></td>
+<td>Cheap model for grading</td>
+</tr>
+<tr>
+<td><code>AI_FEEDBACK_MODEL</code></td>
+<td><code>gpt-4o-mini</code></td>
+<td>Higher model for feedback/doubt</td>
+</tr>
+<tr>
+<td><code>AI_TIMEOUT_MS</code></td>
+<td><code>10000</code></td>
+<td>Request timeout</td>
+</tr>
+<tr>
+<td><code>AI_MAX_TOKENS</code></td>
+<td><code>512</code></td>
+<td>Max tokens per response</td>
+</tr>
+<tr>
+<td><code>AI_TEMPERATURE</code></td>
+<td><code>0.3</code></td>
+<td>Low temperature for deterministic outputs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Files Created</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/modules/ai/ai-provider.service.ts</code></td>
+<td>AI HTTP client with timeout/fallback</td>
+</tr>
+<tr>
+<td><code>src/modules/ai/prompt-builder.service.ts</code></td>
+<td>Structured prompt builders</td>
+</tr>
+<tr>
+<td><code>src/modules/ai/ai.module.ts</code></td>
+<td>Global AI module</td>
+</tr>
+<tr>
+<td><code>src/config/configuration.ts</code></td>
+<td>Added <code>ai</code> config section</td>
+</tr>
+<tr>
+<td><code>backend/.env.example</code></td>
+<td>Added AI config variables</td>
+</tr>
+<tr>
+<td><code>src/app.module.ts</code></td>
+<td>Imported AiModule</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<pre><code>AI with no API key → AiProviderService logs &quot;no_api_key&quot; fallback
+All endpoints return user-friendly fallback content
+No raw AI errors exposed in any response
+Token usage logging format: &quot;AI call: model=... tier=... tokens=... latency=...&quot;
+</code></pre></body></html>

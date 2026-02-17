@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 5.2 — Doubts API + Syllabus Tree</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 5.2 — Doubts API + Syllabus Tree</h1>
+<p><strong>Sprint</strong>: 5 — Attendance &amp; Doubts API<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-17<br>
+<strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>GET /v1/student/doubts</code> returns list of threads</li>
+<li>[x] <code>GET /v1/student/doubts/:threadId</code> returns thread with messages</li>
+<li>[x] <code>POST /v1/student/doubts</code> creates message with syllabus context; AI responds; stores messages</li>
+<li>[x] <code>GET /v1/student/syllabus/tree</code> returns Class → Subject → Chapter → Topic hierarchy</li>
+<li>[x] Replies inherit thread's existing syllabus context (no re-specification needed)</li>
+<li>[x] Minimal PII in AI prompts; fallback on AI failure</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Created</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/modules/activities/doubts.controller.ts</code></td><td>HTTP layer for doubt endpoints (list, get thread, create message)</td></tr>
+<tr><td><code>src/modules/activities/dto/doubt.dto.ts</code></td><td><code>CreateDoubtDto</code> — message, optional threadId, syllabus context fields</td></tr>
+<tr><td><code>src/modules/syllabus/syllabus.controller.ts</code></td><td>HTTP layer for syllabus tree endpoint</td></tr>
+<tr><td><code>src/modules/syllabus/syllabus.service.ts</code></td><td>Builds hierarchical tree (Subject → Chapter → Topic) from flat DB records</td></tr>
+<tr><td><code>src/modules/syllabus/syllabus.module.ts</code></td><td>Wires SyllabusController + SyllabusService</td></tr>
+</tbody>
+</table>
+<h3>Files Modified</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Change</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/modules/activities/activities.module.ts</code></td><td>Added <code>DoubtsController</code> to controllers array</td></tr>
+<tr><td><code>src/modules/activities/doubt.service.ts</code></td><td>Replies now inherit thread's existing syllabus context for AI prompts</td></tr>
+<tr><td><code>src/app.module.ts</code></td><td>Added <code>SyllabusModule</code> import</td></tr>
+</tbody>
+</table>
+<h3>Endpoints</h3>
+<pre><code>GET  /v1/student/doubts              — List all threads (sorted by updatedAt DESC)
+GET  /v1/student/doubts/:threadId    — Thread detail with messages
+POST /v1/student/doubts              — Create new thread or reply to existing
+GET  /v1/student/syllabus/tree       — Class → Subject → Chapter → Topic hierarchy</code></pre>
+<h3>POST /v1/student/doubts — Request Body</h3>
+<pre><code>{
+  "message": "Why does pressure increase with depth?",
+  "threadId": "optional-uuid (reply to existing thread)",
+  "syllabusClass": "8",
+  "syllabusSubject": "Science",
+  "syllabusChapter": "Force and Pressure",
+  "syllabusTopic": "Pressure in Fluids"
+}</code></pre>
+<h3>Doubt Thread Response Shape</h3>
+<pre><code>{
+  "id": "uuid",
+  "title": "Why does pressure increase with depth?",
+  "syllabusContext": {
+    "class": "8",
+    "subject": "Science",
+    "chapter": "Force and Pressure",
+    "topic": "Pressure in Fluids"
+  },
+  "isResolved": false,
+  "messages": [
+    { "id": "uuid", "role": "student", "content": "...", "createdAt": "..." },
+    { "id": "uuid", "role": "ai", "content": "...", "createdAt": "..." }
+  ]
+}</code></pre>
+<h3>Syllabus Tree Response Shape</h3>
+<pre><code>{
+  "class": "8",
+  "board": "CBSE",
+  "subjects": [
+    {
+      "subject": "Mathematics",
+      "chapters": [
+        {
+          "chapter": "Linear Equations",
+          "topics": [
+            { "id": "uuid", "topic": "One Variable" },
+            { "id": "uuid", "topic": "Two Variables" }
+          ]
+        }
+      ]
+    }
+  ]
+}</code></pre>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>Syllabus context inheritance</strong>: Replies to existing threads automatically use the thread's original syllabus context, so students don't need to re-specify for follow-up questions</li>
+<li><strong>AI integration</strong>: Uses <code>AiProviderService</code> + <code>PromptBuilderService.buildDoubtPrompt</code> — syllabus-aligned, PII-free</li>
+<li><strong>Separate SyllabusModule</strong>: Clean separation; repositories from global DatabaseModule</li>
+<li><strong>Thread title</strong>: Auto-generated from first message (first 100 chars)</li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<pre><code># List threads (empty initially)
+curl -s http://localhost:3000/v1/student/doubts -H "Authorization: Bearer $TOKEN"
+
+# Create new thread with syllabus context
+curl -s -X POST http://localhost:3000/v1/student/doubts \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"message":"Why does pressure increase with depth?","syllabusSubject":"Science","syllabusChapter":"Force and Pressure","syllabusTopic":"Pressure in Fluids"}'
+
+# Reply to existing thread (inherits context automatically)
+curl -s -X POST http://localhost:3000/v1/student/doubts \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"message":"Can you explain Archimedes principle?","threadId":"THREAD_UUID"}'
+
+# Syllabus tree
+curl -s http://localhost:3000/v1/student/syllabus/tree -H "Authorization: Bearer $TOKEN"
+
+# Validation error
+curl -s -X POST http://localhost:3000/v1/student/doubts \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"message":""}'
+# → 400: "message must not be empty"</code></pre>
+</body></html>

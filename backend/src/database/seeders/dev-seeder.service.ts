@@ -139,7 +139,7 @@ export class DevSeederService implements OnApplicationBootstrap {
       title: 'Force and Pressure — Quick Quiz',
       syllabusId: sciSyllabus.id,
       status: ActivityStatus.PENDING,
-      questionCount: 2,
+      questionCount: 3,
       estimatedMinutes: 10,
     });
 
@@ -162,6 +162,15 @@ export class DevSeederService implements OnApplicationBootstrap {
         correctAnswer: 'true',
         difficulty: 1,
         sortOrder: 2,
+      },
+      {
+        activityId: quiz.id,
+        syllabusId: sciSyllabus.id,
+        type: QuestionType.SHORT_ANSWER,
+        content: 'Explain in your own words why a sharp knife cuts better than a blunt one.',
+        rubric: 'Must mention pressure = force/area; smaller area means higher pressure; accept synonyms.',
+        difficulty: 3,
+        sortOrder: 3,
       },
     ]);
 

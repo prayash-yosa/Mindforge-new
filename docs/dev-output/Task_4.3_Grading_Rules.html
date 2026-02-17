@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 4.3 — Deterministic and AI-Assisted Grading Rules</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 4.3 — Deterministic and AI-Assisted Grading Rules</h1>
+<p><strong>Sprint</strong>: 4 — AI Integration &amp; Grading
+<strong>Status</strong>: Done
+<strong>Date</strong>: 2026-02-16
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] MCQs and simple types use deterministic evaluation; open-ended may use AI with rubric.</li>
+<li>[x] Rubric and correct answer stored; score and feedback level stored per response.</li>
+<li>[x] No PII in AI grading prompts; pseudonymous ID and syllabus scope only.</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>GradingService (<code>src/modules/activities/grading.service.ts</code>)</h3>
+<p><strong>Deterministic grading</strong> (MCQ, TRUE_FALSE, FILL_BLANK):
+- Case-insensitive, trimmed string comparison
+- Score: 100 (correct) or 0 (incorrect)
+- Feedback: "Correct!" or "Incorrect."</p>
+<p><strong>AI-assisted grading</strong> (SHORT_ANSWER, LONG_ANSWER):
+- Builds prompt via <code>PromptBuilderService.buildGradingPrompt()</code>
+- Includes: syllabusSubject, syllabusChapter, syllabusTopic, questionContent, rubric
+- AI responds with JSON: <code>{isCorrect, score, feedback}</code>
+- Score clamped to 0–100
+- On AI failure: graceful "pending" status with user-friendly message
+- On no API key: returns pending immediately (no network call)</p>
+<p><strong>Integration</strong>:
+- <code>ActivitiesService.submitAnswer()</code> delegates to <code>GradingService.grade()</code>
+- AI grading results stored: <code>aiFeedback</code> + <code>aiConversationRef</code> on response entity
+- Rubric available on <code>QuestionEntity.rubric</code> column</p>
+<p><strong>Seeder updated</strong>: Added a <code>SHORT_ANSWER</code> question with rubric to the Science quiz for testing.</p>
+<hr />
+<h2>Files Modified</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/modules/activities/grading.service.ts</code></td>
+<td>Rewritten: deterministic + AI-assisted with AiProviderService</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/activities.service.ts</code></td>
+<td>Updated: delegates grading to GradingService</td>
+</tr>
+<tr>
+<td><code>src/modules/activities/doubt.service.ts</code></td>
+<td>Updated: uses AiProviderService instead of stub</td>
+</tr>
+<tr>
+<td><code>src/database/repositories/question.repository.ts</code></td>
+<td>Updated: <code>findById</code> loads syllabus relation</td>
+</tr>
+<tr>
+<td><code>src/database/seeders/dev-seeder.service.ts</code></td>
+<td>Updated: added SHORT_ANSWER question with rubric</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Verification</h2>
+<pre><code>MCQ &quot;Friction&quot;        → deterministic: isCorrect=true, score=100, gradingMethod=deterministic
+TRUE_FALSE &quot;true&quot;     → deterministic: isCorrect=true, score=100
+SHORT_ANSWER (no key) → pending: isCorrect=null, score=null, feedback=&quot;AI grading will be available...&quot;
+Results endpoint      → score=67 (2/3 correct, short answer pending)
+</code></pre></body></html>

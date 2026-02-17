@@ -15,6 +15,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ActivityRepository } from '../../database/repositories/activity.repository';
 import { QuestionRepository } from '../../database/repositories/question.repository';
 import { ResponseRepository } from '../../database/repositories/response.repository';
+import { GradingService } from './grading.service';
 import {
   ActivityNotFoundException,
   ActivityAlreadyCompletedException,
@@ -87,6 +88,7 @@ export class ActivitiesService {
     private readonly activityRepo: ActivityRepository,
     private readonly questionRepo: QuestionRepository,
     private readonly responseRepo: ResponseRepository,
+    private readonly gradingService: GradingService,
   ) {}
 
   /**
@@ -177,16 +179,19 @@ export class ActivitiesService {
       };
     }
 
-    // Deterministic grading
-    let isCorrect: boolean | null = null;
-    let score: number | null = null;
-    let feedback = 'Pending evaluation.';
+    // Grade via GradingService (deterministic for MCQ/TF, AI for open-ended)
+    const gradeResult = await this.gradingService.grade({
+      questionType: question.type,
+      studentAnswer: answer,
+      correctAnswer: question.correctAnswer ?? undefined,
+      rubric: question.rubric ?? undefined,
+      syllabusSubject: question.syllabus?.subject ?? activity.syllabus?.subject,
+      syllabusChapter: question.syllabus?.chapter ?? activity.syllabus?.chapter,
+      syllabusTopic: question.syllabus?.topic ?? activity.syllabus?.topic,
+      questionContent: question.content,
+    });
 
-    if (question.correctAnswer) {
-      isCorrect = answer.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
-      score = isCorrect ? 100 : 0;
-      feedback = isCorrect ? 'Correct!' : 'Incorrect.';
-    }
+    const { isCorrect, score, feedback } = gradeResult;
 
     await this.responseRepo.create({
       studentId,
@@ -196,6 +201,8 @@ export class ActivitiesService {
       isCorrect: isCorrect ?? undefined,
       score: score ?? undefined,
       feedbackLevel: requestFeedbackLevel ?? FeedbackLevel.NONE,
+      aiFeedback: gradeResult.gradingMethod === 'ai' ? feedback : undefined,
+      aiConversationRef: gradeResult.aiModel ? `grade:${gradeResult.aiModel}` : undefined,
     });
 
     // Check if activity is now complete

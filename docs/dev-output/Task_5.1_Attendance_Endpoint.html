@@ -1,0 +1,79 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 5.1 — GET /student/attendance (Summary and Calendar)</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 5.1 — GET /student/attendance (Summary and Calendar)</h1>
+<p><strong>Sprint</strong>: 5 — Attendance &amp; Doubts API<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-17<br>
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>GET /v1/student/attendance</code> accepts query: period (this_month, last_month, this_term) or explicit startDate/endDate</li>
+<li>[x] Returns summary (present, absent, late counts, attendancePercent) and per-day calendar (P/A/L)</li>
+<li>[x] Auth required; scoped by student_id; read-only</li>
+<li>[x] Empty and error states supported (0 counts + empty calendar when no data)</li>
+<li>[x] DTO validation: enum for period, regex for YYYY-MM-DD, proper error messages</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Created</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/modules/attendance/attendance.controller.ts</code></td><td>HTTP layer — delegates to AttendanceService; resolves date range from query</td></tr>
+<tr><td><code>src/modules/attendance/dto/attendance-query.dto.ts</code></td><td>DTO with <code>AttendancePeriod</code> enum + date regex validation</td></tr>
+</tbody>
+</table>
+<h3>Files Modified</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Change</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/modules/attendance/attendance.module.ts</code></td><td>Added <code>AttendanceController</code> registration</td></tr>
+</tbody>
+</table>
+<h3>Endpoint</h3>
+<pre><code>GET /v1/student/attendance
+  Query: period=this_month|last_month|this_term  (default: this_month)
+     OR: startDate=YYYY-MM-DD&amp;endDate=YYYY-MM-DD
+  Auth: Bearer token required</code></pre>
+<h3>Response Shape</h3>
+<pre><code>{
+  "summary": {
+    "studentId": "uuid",
+    "period": { "startDate": "2026-02-01", "endDate": "2026-02-28" },
+    "totalDays": 10,
+    "present": 8,
+    "absent": 2,
+    "late": 0,
+    "attendancePercent": 80
+  },
+  "calendar": [
+    { "date": "2026-02-07", "status": "absent" },
+    { "date": "2026-02-08", "status": "present" }
+  ]
+}</code></pre>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>Period shortcuts</strong>: <code>this_month</code>, <code>last_month</code>, <code>this_term</code> (academic: Apr–Sep / Oct–Mar)</li>
+<li><strong>Timezone-safe</strong>: Uses <code>getFullYear()/getMonth()/getDate()</code> instead of <code>toISOString()</code> to avoid UTC date shift</li>
+<li><strong>Default period</strong>: <code>this_month</code> when no params provided</li>
+<li><strong>Read-only</strong>: No write endpoint for students per architecture</li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<pre><code># Default (this_month)
+curl -s http://localhost:3000/v1/student/attendance -H "Authorization: Bearer $TOKEN"
+
+# Explicit dates
+curl -s "http://localhost:3000/v1/student/attendance?startDate=2026-02-01&amp;endDate=2026-02-17" \
+  -H "Authorization: Bearer $TOKEN"
+
+# Validation errors
+curl -s "http://localhost:3000/v1/student/attendance?period=invalid" -H "Authorization: Bearer $TOKEN"
+# → 400: "period must be one of: this_month, last_month, this_term"
+
+curl -s "http://localhost:3000/v1/student/attendance?startDate=02-2026-01" -H "Authorization: Bearer $TOKEN"
+# → 400: "startDate must be in YYYY-MM-DD format"</code></pre>
+</body></html>

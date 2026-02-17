@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 5.3 — Enhanced Profile + Sync Status</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 5.3 — Enhanced Profile + Sync Status</h1>
+<p><strong>Sprint</strong>: 5 — Attendance &amp; Doubts API<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-17<br>
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] <code>GET /v1/student/profile</code> returns display_name, class, board, progress overview; auth; scoped by student_id</li>
+<li>[x] Progress overview includes activity breakdown by type (total, completed, averageScore)</li>
+<li>[x] <code>GET /v1/student/sync/status</code> returns last sync timestamp and optional conflict hint</li>
+<li>[x] Sync conflict detection stub (real tracking deferred to Sprint 7)</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Modified</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Change</th></tr>
+</thead>
+<tbody>
+<tr><td><code>src/modules/student/student.controller.ts</code></td><td>Added <code>GET /v1/student/sync/status</code> endpoint</td></tr>
+<tr><td><code>src/modules/student/student.service.ts</code></td><td>Enhanced <code>getProfile()</code> with <code>progressOverview</code>; added <code>ActivityTypeProgress</code> interface</td></tr>
+<tr><td><code>src/database/repositories/activity.repository.ts</code></td><td>Added <code>getProgressOverviewForStudent()</code> — GROUP BY type with COUNT/SUM/AVG</td></tr>
+</tbody>
+</table>
+<h3>Endpoints</h3>
+<pre><code>GET /v1/student/profile      — Enhanced with progressOverview
+GET /v1/student/sync/status  — Sync status with conflict hint</code></pre>
+<h3>Profile Response Shape (Enhanced)</h3>
+<pre><code>{
+  "id": "uuid",
+  "displayName": "Aarav",
+  "class": "8",
+  "board": "CBSE",
+  "school": "Demo School",
+  "totalActivitiesCompleted": 2,
+  "progressOverview": [
+    { "type": "homework", "total": 5, "completed": 3, "averageScore": 85 },
+    { "type": "quiz", "total": 3, "completed": 1, "averageScore": 72 },
+    { "type": "gap_bridge", "total": 1, "completed": 0, "averageScore": null }
+  ]
+}</code></pre>
+<h3>Sync Status Response Shape</h3>
+<pre><code>{
+  "lastSyncAt": "2026-02-17T06:09:38.130Z",
+  "hasConflict": false,
+  "conflictHint": "newer progress on another device"
+}</code></pre>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>Progress overview</strong>: <code>getProgressOverviewForStudent()</code> uses SQL GROUP BY with conditional aggregation — completed counts and average scores in a single query (no N+1)</li>
+<li><strong>Sync status stub</strong>: Returns current timestamp with <code>hasConflict: false</code>. Real multi-device sync tracking deferred to Sprint 7 per backlog</li>
+<li><strong>Backward-compatible</strong>: Existing <code>GET /v1/student/profile</code> response extended with new <code>progressOverview</code> field — no breaking changes for existing consumers</li>
+<li><strong>Score rounding</strong>: Average scores rounded to nearest integer via <code>Math.round()</code></li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<pre><code># Enhanced profile
+curl -s http://localhost:3000/v1/student/profile -H "Authorization: Bearer $TOKEN"
+# → includes progressOverview array with type breakdown
+
+# Sync status
+curl -s http://localhost:3000/v1/student/sync/status -H "Authorization: Bearer $TOKEN"
+# → { lastSyncAt, hasConflict: false }</code></pre>
+</body></html>

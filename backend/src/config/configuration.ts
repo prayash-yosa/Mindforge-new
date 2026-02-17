@@ -33,6 +33,24 @@ export default () => ({
     expiresIn: process.env.JWT_EXPIRES_IN ?? '1h',
   },
 
+  /** AI provider configuration (Task 4.1) */
+  ai: {
+    /** OpenAI-compatible API base URL */
+    baseUrl: process.env.AI_BASE_URL ?? 'https://api.openai.com/v1',
+    /** API key — must be in vault for production */
+    apiKey: process.env.AI_API_KEY ?? '',
+    /** Model for grading (cheap tier) */
+    gradingModel: process.env.AI_GRADING_MODEL ?? 'gpt-4o-mini',
+    /** Model for feedback/doubt (higher tier) */
+    feedbackModel: process.env.AI_FEEDBACK_MODEL ?? 'gpt-4o-mini',
+    /** Request timeout in milliseconds */
+    timeoutMs: parseInt(process.env.AI_TIMEOUT_MS ?? '10000', 10),
+    /** Maximum tokens per AI response */
+    maxTokens: parseInt(process.env.AI_MAX_TOKENS ?? '512', 10),
+    /** Temperature for deterministic-style responses */
+    temperature: parseFloat(process.env.AI_TEMPERATURE ?? '0.3'),
+  },
+
   /** Database configuration (Task 2.1) */
   database: {
     url: process.env.DATABASE_URL,

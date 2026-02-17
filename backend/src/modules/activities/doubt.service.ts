@@ -1,21 +1,24 @@
 /**
- * Mindforge Backend — Doubt Service (Task 2.3)
+ * Mindforge Backend — Doubt Service (Sprint 4)
  *
  * Business logic for doubt threads with syllabus context.
- * Services = business logic only. No HTTP, no direct DB access.
+ * Integrates with AiProviderService for AI-powered responses.
+ * Falls back to static guidance when AI is unavailable.
  *
- * Checklist 2.3:
- *   [x] Business service for doubts (stubs OK for AI parts)
- *   [x] Business layer calls data access and external (AI) only
+ * Standards applied:
+ *   - No PII in AI prompts (pseudonymous, syllabus context only)
+ *   - Explicit edge case handling (thread not found, student not found, AI failure)
+ *   - No raw AI errors exposed to client
  */
 
 import { Injectable, Logger } from '@nestjs/common';
 import { DoubtRepository } from '../../database/repositories/doubt.repository';
 import { StudentRepository } from '../../database/repositories/student.repository';
+import { AiProviderService } from '../ai/ai-provider.service';
+import { PromptBuilderService } from '../ai/prompt-builder.service';
 import {
   DoubtThreadNotFoundException,
   StudentNotFoundException,
-  AiUnavailableException,
 } from '../../common/exceptions/domain.exceptions';
 import { MessageRole } from '../../database/entities/doubt-message.entity';
 
@@ -55,7 +58,7 @@ export interface CreateDoubtInput {
   syllabusChapter?: string;
   syllabusTopic?: string;
   message: string;
-  threadId?: string; // If provided, adds to existing thread
+  threadId?: string;
 }
 
 @Injectable()
@@ -65,13 +68,11 @@ export class DoubtService {
   constructor(
     private readonly doubtRepo: DoubtRepository,
     private readonly studentRepo: StudentRepository,
+    private readonly aiProvider: AiProviderService,
+    private readonly promptBuilder: PromptBuilderService,
   ) {}
 
-  /**
-   * Get all doubt threads for a student.
-   *
-   * Architecture ref: §5.2 — "GET /student/doubts"
-   */
+  /** Get all doubt threads for a student */
   async getThreads(studentId: string): Promise<DoubtThreadSummary[]> {
     const threads = await this.doubtRepo.findThreadsByStudent(studentId);
 
@@ -89,11 +90,7 @@ export class DoubtService {
     }));
   }
 
-  /**
-   * Get a doubt thread with messages.
-   *
-   * Architecture ref: §5.2 — "GET /student/doubts/:threadId"
-   */
+  /** Get a doubt thread with messages */
   async getThread(threadId: string, studentId: string): Promise<DoubtThreadDetail> {
     const thread = await this.doubtRepo.findThreadByIdForStudent(threadId, studentId);
     if (!thread) throw new DoubtThreadNotFoundException(threadId);
@@ -119,9 +116,7 @@ export class DoubtService {
 
   /**
    * Create a doubt message (new thread or reply to existing).
-   * Calls AI provider for response — stub in Sprint 2.
-   *
-   * Architecture ref: §5.2 — "POST /student/doubts"
+   * Calls AI provider for response; falls back to static guidance on failure.
    */
   async createMessage(
     studentId: string,
@@ -152,34 +147,39 @@ export class DoubtService {
       content: input.message,
     });
 
-    // AI response — stub for Sprint 2 (full in Task 5.2 / 4.1)
-    const aiResponse = this.generateStubAiResponse(input);
+    // Build conversation history for context
+    const thread = await this.doubtRepo.findThreadByIdForStudent(threadId, studentId);
+    const history = (thread?.messages ?? []).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    // Use thread's existing syllabus context for replies; fall back to input or defaults
+    const syllabusClass = input.syllabusClass ?? thread?.syllabusClass ?? student.class ?? '8';
+    const syllabusSubject = input.syllabusSubject ?? thread?.syllabusSubject ?? 'General';
+    const syllabusChapter = input.syllabusChapter ?? thread?.syllabusChapter ?? 'General';
+    const syllabusTopic = input.syllabusTopic ?? thread?.syllabusTopic ?? 'General';
+
+    // Call AI provider with syllabus context (no PII)
+    const { messages, fallback } = this.promptBuilder.buildDoubtPrompt({
+      syllabusClass,
+      syllabusSubject,
+      syllabusChapter,
+      syllabusTopic,
+      studentMessage: input.message,
+      conversationHistory: history.slice(0, -1),
+    });
+
+    const aiResult = await this.aiProvider.chatCompletion(messages, 'feedback', fallback);
+
+    // Persist AI response
     await this.doubtRepo.addMessage({
       threadId,
       role: MessageRole.AI,
-      content: aiResponse,
-      aiModel: 'stub-v1',
+      content: aiResult.content,
+      aiModel: aiResult.fromFallback ? 'fallback' : aiResult.model,
     });
 
     return this.getThread(threadId, studentId);
-  }
-
-  /**
-   * Stub AI response — will be replaced with real AI call in Task 4.1/5.2.
-   */
-  private generateStubAiResponse(input: CreateDoubtInput): string {
-    const context = [
-      input.syllabusSubject,
-      input.syllabusChapter,
-      input.syllabusTopic,
-    ]
-      .filter(Boolean)
-      .join(' > ');
-
-    return (
-      `Thank you for your question${context ? ` about ${context}` : ''}. ` +
-      `AI-powered responses will be available once the AI provider is integrated (Task 4.1). ` +
-      `In the meantime, please refer to your textbook or ask your teacher.`
-    );
   }
 }
