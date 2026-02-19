@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 6.1 — Client App Shell</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 6.1 — Client App Shell</h1>
+<p><strong>Sprint</strong>: 6 — Client: Login, Home, Activity, Results<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-18<br>
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] API client with base URL, Bearer auth, JSON, and error shape parsing</li>
+<li>[x] Retry and timeout configurable</li>
+<li>[x] Optional local queue stub</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Created</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>client/src/api/client.ts</code></td><td>fetch + AbortController, 15s timeout, 2x retry, <code>{code,message,details?}</code> error parsing, <code>setToken</code>/<code>clearToken</code>/<code>hasToken</code></td></tr>
+<tr><td><code>client/src/api/types.ts</code></td><td>Typed interfaces for all backend responses</td></tr>
+<tr><td><code>client/src/auth/AuthContext.tsx</code></td><td>Login/logout, sessionStorage persistence, ProtectedRoute</td></tr>
+<tr><td><code>client/src/styles/theme.css</code></td><td>Design tokens: sage green #7C9A6E, deep brown #4A3728, cream #FDF6EC</td></tr>
+<tr><td><code>client/src/components/BottomNav.tsx</code></td><td>Bottom navigation component</td></tr>
+<tr><td><code>client/src/components/Skeleton.tsx</code></td><td>Skeleton loading component</td></tr>
+<tr><td><code>client/vite.config.ts</code></td><td>Proxy /v1 → localhost:3000</td></tr>
+</tbody>
+</table>
+<h3>React + TS + Vite Scaffold</h3>
+<p>Scaffolded in <code>/client</code> directory. React 18 + TypeScript + Vite.</p>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>sessionStorage for token</strong>: Cleared on tab close for security</li>
+<li><strong>Vite proxy for dev</strong>: <code>/v1</code> proxy to localhost:3000</li>
+<li><strong>No external HTTP library</strong>: Native fetch only</li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<pre><code>npx tsc --noEmit
+# → 0 errors
+
+npx vite build
+# → 256KB JS / 80KB gzipped
+
+# API proxy verified</code></pre>
+</body></html>

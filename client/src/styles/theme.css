@@ -1,0 +1,67 @@
+/**
+ * Mindforge — Design Tokens (Task 6.1)
+ *
+ * Colors per UX spec: sage green, deep brown, cream.
+ */
+
+:root {
+  --color-sage: #7C9A6E;
+  --color-sage-light: #A8C49A;
+  --color-sage-dark: #5A7A4E;
+  --color-brown: #4A3728;
+  --color-brown-light: #6B5344;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F0E6D4;
+
+  --color-correct: #4CAF50;
+  --color-incorrect: #E53935;
+  --color-warning: #FB8C00;
+  --color-info: #1E88E5;
+
+  --color-bg: var(--color-cream);
+  --color-surface: #FFFFFF;
+  --color-text: var(--color-brown);
+  --color-text-muted: #8A7A6E;
+  --color-border: #E0D6CC;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(74, 55, 40, 0.08);
+  --shadow-md: 0 4px 12px rgba(74, 55, 40, 0.12);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --transition: 200ms ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input {
+  font-family: inherit;
+}
+
+a {
+  color: var(--color-sage-dark);
+  text-decoration: none;
+}

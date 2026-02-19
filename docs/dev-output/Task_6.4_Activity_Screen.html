@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 6.4 — Activity Screen</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 6.4 — Activity Screen</h1>
+<p><strong>Sprint</strong>: 6 — Client: Login, Home, Activity, Results<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-18<br>
+<strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] Route <code>/activity/:type/:id</code></li>
+<li>[x] Load activity + questions</li>
+<li>[x] Question display, answer input, Check Answer</li>
+<li>[x] Progress bar</li>
+<li>[x] Correct/incorrect states</li>
+<li>[x] AI feedback panel</li>
+<li>[x] Pause saves progress</li>
+<li>[x] Accessibility</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Created</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>client/src/screens/ActivityScreen.tsx</code></td><td>Main activity screen component</td></tr>
+</tbody>
+</table>
+<h3>Flow States</h3>
+<table>
+<thead>
+<tr><th>State</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>loading</td><td>Fetching activity and questions</td></tr>
+<tr><td>question</td><td>Displaying current question with answer input</td></tr>
+<tr><td>submitting</td><td>Check Answer in progress</td></tr>
+<tr><td>correct/incorrect</td><td>Feedback after answer check</td></tr>
+<tr><td>complete</td><td>All questions answered</td></tr>
+</tbody>
+</table>
+<h3>Features</h3>
+<ul>
+<li><strong>MCQ</strong>: Selectable option buttons</li>
+<li><strong>Text</strong>: Textarea for free-form answers</li>
+<li><strong>On incorrect</strong>: AI feedback panel with progressive levels (Get a Hint → More Help)</li>
+<li><strong>AI thinking indicator</strong>: Shown during feedback fetch</li>
+<li><strong>Pause button</strong>: Calls <code>POST /pause</code> and navigates home</li>
+<li><strong>Auto-advance</strong>: To next unanswered question</li>
+<li><strong>Complete state</strong>: "Activity Complete!" with View Results + Back to Home</li>
+</ul>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>Local question.answered tracking</strong>: Client-side state for answered questions</li>
+<li><strong>Auto-advance to next unanswered</strong>: Skip already-answered questions</li>
+<li><strong>Feedback panel fetches on-demand</strong>: When user requests hint or more help</li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<ul>
+<li>Full activity flow: MCQ and text questions</li>
+<li>Incorrect feedback with progressive hints</li>
+<li>Pause saves and navigates home</li>
+<li>Complete state navigation to results</li>
+</ul>
+</body></html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 6.3 — Home Screen</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 6.3 — Home Screen</h1>
+<p><strong>Sprint</strong>: 6 — Client: Login, Home, Activity, Results<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-18<br>
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] Route <code>/home</code></li>
+<li>[x] <code>GET /student/today</code> integration</li>
+<li>[x] Greeting, progress bar, task cards, bottom nav</li>
+<li>[x] States: loading, default, empty, error</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Created</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>client/src/screens/HomeScreen.tsx</code></td><td>Main home screen component</td></tr>
+</tbody>
+</table>
+<h3>Features</h3>
+<ul>
+<li><strong>Time-based greeting</strong>: Morning/Afternoon/Evening based on time of day</li>
+<li><strong>Progress card</strong>: Percent bar + X of Y tasks completed</li>
+<li><strong>Task cards</strong>: type badge, status badge (color-coded), title, syllabusRef, questionCount, estimatedMinutes, score</li>
+<li><strong>Empty state</strong>: "All caught up!" with emoji</li>
+<li><strong>Error state</strong>: Try Again button</li>
+<li><strong>BottomNav</strong>: Home, Attendance, Doubts, Profile</li>
+</ul>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>Completed tasks</strong>: Navigate to <code>/results/:type/:id</code></li>
+<li><strong>Active tasks</strong>: Navigate to <code>/activity/:type/:id</code></li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<ul>
+<li>Manual load of home screen with data</li>
+<li>Empty state when no tasks</li>
+<li>Error state with retry</li>
+<li>Navigation from task cards to correct routes</li>
+</ul>
+</body></html>

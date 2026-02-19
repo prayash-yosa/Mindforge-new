@@ -25,7 +25,12 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.get<number>('port') ?? 3000;
   const isProduction = config.get<boolean>('isProduction');
-  const corsOrigins = config.get<string[]>('corsOrigins') ?? ['http://localhost:3001'];
+  const corsOrigins = config.get<string[]>('corsOrigins') ?? [
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://10.0.2.2:5173',
+  ];
 
   // ── Trust proxy (behind LB) ───────────────────────────────────
   if (config.get<boolean>('trustProxy')) {

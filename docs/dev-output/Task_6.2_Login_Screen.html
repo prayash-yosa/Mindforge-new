@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Task 6.2 — Login Screen</title><style>body{font-family:system-ui;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;overflow-x:auto;border-radius:6px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f8f8f8}</style></head><body><h1>Task 6.2 — Login Screen</h1>
+<p><strong>Sprint</strong>: 6 — Client: Login, Home, Activity, Results<br>
+<strong>Status</strong>: Done<br>
+<strong>Date</strong>: 2026-02-18<br>
+<strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h2>Checklist</h2>
+<ul>
+<li>[x] Route <code>/login</code></li>
+<li>[x] 6-digit MPIN input (dots), on-screen keypad</li>
+<li>[x] Enter and Forgot MPIN</li>
+<li>[x] States: default, entering, loading, error, locked</li>
+<li>[x] Accessibility</li>
+</ul>
+<hr />
+<h2>Implementation</h2>
+<h3>Files Created</h3>
+<table>
+<thead>
+<tr><th>File</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>client/src/screens/LoginScreen.tsx</code></td><td>Main login screen component</td></tr>
+</tbody>
+</table>
+<h3>Features</h3>
+<ul>
+<li><strong>6-dot indicator</strong>: Visual feedback for each digit entered</li>
+<li><strong>3x4 keypad grid</strong>: On-screen numeric keypad</li>
+<li><strong>Auto-submit on 6th digit</strong>: UX flow optimization</li>
+<li><strong>Error state</strong>: Red borders, message, attempts remaining</li>
+<li><strong>Locked state</strong>: Countdown timer (derived from <code>lockedUntil</code> from API)</li>
+<li><strong>Forgot MPIN link</strong>: Stub for future implementation</li>
+<li><strong>Loading state</strong>: Spinner during submission</li>
+</ul>
+<h3>Key Decisions</h3>
+<ul>
+<li><strong>Auto-submit on 6 digits</strong>: For UX flow; no need to tap Enter</li>
+<li><strong>Generic error messages</strong>: No identity leak in error text</li>
+<li><strong>Countdown derived from server</strong>: <code>lockedUntil</code> from API drives UI countdown</li>
+</ul>
+<hr />
+<h2>Verification</h2>
+<ul>
+<li>Manual login flow with valid/invalid MPIN</li>
+<li>Locked state display after max attempts</li>
+<li>Accessibility: keyboard navigation, screen reader labels</li>
+</ul>
+</body></html>
