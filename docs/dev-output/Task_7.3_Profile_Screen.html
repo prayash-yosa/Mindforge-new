@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 7.3 — Profile Screen and Logout</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #fafafa;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 1.5rem; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-top: 1.5rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.25rem; }
+    p { margin: 0.5rem 0; }
+    ul { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.25rem 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f5f5f5; font-weight: 600; }
+    code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task 7.3 — Profile Screen and Logout</h1>
+    <p><strong>Sprint</strong>: 7 — Client: Attendance, Doubts, Profile &amp; Sync<br>
+    <strong>Status</strong>: Done<br>
+    <strong>Date</strong>: 2026-02-19</p>
+
+    <h2>Summary</h2>
+    <p>Built the Profile screen at <code>/profile</code> with student details, progress overview, quick links, and logout with confirmation.</p>
+
+    <h2>Implementation</h2>
+
+    <h3>Route &amp; Data Flow</h3>
+    <ul>
+      <li><strong>Route</strong>: <code>/profile</code> (protected)</li>
+      <li><strong>API</strong>: <code>GET /v1/student/profile</code></li>
+      <li><strong>Response type</strong>: <code>StudentProfile</code> (added to <code>api/types.ts</code>)</li>
+    </ul>
+
+    <h3>Features</h3>
+    <ol>
+      <li><strong>Info Card</strong> — Avatar (initial letter, gradient background), display name, Class/Board detail chips, school name.</li>
+      <li><strong>Progress Overview</strong> — Per activity type: label, mini progress bar (completed/total), average score. Uses <code>progressOverview[]</code> from API.</li>
+      <li><strong>Quick Links</strong> — "View Attendance" and "My Doubts" with chevron-right icons, navigating to respective routes.</li>
+      <li><strong>Logout</strong> — Two-step: "Log Out" button → confirmation card ("Are you sure?") → [Cancel] [Log Out]. Logout clears token + sessionStorage and navigates to <code>/login</code>.</li>
+    </ol>
+
+    <h3>Key Implementation Details</h3>
+    <ul>
+      <li><code>ProgressCard</code> calculates completion percentage from total/completed</li>
+      <li><code>DetailChip</code> for clean Class/Board display</li>
+      <li>Confirmation dialog prevents accidental logout</li>
+      <li>Uses <code>useAuth().logout()</code> from AuthContext</li>
+    </ul>
+
+    <h2>Files</h2>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>client/src/screens/ProfileScreen.tsx</code></td><td>Created</td></tr>
+        <tr><td><code>client/src/api/types.ts</code></td><td>Modified — added <code>StudentProfile</code></td></tr>
+        <tr><td><code>client/src/App.tsx</code></td><td>Modified — routed <code>/profile</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 7.4 — Sync Status and Conflict Modal</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #fafafa;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 1.5rem; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-top: 1.5rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.25rem; }
+    p { margin: 0.5rem 0; }
+    ul { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.25rem 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f5f5f5; font-weight: 600; }
+    code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task 7.4 — Sync Status and Conflict Modal</h1>
+    <p><strong>Sprint</strong>: 7 — Client: Attendance, Doubts, Profile &amp; Sync<br>
+    <strong>Status</strong>: Done<br>
+    <strong>Date</strong>: 2026-02-19</p>
+
+    <h2>Summary</h2>
+    <p>Built the <code>SyncBanner</code> component for the Home screen that polls sync status and shows a conflict resolution modal.</p>
+
+    <h2>Implementation</h2>
+
+    <h3>Data Flow</h3>
+    <ul>
+      <li><strong>API</strong>: <code>GET /v1/student/sync/status</code></li>
+      <li><strong>Response type</strong>: <code>SyncStatus</code> (added to <code>api/types.ts</code>)</li>
+      <li><strong>Polling</strong>: Every 60 seconds via <code>setInterval</code></li>
+    </ul>
+
+    <h3>Features</h3>
+    <ol>
+      <li><strong>Status Banner</strong> — Green dot + "All caught up!" when synced. Orange dot + "Sync conflict detected" on conflict.</li>
+      <li><strong>Conflict Modal</strong> — Full-screen overlay with modal card: "Found newer progress on another device" + hint text. Two actions:
+        <ul>
+          <li><strong>Keep Current</strong> — Dismisses modal.</li>
+          <li><strong>Use Latest</strong> — Dismisses modal and reloads the page (fetches fresh data).</li>
+        </ul>
+      </li>
+      <li><strong>Non-blocking</strong> — Silent catch on poll failures. Banner hidden until first successful poll.</li>
+    </ol>
+
+    <h3>Integration</h3>
+    <ul>
+      <li><code>SyncBanner</code> rendered at top of <code>HomeScreen</code> content area</li>
+      <li>Cleanup: <code>clearInterval</code> on component unmount</li>
+    </ul>
+
+    <h2>Files</h2>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>client/src/components/SyncBanner.tsx</code></td><td>Created</td></tr>
+        <tr><td><code>client/src/screens/HomeScreen.tsx</code></td><td>Modified — integrated <code>SyncBanner</code></td></tr>
+        <tr><td><code>client/src/api/types.ts</code></td><td>Modified — added <code>SyncStatus</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Additional UI Improvements (Sprint 7)</h2>
+
+    <h3>Bottom Navigation Icons</h3>
+    <ul>
+      <li>Replaced emoji icons (🏠📅💬👤) with custom SVG stroke icons in <code>Icons.tsx</code></li>
+      <li><code>HomeIcon</code>, <code>CalendarIcon</code>, <code>ChatIcon</code>, <code>UserIcon</code> — 24×24, stroke-based, <code>currentColor</code></li>
+      <li>No external font/CDN dependency</li>
+    </ul>
+
+    <h3>Results Screen Score Circle</h3>
+    <ul>
+      <li>Fixed <code>alignItems: 'baseline'</code> → <code>alignItems: 'center'</code> in <code>scoreCircle</code> style</li>
+      <li>Percentage text now perfectly centered vertically and horizontally</li>
+    </ul>
+  </div>
+</body>
+</html>

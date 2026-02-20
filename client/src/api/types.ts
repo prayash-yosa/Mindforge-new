@@ -74,6 +74,59 @@ export interface FeedbackResult {
   maxLevelReached: boolean;
 }
 
+/* ── Sprint 7 types ─────────────────────────────────────── */
+
+export interface AttendanceResponse {
+  summary: {
+    studentId: string;
+    period: { startDate: string; endDate: string };
+    totalDays: number;
+    present: number;
+    absent: number;
+    late: number;
+    attendancePercent: number;
+  };
+  calendar: { date: string; status: string }[];
+}
+
+export interface DoubtThread {
+  id: string;
+  title: string | null;
+  syllabusContext: { class?: string; subject?: string; chapter?: string; topic?: string };
+  isResolved: boolean;
+  updatedAt: string;
+}
+
+export interface DoubtThreadDetail {
+  id: string;
+  title: string | null;
+  syllabusContext: { class?: string; subject?: string; chapter?: string; topic?: string };
+  isResolved: boolean;
+  messages: { id: string; role: string; content: string; createdAt: string }[];
+}
+
+export interface SyllabusTree {
+  class: string;
+  board: string;
+  subjects: { subject: string; chapters: { chapter: string; topics: { id: string; topic: string }[] }[] }[];
+}
+
+export interface StudentProfile {
+  id: string;
+  displayName: string;
+  class: string;
+  board: string;
+  school: string | null;
+  totalActivitiesCompleted: number;
+  progressOverview: { type: string; total: number; completed: number; averageScore: number | null }[];
+}
+
+export interface SyncStatus {
+  lastSyncAt: string;
+  hasConflict: boolean;
+  conflictHint?: string;
+}
+
 export interface ActivityResult {
   activityId: string;
   type: string;

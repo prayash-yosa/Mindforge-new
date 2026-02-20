@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 7.2 — Doubts Screen (Screen 6) with Syllabus Context Selector</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #fafafa;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 1.5rem; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-top: 1.5rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.25rem; }
+    p { margin: 0.5rem 0; }
+    ul { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.25rem 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f5f5f5; font-weight: 600; }
+    code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task 7.2 — Doubts Screen (Screen 6) with Syllabus Context Selector</h1>
+    <p><strong>Sprint</strong>: 7 — Client: Attendance, Doubts, Profile &amp; Sync<br>
+    <strong>Status</strong>: Done<br>
+    <strong>Date</strong>: 2026-02-19</p>
+
+    <h2>Summary</h2>
+    <p>Built the Doubts screen at <code>/doubts</code> with a thread-based chat interface and cascading syllabus context selector.</p>
+
+    <h2>Implementation</h2>
+
+    <h3>Route &amp; Data Flow</h3>
+    <ul>
+      <li><strong>Route</strong>: <code>/doubts</code> (protected)</li>
+      <li><strong>APIs</strong>: <code>GET /v1/student/doubts</code>, <code>GET /v1/student/doubts/:threadId</code>, <code>POST /v1/student/doubts</code>, <code>GET /v1/student/syllabus/tree</code></li>
+      <li><strong>Response types</strong>: <code>DoubtThread</code>, <code>DoubtThreadDetail</code>, <code>SyllabusTree</code> (added to <code>api/types.ts</code>)</li>
+    </ul>
+
+    <h3>Features</h3>
+    <ol>
+      <li><strong>Syllabus Context Bar</strong> — Shows current Subject · Chapter · Topic. "Change" toggles a cascading picker (Subject → Chapter → Topic dropdowns).</li>
+      <li><strong>Thread List View</strong> — Lists existing doubt threads with title, resolved badge, and syllabus meta. "Ask a Doubt" button.</li>
+      <li><strong>Chat View</strong> — Student (right, sage-light) and AI (left, white) bubbles. Auto-scroll. "Thinking..." indicator while AI responds.</li>
+      <li><strong>Context Inheritance</strong> — Replies carry the current syllabus context. Changing context does not clear the thread.</li>
+      <li><strong>States</strong>: Loading (skeleton), empty ("Ask your first question!"), error (retry).</li>
+    </ol>
+
+    <h3>Key Implementation Details</h3>
+    <ul>
+      <li>Parallel fetch on mount: threads + syllabus tree (fetched once, cached in state)</li>
+      <li><code>CtxSelect</code> component for each dropdown level</li>
+      <li>Enter-to-send + Send button with SVG icon</li>
+      <li>Back navigation returns to thread list and refreshes</li>
+    </ul>
+
+    <h2>Files</h2>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>client/src/screens/DoubtsScreen.tsx</code></td><td>Created</td></tr>
+        <tr><td><code>client/src/api/types.ts</code></td><td>Modified — added <code>DoubtThread</code>, <code>DoubtThreadDetail</code>, <code>SyllabusTree</code></td></tr>
+        <tr><td><code>client/src/App.tsx</code></td><td>Modified — routed <code>/doubts</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

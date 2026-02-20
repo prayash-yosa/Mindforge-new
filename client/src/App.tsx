@@ -5,6 +5,9 @@ import { LoginScreen } from './screens/LoginScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { ActivityScreen } from './screens/ActivityScreen';
 import { ResultsScreen } from './screens/ResultsScreen';
+import { AttendanceScreen } from './screens/AttendanceScreen';
+import { DoubtsScreen } from './screens/DoubtsScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -24,21 +27,11 @@ function AppRoutes() {
       <Route path="/home" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
       <Route path="/activity/:type/:id" element={<ProtectedRoute><ActivityScreen /></ProtectedRoute>} />
       <Route path="/results/:type/:id" element={<ProtectedRoute><ResultsScreen /></ProtectedRoute>} />
-      {/* Stubs for bottom nav — Sprint 7 */}
-      <Route path="/attendance" element={<ProtectedRoute><Placeholder title="Attendance" /></ProtectedRoute>} />
-      <Route path="/doubts" element={<ProtectedRoute><Placeholder title="Doubts" /></ProtectedRoute>} />
-      <Route path="/profile" element={<ProtectedRoute><Placeholder title="Profile" /></ProtectedRoute>} />
+      <Route path="/attendance" element={<ProtectedRoute><AttendanceScreen /></ProtectedRoute>} />
+      <Route path="/doubts" element={<ProtectedRoute><DoubtsScreen /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><ProfileScreen /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  );
-}
-
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, background: 'var(--color-bg)' }}>
-      <h2 style={{ color: 'var(--color-brown)' }}>{title}</h2>
-      <p style={{ color: 'var(--color-text-muted)', fontSize: 14 }}>Coming in Sprint 7</p>
-    </div>
   );
 }
 

@@ -148,7 +148,7 @@ const s: Record<string, React.CSSProperties> = {
   },
   celebration: { fontSize: 18, fontWeight: 700, color: 'var(--color-sage-dark)', marginBottom: 12 },
   scoreCircle: {
-    display: 'inline-flex', alignItems: 'baseline', justifyContent: 'center',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     width: 120, height: 120, borderRadius: '50%',
     background: 'linear-gradient(135deg, var(--color-sage-light), var(--color-sage))',
     margin: '0 auto', boxShadow: '0 4px 20px rgba(124,154,110,0.3)',

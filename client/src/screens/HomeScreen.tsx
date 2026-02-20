@@ -11,6 +11,7 @@ import { api } from '../api/client';
 import type { TodayPlan, TaskCard } from '../api/types';
 import { BottomNav } from '../components/BottomNav';
 import { Skeleton } from '../components/Skeleton';
+import { SyncBanner } from '../components/SyncBanner';
 
 type ScreenState = 'loading' | 'success' | 'empty' | 'error';
 
@@ -62,6 +63,8 @@ export function HomeScreen() {
   return (
     <div style={styles.page}>
       <div style={styles.content}>
+        <SyncBanner />
+
         {/* Header */}
         <div style={styles.header}>
           <p style={styles.greeting}>{greetingTime()},</p>

@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { HomeIcon, CalendarIcon, ChatIcon, UserIcon } from './Icons';
 
 const tabs = [
-  { path: '/home', label: 'Home', icon: '🏠' },
-  { path: '/attendance', label: 'Attendance', icon: '📅' },
-  { path: '/doubts', label: 'Doubts', icon: '💬' },
-  { path: '/profile', label: 'Profile', icon: '👤' },
+  { path: '/home', label: 'Home', Icon: HomeIcon },
+  { path: '/attendance', label: 'Attendance', Icon: CalendarIcon },
+  { path: '/doubts', label: 'Doubts', Icon: ChatIcon },
+  { path: '/profile', label: 'Profile', Icon: UserIcon },
 ] as const;
 
 export function BottomNav() {
@@ -15,15 +16,16 @@ export function BottomNav() {
     <nav style={styles.nav}>
       {tabs.map((tab) => {
         const active = location.pathname.startsWith(tab.path);
+        const color = active ? 'var(--color-sage-dark)' : 'var(--color-text-muted)';
         return (
           <button
             key={tab.path}
             onClick={() => navigate(tab.path)}
-            style={{ ...styles.tab, color: active ? 'var(--color-sage-dark)' : 'var(--color-text-muted)' }}
+            style={{ ...styles.tab, color }}
             aria-label={tab.label}
             aria-current={active ? 'page' : undefined}
           >
-            <span style={styles.icon}>{tab.icon}</span>
+            <tab.Icon size={22} color={color} />
             <span style={{ ...styles.label, fontWeight: active ? 600 : 400 }}>{tab.label}</span>
           </button>
         );
@@ -38,7 +40,7 @@ const styles: Record<string, React.CSSProperties> = {
     bottom: 0,
     left: 0,
     right: 0,
-    height: 64,
+    height: 60,
     background: 'var(--color-surface)',
     borderTop: '1px solid var(--color-border)',
     display: 'flex',
@@ -52,11 +54,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: 2,
-    padding: '8px 16px',
-    fontSize: 11,
+    gap: 3,
+    padding: '6px 16px',
     transition: 'var(--transition)',
   },
-  icon: { fontSize: 20 },
   label: { fontSize: 11 },
 };
