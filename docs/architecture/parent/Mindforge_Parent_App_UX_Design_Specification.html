@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mindforge Parent App — UX Design Specification (v1, Mobile)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5fbef;
+        --panel: #ffffff;
+        --border: #d2dacb;
+        --text: #503d42;
+        --muted: #6b5a5e;
+        --accent: #748b75;
+        --accent-soft: #e2ebe0;
+        --accent-dark: #5a6b5a;
+        --code-bg: #111827;
+        --code-border: #1f2937;
+        --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem 1rem 3rem;
+        font-family: var(--sans);
+        background: radial-gradient(circle at top, #e2ebe0 0, #f5fbef 40%, #f0f5ec 100%);
+        color: var(--text);
+      }
+
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--panel);
+        border-radius: 16px;
+        box-shadow:
+          0 18px 40px rgba(15, 23, 42, 0.12),
+          0 0 0 1px rgba(148, 163, 184, 0.25);
+        padding: 2.2rem 2.3rem 2.5rem;
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.4rem;
+        margin-bottom: 1.6rem;
+      }
+
+      h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.85rem;
+        letter-spacing: -0.03em;
+        color: var(--accent-dark);
+      }
+
+      h2 {
+        margin-top: 2.1rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        border-bottom: 2px solid var(--accent-soft);
+        padding-bottom: 0.45rem;
+      }
+
+      h3 {
+        margin-top: 1.4rem;
+        margin-bottom: 0.4rem;
+        font-size: 1.05rem;
+      }
+
+      p {
+        margin: 0.35rem 0 0.8rem;
+        line-height: 1.6;
+      }
+
+      ul,
+      ol {
+        margin: 0.35rem 0 0.9rem 1.4rem;
+        padding: 0;
+      }
+
+      li {
+        margin: 0.2rem 0;
+        line-height: 1.55;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.15rem 0.7rem;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .meta {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .toc {
+        background: #f7faf7;
+        border-radius: 10px;
+        padding: 0.9rem 1.2rem;
+        margin-bottom: 1.4rem;
+        border: 1px solid var(--border);
+      }
+
+      .toc h4 {
+        margin: 0 0 0.4rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .toc ul {
+        margin: 0;
+        padding-left: 1.1rem;
+      }
+
+      .toc a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .toc a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+        background: #eef2f0;
+        padding: 0.05rem 0.3rem;
+        border-radius: 4px;
+      }
+
+      pre {
+        margin: 0.7rem 0 1rem;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        background: var(--code-bg);
+        color: #e5e7eb;
+        border: 1px solid var(--code-border);
+        overflow-x: auto;
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      pre code {
+        background: transparent;
+        padding: 0;
+      }
+
+      .section-intro {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 0.45rem;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 2.1fr) minmax(0, 2fr);
+        gap: 1.4rem;
+        align-items: flex-start;
+        margin: 0.8rem 0 1.6rem;
+      }
+
+      .screen-card {
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #ffffff 0, #f7faf7 100%);
+        padding: 1rem 1.2rem 1.1rem;
+      }
+
+      .screen-title {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .screen-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+      }
+
+      .screenshot-frame {
+        border-radius: 18px;
+        padding: 0.7rem;
+        background: radial-gradient(circle at top, #e2ebe0 0, #cbd5c5 35%, #9ca89a 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .screenshot-inner {
+        border-radius: 18px;
+        overflow: hidden;
+        background: #000;
+        box-shadow:
+          0 18px 35px rgba(15, 23, 42, 0.45),
+          0 0 0 1px rgba(15, 23, 42, 0.4);
+        max-width: 320px;
+      }
+
+      .screenshot-inner img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
+
+      .handoff {
+        margin-top: 2.1rem;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        border: 1px dashed #cbd5c5;
+        background: #f7faf7;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        white-space: pre-wrap;
+      }
+
+      @media (max-width: 768px) {
+        .page {
+          padding: 1.6rem 1.3rem 2.1rem;
+        }
+        .grid-2 {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div class="tag">UX Design Spec</div>
+        <h1>Mindforge Parent App — UX (Mobile-first)</h1>
+        <div class="meta">
+          Architecture source:
+          <code>docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md</code><br />
+          Images:
+          <code>docs/architecture/parent/images/</code>
+        </div>
+      </header>
+
+      <nav class="toc">
+        <h4>Contents</h4>
+        <ul>
+          <li><a href="#overview">1. UX System Overview</a></li>
+          <li><a href="#flows">2. Key User Flows</a></li>
+          <li><a href="#navigation">3. Mobile Navigation Map</a></li>
+          <li><a href="#screens">4. Screen Reference (Mobile)</a></li>
+          <li><a href="#handoff">Standard Handoff</a></li>
+        </ul>
+      </nav>
+
+      <section id="overview">
+        <h2>1. UX System Overview</h2>
+        <p class="section-intro">
+          Mobile-first, read-only parent experience for a single linked child, aligned with Student/Teacher apps.
+        </p>
+        <h3>UX Principles</h3>
+        <ul>
+          <li><strong>Read-only, trust-building</strong> – parents can see everything, change nothing accidentally.</li>
+          <li><strong>Mobile-first</strong> – all flows optimised for phone use; desktop can follow.</li>
+          <li><strong>One-child focus</strong> – every screen clearly scoped to the linked child.</li>
+          <li><strong>Calm and informative</strong> – simple cards, charts, and explanations.</li>
+          <li><strong>Consistent branding</strong> – sage green, cream, deep brown palette.</li>
+        </ul>
+      </section>
+
+      <section id="flows">
+        <h2>2. Key User Flows (Mobile)</h2>
+
+        <h3>2.1 Login (Mobile + MPIN)</h3>
+        <pre><code>Goal: Parent logs in with phone number + 6-digit MPIN.
+
+Flow:
+1. Enter registered mobile number.
+2. Enter MPIN using 6 circular inputs + numeric keypad.
+3. On success, navigate to Home (Dashboard) with child context.
+
+Errors:
+- Incorrect MPIN message.
+- Lockout message after repeated failures.</code></pre>
+      </section>
+
+      <section id="navigation">
+        <h2>3. Mobile Navigation Map</h2>
+        <pre><code>Login → Home (Dashboard)
+
+Home
+  → Progress (Academic)
+  → Attendance
+  → Fees &amp; Pay Info
+
+Bottom nav:
+Home | Progress | Attendance | Fees | Profile</code></pre>
+      </section>
+
+      <section id="screens">
+        <h2>4. Screen Reference (Mobile)</h2>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.1 Login</h3>
+            <p class="section-intro">Phone number + 6-digit MPIN, admin-created accounts only.</p>
+            <ul>
+              <li>Fields: phone number, MPIN (6 circles).</li>
+              <li>Primary button: <strong>Log in</strong> (sage green).</li>
+              <li>Helper text: contact school admin for issues; lockout hint.</li>
+            </ul>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Login — Mobile</div>
+            <div class="screen-meta">MPIN-only login for parents.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/parent-login-mobile.png" alt="Parent app mobile login screen with phone and MPIN" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/parent-login-mobile.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.2 Dashboard (Home)</h3>
+            <p class="section-intro">Single scrollable view of latest test, attendance %, and fee status.</p>
+            <ul>
+              <li>Child context pill (name, class, section).</li>
+              <li>Cards:
+                <ul>
+                  <li>Latest test: subject, name, child vs highest marks, short feedback.</li>
+                  <li>Attendance this month: big % + “X of Y days present”.</li>
+                  <li>Fees summary: total, paid, balance.</li>
+                </ul>
+              </li>
+              <li>Quick links: Academic Progress, Attendance calendar, Fees &amp; Pay Info.</li>
+            </ul>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Dashboard — Mobile</div>
+            <div class="screen-meta">Read-only snapshot of child’s status.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/parent-mobile-dashboard.png" alt="Parent app mobile dashboard" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/parent-mobile-dashboard.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.3 Academic Progress</h3>
+            <p class="section-intro">Subject-filtered view of tests, marks, and trends.</p>
+            <ul>
+              <li>Subject filter chips (All / Math / Science / …).</li>
+              <li>Mini line chart “Marks over time” + short text summary.</li>
+              <li>Recent tests list rows:
+                <ul>
+                  <li>Test name, subject, date.</li>
+                  <li>Child marks vs highest marks.</li>
+                  <li>Optional “Top 10%” badge.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Academic Progress — Mobile</div>
+            <div class="screen-meta">Charts plus recent tests list.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/parent-mobile-progress.png" alt="Parent app mobile academic progress screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/parent-mobile-progress.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.4 Attendance</h3>
+            <p class="section-intro">Weekly, monthly, and yearly attendance with clear absent dates.</p>
+            <ul>
+              <li>Segmented control: Weekly / Monthly / Yearly.</li>
+              <li>Month calendar with colored dots (green present, red absent).</li>
+              <li>Summary: percentage + days present/total.</li>
+              <li>List of absent days with dates and reasons.</li>
+            </ul>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Attendance — Mobile</div>
+            <div class="screen-meta">Calendar and summary for a single child.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/parent-mobile-attendance.png" alt="Parent app mobile attendance screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/parent-mobile-attendance.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.5 Fees &amp; Pay Info</h3>
+            <p class="section-intro">Fee status plus static instructions for manual payments.</p>
+            <ul>
+              <li>Fees summary card: total, paid, balance, last payment.</li>
+              <li>Optional short payment history list.</li>
+              <li>Pay Info card: QR, UPI ID, bank + account details, IFSC.</li>
+              <li>Explicit message that payments occur outside the app.</li>
+            </ul>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Fees &amp; Pay Info — Mobile</div>
+            <div class="screen-meta">Read-only summary and instructions.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/parent-mobile-fees.png" alt="Parent app mobile fees and pay info screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/parent-mobile-fees.png</code></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="handoff">
+        <h2>STANDARD HANDOFF</h2>
+        <div class="handoff">============================================
+HANDOFF: UX/UI Designer Agent → Planner Agent → Developer Agent
+============================================
+
+PROJECT: Mindforge Parent App
+
+MOBILE SCREENS:
+- parent-login-mobile.png
+- parent-mobile-dashboard.png
+- parent-mobile-progress.png
+- parent-mobile-attendance.png
+- parent-mobile-fees.png
+
+SCOPE:
+- Login with mobile + MPIN
+- Dashboard (Home)
+- Academic Progress
+- Attendance
+- Fees &amp; Pay Info
+
+CONSTRAINTS:
+- Read-only across academic, attendance, and fees domains
+- One-child scope from linkedStudentId
+- No in-app payment initiation
+
+NEXT STEPS:
+- Planner Agent: break this UX into epics and stories for apps/parent/frontend
+- Developer Agent: implement mobile-first React/Vite screens matching these contracts
+
+============================================</div>
+      </section>
+    </main>
+  </body>
+</html>
+

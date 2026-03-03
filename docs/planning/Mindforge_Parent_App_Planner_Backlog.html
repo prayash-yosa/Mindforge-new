@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mindforge Parent App -- Planner Backlog (v1)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+      max-width: 960px;
+      color: #111827;
+      background: #f9fafb;
+    }
+    h1, h2, h3, h4 { color: #111827; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.5rem; margin-top: 2rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.25rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.25rem; }
+    p { margin: 0.5rem 0; }
+    ul, ol { padding-left: 1.5rem; }
+    li { margin: 0.35rem 0; }
+    strong { font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f3f4f6; font-weight: 600; }
+    tr:nth-child(even) { background: #f9fafb; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.9em; }
+    blockquote { border-left: 4px solid #6366f1; margin: 1rem 0; padding: 0.5rem 1rem; background: #eef2ff; }
+  </style>
+</head>
+<body>
+<h1>Mindforge Parent App — Planner Backlog</h1>
+<p><strong>Artifact name</strong>: Mindforge_Parent_App_Planner_Backlog<br />
+<strong>Role</strong>: Planner / Scrum Master AI Agent<br />
+<strong>Date</strong>: February 20, 2026<br />
+<strong>Mode</strong>: Enterprise (V3) — parent app (read-only, child-linked)</p>
+<p><strong>Sources (no scope expansion)</strong>:
+- Architecture: <code>docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md</code>
+- UX Spec: <code>docs/architecture/parent/Mindforge_Parent_App_UX_Design_Specification.md</code>
+- Workspace: <code>docs/architecture/workspace-architecture.md</code></p>
+<p><strong>Capacity</strong>: 1 engineer = 8–10 SP/sprint · 20% buffer · AI work = probabilistic (confidence % in forecast)</p>
+<hr />
+<h2>Plan: Mindforge Parent App — Release 1</h2>
+<h3>Buckets (Sprint / Epic)</h3>
+<table>
+<thead>
+<tr>
+<th>Bucket</th>
+<th>Type</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sprint 1</strong></td>
+<td>Sprint</td>
+<td>Workspace integration &amp; Parent service foundation</td>
+</tr>
+<tr>
+<td><strong>Sprint 2</strong></td>
+<td>Sprint</td>
+<td>Parent auth &amp; linkage (mobile + MPIN)</td>
+</tr>
+<tr>
+<td><strong>Sprint 3</strong></td>
+<td>Sprint</td>
+<td>Read APIs: progress, attendance, fees, pay info</td>
+</tr>
+<tr>
+<td><strong>Sprint 4</strong></td>
+<td>Sprint</td>
+<td>Parent dashboard aggregation &amp; caching</td>
+</tr>
+<tr>
+<td><strong>Sprint 5</strong></td>
+<td>Sprint</td>
+<td>Parent frontend — Shell, Login &amp; Home</td>
+</tr>
+<tr>
+<td><strong>Sprint 6</strong></td>
+<td>Sprint</td>
+<td>Parent frontend — Progress &amp; Attendance</td>
+</tr>
+<tr>
+<td><strong>Sprint 7</strong></td>
+<td>Sprint</td>
+<td>Parent frontend — Fees, Pay Info &amp; Profile</td>
+</tr>
+<tr>
+<td><strong>Sprint 8</strong></td>
+<td>Sprint</td>
+<td>Hardening, observability &amp; integration validation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Sprint 1 — Workspace Integration &amp; Parent Service Foundation</h2>
+<p><strong>Capacity</strong>: 10 SP (1 eng) · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 1.1 — Wire Parent app into workspace &amp; gateway routing</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Workspace / Gateway</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform team<br />
+- <strong>I want</strong> the Parent frontend/backend wired into the monorepo and API gateway<br />
+- <strong>So that</strong> Parent traffic flows via <code>services/gateway</code> and respects workspace rules.<br />
+- <strong>Dependencies</strong>: Existing workspace scaffolding.<br />
+- <strong>Risks</strong>: Misconfigured routing could affect other apps.</p>
+<p><strong>Checklist</strong>:
+- [ ] Ensure <code>apps/parent/frontend</code> and <code>apps/parent/backend</code> are registered in root workspaces and Turborepo tasks.
+- [ ] Add Parent routes in <code>services/gateway</code> with <code>role = parent</code> and routing to Parent backend port.
+- [ ] Verify JWT + RBAC path in gateway for Parent role.
+- [ ] Document local dev commands for Parent app (frontend + backend).</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 1.2 — Parent backend skeleton (NestJS service)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Backend</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> backend engineer<br />
+- <strong>I want</strong> a Parent NestJS service skeleton with core modules<br />
+- <strong>So that</strong> auth, profile, and read modules can be added cleanly.<br />
+- <strong>Dependencies</strong>: Task 1.1.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Create <code>apps/parent/backend</code> NestJS app with module layout matching architecture (Auth, Profile &amp; Linkage, Academic Progress Read, Attendance Read, Fees Read, Pay Info, Integration).
+- [ ] Implement basic health check and version endpoint.
+- [ ] Configure DB connection for Parent service per workspace pattern.
+- [ ] Ensure only <code>@mindforge/shared</code> is used for cross-app contracts; no direct imports from Teacher/Student/Admin apps.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 1.3 — Parent DB schema &amp; migrations (parent_accounts &amp; support tables)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Parent Backend — Data</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> system<br />
+- <strong>I want</strong> versioned migrations for parent identity and linkage data<br />
+- <strong>So that</strong> parent accounts, MPIN and parent↔student mapping are consistent.<br />
+- <strong>Dependencies</strong>: Task 1.2.<br />
+- <strong>Risks</strong>: Constraints misaligned with PRD (e.g., more than two parents per child).</p>
+<p><strong>Checklist</strong>:
+- [ ] Define and migrate <code>parent_accounts</code> and <code>parent_login_attempts</code> (or equivalent) tables per architecture v1.
+- [ ] Enforce uniqueness of <code>mobile_number</code> and application rule of at most two active parents per <code>linked_student_id</code>.
+- [ ] Integrate migrations into CI/CD and local dev.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 1.4 — Shared contracts for Parent APIs in @mindforge/shared</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Shared</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> cross-app integrator<br />
+- <strong>I want</strong> Parent DTOs and enums in <code>@mindforge/shared</code><br />
+- <strong>So that</strong> Gateway and other services can call Parent APIs without tight coupling.<br />
+- <strong>Dependencies</strong>: Task 1.2.<br />
+- <strong>Risks</strong>: Contract churn creating breaking changes.</p>
+<p><strong>Checklist</strong>:
+- [ ] Add Parent-related DTOs (e.g., <code>ParentProfileDto</code>, <code>ParentDashboardDto</code>, <code>ChildProgressTestDto</code>, <code>ChildAttendanceSummaryDto</code>, <code>ChildFeesSummaryDto</code>) under <code>shared/src/interfaces/parent</code>.
+- [ ] Expose Parent role and claims (<code>linkedStudentId</code>) in <code>shared/src/auth</code> as needed.
+- [ ] Ensure Parent frontend and backend both consume these shared types.</p>
+<p><strong>Estimate</strong>: 1 SP</p>
+<hr />
+<p><strong>Sprint 1 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 2 — Parent Auth &amp; Linkage (Mobile + MPIN)</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 2.1 — Parent MPIN auth API (mobile + MPIN)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Parent Backend — Auth</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to log in with my registered mobile number and 6-digit MPIN<br />
+- <strong>So that</strong> I can securely access my child’s data.<br />
+- <strong>Dependencies</strong>: Task 1.3.<br />
+- <strong>Risks</strong>: Brute-force attacks if rate limiting and lockout are weak.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>POST /parent/auth/login</code> taking <code>mobile_number</code> + <code>mpin</code> and returning JWT/session on success.
+- [ ] Store only hashed MPIN; no MPIN values in logs.
+- [ ] On failure, return clear but non-revealing error (no indication whether mobile or MPIN is wrong).</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 2.2 — Lockout &amp; rate limiting for Parent login</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Parent Backend — Auth</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform owner<br />
+- <strong>I want</strong> lockout and rate limiting on failed MPIN attempts<br />
+- <strong>So that</strong> brute-force attacks are mitigated.<br />
+- <strong>Dependencies</strong>: Task 2.1.<br />
+- <strong>Risks</strong>: Legitimate parents locked out if thresholds misconfigured.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement attempt tracking in DB or Redis with thresholds (e.g., N failed attempts → lockout for 15 minutes).
+- [ ] Provide lockout status endpoint or payload field for frontend to show timers.
+- [ ] Ensure counters reset on successful login.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 2.3 — Parent profile &amp; parent↔student linkage enforcement</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Backend — Profile &amp; Linkage</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to see my profile and my linked child’s basic information<br />
+- <strong>So that</strong> I trust that I am seeing the right student’s data.<br />
+- <strong>Dependencies</strong>: Task 1.3, 2.1.<br />
+- <strong>Risks</strong>: Data leaks if linkage is misapplied.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>GET /parent/profile</code> returning parent name, mobile, relationship, status, and child summary (name, class, section) based on <code>linkedStudentId</code>.
+- [ ] Enforce exactly one <code>linked_student_id</code> per parent and at most two active parents per student at the service level.
+- [ ] Ensure JWT includes <code>linkedStudentId</code> claim and all child data APIs use it for scoping.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 2 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 3 — Read APIs: Progress, Attendance, Fees, Pay Info</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 3.1 — Academic progress read APIs (tests &amp; summary)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Parent Backend — Academic Progress</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to view my child’s test history and performance summaries<br />
+- <strong>So that</strong> I understand academic progress over time.<br />
+- <strong>Dependencies</strong>: Task 2.3; Teacher/Test services available.<br />
+- <strong>Risks</strong>: Cross-service contract drift.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>GET /parent/child/progress/tests</code> and <code>GET /parent/child/progress/summary</code> as per architecture.
+- [ ] Integrate with Teacher/Test service via Integration module; read-only GETs; enforce <code>student_id = linkedStudentId</code>.
+- [ ] Return data shaped for UX: test list with child/hi/lo marks and series for line/bar charts with subject filters.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 3.2 — Attendance read APIs (weekly/monthly/yearly)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Parent Backend — Attendance</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> weekly, monthly and yearly attendance views<br />
+- <strong>So that</strong> I can see patterns and specific absent days.<br />
+- <strong>Dependencies</strong>: Task 2.3; Teacher/Attendance service available.<br />
+- <strong>Risks</strong>: Off-by-one or holiday issues in aggregation.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>GET /parent/child/attendance/weekly</code>, <code>/monthly</code>, <code>/yearly</code> that wrap Teacher/Attendance service reads.
+- [ ] Provide aggregated stats (present/absent counts, %) and monthly absent date lists as per UX.
+- [ ] Enforce <code>student_id = linkedStudentId</code> on all calls.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 3.3 — Fees summary, history &amp; pay info APIs</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Backend — Fees &amp; Pay Info</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to view my child’s fee status and pay instructions<br />
+- <strong>So that</strong> I know dues and how to pay offline<br />
+- <strong>Dependencies</strong>: Admin/Fees service; Task 2.3.<br />
+- <strong>Risks</strong>: None (read-only only).</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>GET /parent/child/fees/summary</code> (+ optional <code>/history</code>) consuming Admin/Fees service; read-only.
+- [ ] Implement <code>GET /parent/child/fees/pay-info</code> returning QR code URL, UPI ID and bank details per architecture.
+- [ ] Ensure no payment initiation APIs exist; responses are informational only.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 3 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 4 — Parent Dashboard Aggregation &amp; Caching</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 4.1 — Parent dashboard DTO &amp; aggregation logic</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Parent Backend — Dashboard</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> a Dashboard with latest test, attendance % and fee balance<br />
+- <strong>So that</strong> I see a quick, trustworthy summary on Home.<br />
+- <strong>Dependencies</strong>: Tasks 3.1, 3.2, 3.3.<br />
+- <strong>Risks</strong>: Inconsistent numbers if aggregation windows differ.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>GET /parent/dashboard</code> returning a <code>ParentDashboardDto</code> (latest test card, attendance this month, fees summary, quick links metadata).
+- [ ] Reuse existing progress/attendance/fees modules for underlying data; define consistent time windows (e.g., this month for attendance).</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 4.2 — Caching and timeout policies for upstream calls</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Parent Backend — Integration</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform<br />
+- <strong>I want</strong> caching and robust timeout/ retry for Teacher/Fees services<br />
+- <strong>So that</strong> Parent dashboard loads reliably without overloading upstreams.<br />
+- <strong>Dependencies</strong>: Tasks 3.1–3.3, 4.1.<br />
+- <strong>Risks</strong>: Stale data vs responsiveness.</p>
+<p><strong>Checklist</strong>:
+- [ ] Introduce reasonable timeouts and retry policies for upstream reads in the Integration module.
+- [ ] Add optional Redis caching layer for dashboard aggregates (e.g., TTL few minutes).
+- [ ] Define fallback behaviour when one upstream is down (e.g., partial dashboard with clear messaging).</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 4.3 — Parent backend error mapping &amp; observability (MVP)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Parent Backend — Observability</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> developer<br />
+- <strong>I want</strong> consistent error mapping and basic logs/metrics<br />
+- <strong>So that</strong> issues in Parent flows can be debugged quickly.<br />
+- <strong>Dependencies</strong>: Tasks 1.2–3.3.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Map upstream errors and internal failures to stable API error codes/messages for the Parent frontend.
+- [ ] Add structured logging for key flows (login, dashboard, progress, attendance, fees) without PII.
+- [ ] Expose health and metrics endpoints for Parent backend.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 4 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 5 — Parent Frontend: Shell, Login &amp; Home</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 5.1 — Parent frontend app shell, routing &amp; bottom nav</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> a mobile-first app with clear navigation<br />
+- <strong>So that</strong> I can reach Home, Progress, Attendance, Fees and Profile easily.<br />
+- <strong>Dependencies</strong>: Task 1.1, 1.4.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Create <code>apps/parent/frontend</code> React app with routes for Home, Progress, Attendance, Fees, Profile.
+- [ ] Implement bottom navigation (<code>Home</code>, <code>Progress</code>, <code>Attendance</code>, <code>Fees</code>, <code>Profile</code>) per UX.
+- [ ] Integrate auth guard using Parent JWT from gateway; ensure non-parents cannot access.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 5.2 — Login screen (mobile + MPIN)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend — Auth</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to log in using my phone number and 6-digit MPIN<br />
+- <strong>So that</strong> I can securely access my child’s dashboard.<br />
+- <strong>Dependencies</strong>: Task 2.1, 2.2, 5.1.<br />
+- <strong>Risks</strong>: Poor error handling leading to confusion.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Login screen per UX (<code>parent-login-mobile.png</code>): phone input, 6-digit MPIN keypad UI, error and lockout messages.
+- [ ] Call Parent auth API; handle incorrect MPIN, lockout timer, and generic errors.
+- [ ] On success, store token/session and navigate to Home.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 5.3 — Home (Dashboard) screen</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend — Dashboard</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> a Dashboard with latest test, attendance %, and fee summary<br />
+- <strong>So that</strong> I have a quick overview of my child’s situation.<br />
+- <strong>Dependencies</strong>: Task 4.1, 5.1.<br />
+- <strong>Risks</strong>: Data overload if layout not clear.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Home screen per UX (<code>parent-mobile-dashboard.png</code>): child pill, latest test card, attendance this month card, fees summary card, quick links.
+- [ ] Call <code>GET /parent/dashboard</code>; show loading, error and empty states.
+- [ ] Ensure all content is read-only and clearly labelled.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 5 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 6 — Parent Frontend: Progress &amp; Attendance</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 6.1 — Academic Progress screen</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend — Progress</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to see test history, subject-wise trends and comparisons<br />
+- <strong>So that</strong> I understand my child’s academic performance over time.<br />
+- <strong>Dependencies</strong>: Task 3.1, 5.1.<br />
+- <strong>Risks</strong>: Chart readability on small screens.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Progress screen per UX (<code>parent-mobile-progress.png</code>): subject chips, marks-over-time line chart, Recent tests list.
+- [ ] Call academic progress APIs; map DTOs to chart and list models.
+- [ ] Handle no-data and error states with clear messaging.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 6.2 — Attendance screen (weekly/monthly/yearly views)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend — Attendance</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> weekly, monthly and yearly attendance views with absent days list<br />
+- <strong>So that</strong> I can monitor attendance patterns easily.<br />
+- <strong>Dependencies</strong>: Task 3.2, 5.1.<br />
+- <strong>Risks</strong>: Calendar performance and clarity.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Attendance screen per UX (<code>parent-mobile-attendance.png</code>): segmented control (Weekly/Monthly/Yearly), calendar grid with present/absent dots, summary %, week bars, absent days list.
+- [ ] Call attendance APIs for each mode; ensure correct scoping by student and date ranges.
+- [ ] Handle holidays and no-data periods explicitly.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 6.3 — Basic accessibility &amp; mobile optimisations (Parent core screens)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Parent Frontend — Accessibility</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> the app to be usable and readable on my phone<br />
+- <strong>So that</strong> I can access my child’s data comfortably.<br />
+- <strong>Dependencies</strong>: Tasks 5.2, 5.3, 6.1, 6.2.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Ensure tap targets and text sizes meet UX guidance.
+- [ ] Add accessible labels for charts and cards (textual summaries).
+- [ ] Verify layout on common mobile screen sizes.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 6 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 7 — Parent Frontend: Fees, Pay Info &amp; Profile</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 7.1 — Fees &amp; Pay Info screen</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend — Fees</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to view my child’s fees summary and pay instructions<br />
+- <strong>So that</strong> I know dues and how to pay manually.<br />
+- <strong>Dependencies</strong>: Task 3.3, 5.1.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Fees &amp; Pay Info screen per UX (<code>parent-mobile-fees.png</code>): fees summary card, optional history, Pay Info card (QR, UPI ID, bank details), informational copy.
+- [ ] Call fees and pay info APIs; clearly indicate that payments happen outside the app.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 7.2 — Profile screen (parent &amp; child summary)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Parent Frontend — Profile</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> to see my details and my linked child’s summary<br />
+- <strong>So that</strong> I can confirm the account is set up correctly.<br />
+- <strong>Dependencies</strong>: Task 2.3, 5.1.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Profile screen listing parent name, phone, relationship, and linked child summary (name, class, section).
+- [ ] Include static “Contact school” information; ensure everything is read-only.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 7.3 — Empty/error/offline states across Parent screens</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Parent Frontend — UX Polish</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> parent<br />
+- <strong>I want</strong> clear messages when data is unavailable or offline<br />
+- <strong>So that</strong> I understand what is happening.<br />
+- <strong>Dependencies</strong>: Sprints 5–7 screens.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement consistent loading, error, empty and offline patterns across Home, Progress, Attendance, Fees and Profile.
+- [ ] Ensure no partial or misleading data is shown when upstreams fail.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 7 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 8 — Hardening, Observability &amp; Integration Validation</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 8.1 — Parent service observability (logs, metrics, tracing)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: DevOps / Parent Backend</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> team<br />
+- <strong>I want</strong> logs, metrics and basic tracing for Parent backend<br />
+- <strong>So that</strong> we can monitor performance and errors in production.<br />
+- <strong>Dependencies</strong>: Sprints 1–4.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Integrate Parent backend with platform logging/monitoring stack (structured logs, metrics).
+- [ ] Add health checks and readiness probes for Parent backend and gateway routes.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 8.2 — Security review: RBAC, data scoping &amp; read-only guarantees</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Parent Backend — Security</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform owner<br />
+- <strong>I want</strong> to ensure Parent app is strictly read-only and correctly scoped<br />
+- <strong>So that</strong> parents cannot mutate or see other students’ data.<br />
+- <strong>Dependencies</strong>: Sprints 2–4.<br />
+- <strong>Risks</strong>: Data leaks or accidental writes.</p>
+<p><strong>Checklist</strong>:
+- [ ] Review all Parent APIs to confirm they are read-only and always filter by <code>linkedStudentId</code>.
+- [ ] Validate RBAC rules in the gateway for Parent role.
+- [ ] Run targeted security tests for cross-student access attempts.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 8.3 — Cross-app integration validation (Teacher/Admin/Student)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Integration</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform<br />
+- <strong>I want</strong> to validate that Parent reads align with Teacher/Admin sources<br />
+- <strong>So that</strong> numbers match and parents trust the app.<br />
+- <strong>Dependencies</strong>: Tasks 3.1–3.3; Teacher/Admin services.<br />
+- <strong>Risks</strong>: Cross-app data drift.</p>
+<p><strong>Checklist</strong>:
+- [ ] Cross-check a sample set of tests, attendance and fees between Parent views and Teacher/Admin dashboards.
+- [ ] Document any discrepancies and align aggregation rules where needed.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 8 total</strong>: 8 SP</p>
+<hr />
+<h2>Risk Register (Planner — Parent App)</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Risk</th>
+<th>Mitigation</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR1</td>
+<td>Cross-app data drift (Parent vs Teacher/Admin)</td>
+<td>Shared contracts in <code>@mindforge/shared</code>; cross-app validation in Sprint 8</td>
+<td>Backend + Gateway</td>
+</tr>
+<tr>
+<td>PR2</td>
+<td>Weak MPIN security for parents</td>
+<td>Lockout &amp; rate limiting; hashed MPIN; no MPIN in logs</td>
+<td>Parent Backend</td>
+</tr>
+<tr>
+<td>PR3</td>
+<td>Parent sees wrong student’s data</td>
+<td>Enforce <code>linkedStudentId</code> in all queries and JWT; security tests</td>
+<td>Parent Backend</td>
+</tr>
+<tr>
+<td>PR4</td>
+<td>Performance issues due to upstream dependencies</td>
+<td>Caching, timeouts, fallbacks; monitor latency</td>
+<td>Parent Backend + DevOps</td>
+</tr>
+<tr>
+<td>PR5</td>
+<td>Confusing read-only behaviour on Fees &amp; Pay Info</td>
+<td>Clear copy that payments happen outside the app; no pay buttons</td>
+<td>Parent Frontend</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Forecast Summary (Parent App)</h2>
+<table>
+<thead>
+<tr>
+<th>Sprint</th>
+<th>Focus</th>
+<th>SP</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Workspace integration &amp; Parent service foundation</td>
+<td>8</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Parent auth &amp; linkage</td>
+<td>8</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Read APIs: progress, attendance, fees, pay info</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Dashboard aggregation &amp; caching</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Parent frontend — Shell, Login &amp; Home</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Parent frontend — Progress &amp; Attendance</td>
+<td>8</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Parent frontend — Fees, Pay Info &amp; Profile</td>
+<td>8</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Hardening, observability &amp; integration validation</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total</strong>: ~64 SP over 8 sprints. <strong>No scope expansion</strong>; all items trace to Parent Architecture + UX + Workspace docs only.</p>
+<hr />
+<h2>STANDARD HANDOFF – To Dev Agent (Parent App)</h2>
+<pre><code>============================================
+HANDOFF: Planner / Scrum Master AI Agent → Dev Agent (Parent App)
+============================================
+
+PROJECT: Mindforge Parent App
+
+ARTIFACT SOURCE: docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md
+PLANNING SOURCE: docs/planning/Mindforge_Parent_App_Planner_Backlog.md
+
+PLANNING STATUS: Backlog and sprints defined for Parent app; no architecture or UX changes.
+
+WHAT THE DEV RECEIVES:
+- Plan: Mindforge Parent App — Release 1
+- Buckets: Sprints 1–8 (Workspace &amp; Parent service foundation → Auth &amp; linkage → Read APIs → Dashboard aggregation → Frontend Shell/Login/Home → Frontend Progress/Attendance → Frontend Fees/Pay Info/Profile → Hardening &amp; integration validation)
+- Tasks: Each task has Title, User story (As/I want/So that), Acceptance criteria (Checklist), Dependencies, Risks, Labels (Type | AI/Non-AI | Risk | Area)
+- Notes: Full details in each task's Notes block
+- Capacity: 1 engineer = 8–10 SP/sprint; 20% buffer; AI work treated as probabilistic where relevant
+- Risk register: PR1–PR5 with mitigations and owner area
+
+CONSTRAINTS (DO NOT BREAK):
+- Parent Architecture v1 is locked (docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md).
+- Parent UX Spec v1 is locked (docs/architecture/parent/Mindforge_Parent_App_UX_Design_Specification.md). No screen, flow, or feature changes.
+- Workspace architecture is locked (docs/architecture/workspace-architecture.md). Apps remain decoupled; traffic via gateway; shared types in @mindforge/shared.
+- Parent app is strictly read-only for academic, attendance and fees data; no payment or edit flows.
+- No scope expansion; only implement approved design.
+
+DEV NEXT STEPS:
+1. Implement in sprint order (Sprint 1 → 2 → … → 8) or as directed by PM; respect dependencies in task Notes.
+2. Use Checklist per task as acceptance criteria; satisfy all items before marking done.
+3. Ensure all Parent APIs are read-only and correctly scoped to `linkedStudentId`.
+4. Run tests and migrations per CI/CD; adhere to workspace coding standards and security (auth, RBAC, secrets).
+
+BLOCKERS: None.
+
+DEPENDENCIES:
+- Reads: docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md
+- Reads: docs/architecture/parent/Mindforge_Parent_App_UX_Design_Specification.md
+- Reads: docs/architecture/workspace-architecture.md
+
+============================================
+Signature: Planner / Scrum Master AI Agent – Mindforge Parent App
+============================================
+</code></pre>
+</body>
+</html>

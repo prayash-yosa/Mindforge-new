@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mindforge Parent App – Architecture (v1)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+      max-width: 960px;
+      color: #111827;
+      background: #f9fafb;
+    }
+    h1, h2, h3, h4 {
+      color: #111827;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.25rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      margin-top: 1.25rem;
+    }
+    p {
+      margin: 0.4rem 0;
+    }
+    ul {
+      padding-left: 1.5rem;
+    }
+    li {
+      margin: 0.25rem 0;
+    }
+    strong {
+      font-weight: 600;
+    }
+    .meta {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 1rem;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #374151;
+      padding: 0.75rem 1rem;
+      background: #e5e7eb;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      background: #e5e7eb;
+      padding: 0.05rem 0.25rem;
+      border-radius: 0.25rem;
+    }
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid #e5e7eb;
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mindforge Parent App – Architecture (v1)</h1>
+  <p class="meta">
+    <strong>Artifact name:</strong> Mindforge_Parent_App_Architecture_v1<br />
+    <strong>Path:</strong> docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md
+  </p>
+  <p class="note">
+    Scope: Architecture for the <strong>Parent application</strong> (frontend + backend) within the existing Mindforge monorepo, based on the Parents Portal PRD. Student and Teacher apps already exist; this defines parent-facing capabilities and backend changes without modifying Student/Teacher UX.
+  </p>
+
+  <h2>1. Goals &amp; Non-Goals</h2>
+  <h3>1.1 Goals</h3>
+  <ul>
+    <li>Provide a dedicated <strong>Parent app</strong> (frontend + backend) with secure, <strong>read-only</strong> access to the parent’s own child’s academic progress, attendance, and fees.</li>
+    <li>Expose a <strong>Pay Info</strong> section (QR, UPI, bank details) as information only; no online payments.</li>
+    <li>Enforce strict isolation:
+      <ul>
+        <li>Parent accounts created only by Admin.</li>
+        <li>Each parent linked to exactly <strong>one student</strong>.</li>
+        <li>Each student has at most <strong>two parents</strong>.</li>
+        <li>Parent can only see data where <code>student_id = linked_student_id</code>.</li>
+      </ul>
+    </li>
+    <li>Reuse Teacher/Admin services as sources of truth; Parent backend as a read-only façade.</li>
+    <li>Integrate cleanly into monorepo via <code>apps/parent</code> and the API Gateway.</li>
+  </ul>
+  <h3>1.2 Non-Goals (v1)</h3>
+  <ul>
+    <li>No write operations from Parent app (no editing data, no payments, no uploads).</li>
+    <li>No multi-student parent view in v1.</li>
+    <li>No teacher messaging or homework approval.</li>
+    <li>No redesign of Student/Teacher UX.</li>
+  </ul>
+
+  <h2>2. Placement in Workspace Architecture</h2>
+  <pre><code>Mindforge/
+├── apps/
+│   ├── student/
+│   ├── teacher/
+│   ├── parent/
+│   │   ├── frontend/   # React + Vite — Parent UI
+│   │   └── backend/    # NestJS — Parent microservice
+├── services/
+│   └── gateway/        # API Gateway (NestJS)
+├── shared/             # @mindforge/shared
+└── docs/</code></pre>
+  <p><strong>Key rules:</strong> Parent frontend → <strong>Gateway</strong> → Parent backend; Parent backend owns parent identity &amp; linkage and exposes read-only aggregated views of academic, attendance, and fees for the single linked student.</p>
+
+  <h2>3. High-Level Architecture</h2>
+  <h3>3.1 Components</h3>
+  <p><strong>Parent Frontend (React + Vite):</strong> Auth (mobile + MPIN), navigation (Dashboard, Academic Progress, Attendance, Fees, Pay Info, Profile), charts and lists per PRD.</p>
+  <p><strong>Parent Backend (NestJS):</strong> Auth module, Parent profile &amp; linkage, Academic Progress read, Attendance read, Fees read, Pay Info, Integration module, Parent DB + optional Redis.</p>
+  <h3>3.2 Communication Patterns</h3>
+  <p>Frontend → Gateway → Parent backend over HTTPS/JSON; Parent backend → Teacher/Attendance/Fees services via internal REST; Parent backend ↔ Parent DB/Redis via repositories.</p>
+
+  <h2>4. Data Model &amp; Ownership</h2>
+  <p><strong>Parent-owned tables:</strong> <code>parent_accounts</code> (mobile, mpin_hash, name, relationship, linked_student_id, status, audit fields) and login attempts (or Redis counters). Constraints: unique mobile; at most two parents per student (application-level rule).</p>
+  <p><strong>Read-only domains:</strong> student master, tests/performance (Teacher/Test services), attendance (Teacher/Attendance), fees (Admin/Fees). Parent backend does not become a second source of truth.</p>
+
+  <h2>5. API Contracts (Logical)</h2>
+  <ul>
+    <li><strong>Auth:</strong> <code>POST /parent/auth/login</code>, <code>GET /parent/auth/me</code>.</li>
+    <li><strong>Dashboard:</strong> <code>GET /parent/dashboard</code> (latest test, attendance %, fee summary).</li>
+    <li><strong>Academic Progress:</strong> <code>GET /parent/child/progress/tests</code>, <code>GET /parent/child/progress/summary</code>.</li>
+    <li><strong>Attendance:</strong> <code>GET /parent/child/attendance/weekly</code>, <code>/monthly</code>, <code>/yearly</code>.</li>
+    <li><strong>Fees:</strong> <code>GET /parent/child/fees/summary</code>, optional <code>/history</code>.</li>
+    <li><strong>Pay Info:</strong> <code>GET /parent/child/fees/pay-info</code> (QR + UPI + bank details, informational only).</li>
+  </ul>
+
+  <h2>6. Security, Roles &amp; Data Sensitivity</h2>
+  <p><strong>Roles:</strong> Parent role only for this app; Admin/Teacher/Student interact via other apps/services.</p>
+  <p><strong>AuthN:</strong> Mobile + 6-digit MPIN (hashed), rate-limited with lockout; JWT/session with <code>role = parent</code> and <code>linkedStudentId</code>.</p>
+  <p><strong>AuthZ:</strong> Gateway enforces role; Parent backend ignores client-supplied student IDs and always uses <code>linkedStudentId</code> from token; upstream services treat Parent backend as machine client.</p>
+  <p><strong>Data sensitivity:</strong> Student identity/performance, fees, and attendance treated as sensitive; HTTPS + encryption at rest.</p>
+
+  <h2>7. Error Handling &amp; Resilience</h2>
+  <p>Standard error shape <code>{ code, message, details? }</code> with appropriate HTTP status (400/401/403/404/429/500/503). Upstream failures mapped to domain-specific “temporarily unavailable” messages; frontend uses skeleton loaders, banners, and retry controls.</p>
+
+  <h2>8. Key Risks &amp; Mitigations</h2>
+  <ul>
+    <li><strong>Data leakage across students:</strong> Always derive student ID from token; contract and security tests for isolation.</li>
+    <li><strong>Weak MPIN-only auth:</strong> Rate limiting, lockout, strong hashing, optional future device protections.</li>
+    <li><strong>Inconsistent data vs Teacher/Admin views:</strong> Read directly from source services; show “Last updated” where feasible.</li>
+    <li><strong>Upstream downtime:</strong> Clear partial-outage messaging; short-term cached aggregates.</li>
+    <li><strong>Misinterpreting Pay Info as payment gateway:</strong> Explicit UX copy; no “Pay now” actions.</li>
+  </ul>
+
+  <h2>9. Implementation Order (Architecture-Aligned)</h2>
+  <p>Parent identity &amp; linkage → Auth module → Profile read API → Integrations (Tests/Attendance/Fees) → Academic Progress APIs → Attendance APIs → Fees APIs → Pay Info config/API → Frontend flows (Auth, Dashboard, detail screens) → Observability.</p>
+
+  <h2>STANDARD HANDOFF – To UX / UI Agent (Parent App)</h2>
+  <p><strong>PROJECT:</strong> Mindforge Parent App</p>
+  <p><strong>PHASE:</strong> Architecture → UX / UI (navigation-first)</p>
+  <p><strong>ARTIFACT SOURCE:</strong> docs/architecture/parent/Mindforge_Parent_App_Architecture_v1.md</p>
+
+  <h3>Context summary (for UX)</h3>
+  <p>New Parent app (React + Vite, NestJS backend) integrated via Gateway with <code>role = parent</code>. Parents are Admin-created, log in with mobile + 6-digit MPIN, see only one child’s data, and have read-only access to academic, attendance, and fee data plus Pay Info.</p>
+
+  <h3>What UX SHOULD design now</h3>
+  <ul>
+    <li>Global navigation &amp; layout for Parent persona: Dashboard, Academic Progress, Attendance, Fees, Pay Info, Profile.</li>
+    <li>Authentication flow: mobile + MPIN login, error/lockout/disabled states, session timeout behavior.</li>
+    <li>Dashboard screen: cards for latest test, attendance %, fee balance with clear links to detail pages.</li>
+    <li>Academic Progress screens: test list (with fields from PRD), subject/date filters, line &amp; bar charts, empty/error/loading states.</li>
+    <li>Attendance screens: weekly/monthly/yearly views with % and lists/charts, visually consistent with Student attendance but tuned for parents.</li>
+    <li>Fees &amp; Pay Info: fees summary + optional history; Pay Info with QR, UPI, bank details and explicit “informational only” messaging.</li>
+    <li>Profile: parent identity, mobile, relationship, linked child info, plus “Contact school/support” CTAs.</li>
+  </ul>
+
+  <h3>UX constraints &amp; rules</h3>
+  <ul>
+    <li>Parent app is view-only: no edit affordances on academic, attendance, or fees; no payment actions.</li>
+    <li>Data must always be scoped to the single linked child; avoid multi-child UI in v1.</li>
+    <li>MPIN UX: numeric keypad, 6-digit entry, clear messaging for incorrect attempts and lockouts.</li>
+    <li>Visual language: align with Mindforge brand and Student/Teacher apps; prioritize clarity and quick scanning.</li>
+  </ul>
+
+  <h3>Open questions for UX / Product</h3>
+  <ul>
+    <li>Required historical depth for graphs (e.g., last 3 months vs full academic year).</li>
+    <li>How to visually communicate partial data availability (some domains temporarily unavailable).</li>
+    <li>Mobile vs desktop layout variations (if any) for v1.</li>
+  </ul>
+
+  <h3>Handoff status</h3>
+  <p>Parent app architecture and boundaries are defined and aligned with Student Light Architecture v2 and Teacher App Architecture v1. Parent backend is a read-only façade over academic, attendance, and fees domains with strict per-student isolation. UX / UI may now proceed to design Parent flows using this document and the Parents Portal PRD as constraints.</p>
+
+  <p><strong>Signature:</strong> Architect AI Agent – Mindforge Parent App (v1)</p>
+</body>
+</html>
+
