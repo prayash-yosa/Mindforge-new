@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('AdminService');
 
-  app.setGlobalPrefix('v1');
+  app.setGlobalPrefix('v1', { exclude: ['health', 'health/ready'] });
 
   const port = process.env.ADMIN_SERVICE_PORT ?? 3004;
   await app.listen(port);

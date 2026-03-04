@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mindforge Admin App -- Planner Backlog (v1)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+      max-width: 960px;
+      color: #111827;
+      background: #f9fafb;
+    }
+    h1, h2, h3, h4 { color: #111827; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.5rem; margin-top: 2rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.25rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.25rem; }
+    p { margin: 0.5rem 0; }
+    ul, ol { padding-left: 1.5rem; }
+    li { margin: 0.35rem 0; }
+    strong { font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f3f4f6; font-weight: 600; }
+    tr:nth-child(even) { background: #f9fafb; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.9em; }
+    blockquote { border-left: 4px solid #6366f1; margin: 1rem 0; padding: 0.5rem 1rem; background: #eef2ff; }
+  </style>
+</head>
+<body>
+<h1>Mindforge Admin App — Planner Backlog</h1>
+<p><strong>Artifact name</strong>: Mindforge_Admin_App_Planner_Backlog<br />
+<strong>Role</strong>: Planner / Scrum Master AI Agent<br />
+<strong>Date</strong>: February 20, 2026<br />
+<strong>Mode</strong>: Enterprise (V3) — admin control-plane (approvals &amp; fees)</p>
+<p><strong>Sources (no scope expansion)</strong>:
+- Architecture: <code>docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md</code>
+- UX Spec: <code>docs/architecture/admin/Mindforge_Admin_App_UX_Design_Specification_v1.md</code>
+- Workspace: <code>docs/architecture/workspace-architecture.md</code></p>
+<p><strong>Capacity</strong>: 1 engineer = 8–10 SP/sprint · 20% buffer · AI work = minimal (mostly Non-AI)</p>
+<hr />
+<h2>Plan: Mindforge Admin App — Release 1</h2>
+<h3>Buckets (Sprint / Epic)</h3>
+<table>
+<thead>
+<tr>
+<th>Bucket</th>
+<th>Type</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sprint 1</strong></td>
+<td>Sprint</td>
+<td>Workspace integration &amp; Admin service foundation</td>
+</tr>
+<tr>
+<td><strong>Sprint 2</strong></td>
+<td>Sprint</td>
+<td>User approval &amp; account lifecycle</td>
+</tr>
+<tr>
+<td><strong>Sprint 3</strong></td>
+<td>Sprint</td>
+<td>Fees configuration &amp; payment info backend</td>
+</tr>
+<tr>
+<td><strong>Sprint 4</strong></td>
+<td>Sprint</td>
+<td>Payment entry &amp; fee ledger backend</td>
+</tr>
+<tr>
+<td><strong>Sprint 5</strong></td>
+<td>Sprint</td>
+<td>Admin frontend — Shell, Dashboard &amp; Users</td>
+</tr>
+<tr>
+<td><strong>Sprint 6</strong></td>
+<td>Sprint</td>
+<td>Admin frontend — Fees &amp; Payments</td>
+</tr>
+<tr>
+<td><strong>Sprint 7</strong></td>
+<td>Sprint</td>
+<td>Admin frontend — Payment Info &amp; Audit Logs</td>
+</tr>
+<tr>
+<td><strong>Sprint 8</strong></td>
+<td>Sprint</td>
+<td>Hardening, observability &amp; cross-app validation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Sprint 1 — Workspace Integration &amp; Admin Service Foundation</h2>
+<p><strong>Capacity</strong>: 10 SP (1 eng) · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 1.1 — Wire Admin app into workspace &amp; gateway routing</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Workspace / Gateway</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform team<br />
+- <strong>I want</strong> the Admin frontend/backend wired into the monorepo and API gateway<br />
+- <strong>So that</strong> Admin traffic flows via <code>services/gateway</code> and respects workspace rules.<br />
+- <strong>Dependencies</strong>: Workspace architecture and tooling in place.<br />
+- <strong>Risks</strong>: Misconfigured routing impacting other roles.</p>
+<p><strong>Checklist</strong>:
+- [ ] Ensure <code>apps/admin/frontend</code> and <code>apps/admin/backend</code> are registered in root workspaces and Turborepo tasks.
+- [ ] Add Admin routes in <code>services/gateway</code> with <code>role = admin</code> and routing to Admin backend port.
+- [ ] Verify JWT + RBAC path in gateway for Admin role.
+- [ ] Document local dev commands for Admin app (frontend + backend).</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 1.2 — Admin backend skeleton (NestJS service)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Backend</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> backend engineer<br />
+- <strong>I want</strong> an Admin NestJS service skeleton with core modules<br />
+- <strong>So that</strong> user approval, fees and payments features can be added coherently.<br />
+- <strong>Dependencies</strong>: Task 1.1.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Create <code>apps/admin/backend</code> NestJS app with module layout matching architecture (User Management &amp; Approval, Fee Configuration, Payment Entry &amp; Ledger, Payment Info, Audit Trail, Integration).
+- [ ] Implement basic health check and version endpoint.
+- [ ] Configure DB connection for Admin service per workspace pattern.
+- [ ] Ensure cross-app contracts are via <code>@mindforge/shared</code> only.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 1.3 — Admin DB schema &amp; migrations (user approval, fees &amp; payments)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Admin Backend — Data</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> system<br />
+- <strong>I want</strong> versioned migrations for admin-owned entities<br />
+- <strong>So that</strong> approvals, fees, payments and audit logs have a stable schema.<br />
+- <strong>Dependencies</strong>: Task 1.2.<br />
+- <strong>Risks</strong>: Schema misalignment with Student/Parent/Teacher expectations.</p>
+<p><strong>Checklist</strong>:
+- [ ] Define and migrate tables for <code>user_accounts</code> (or integration with shared user table), <code>grade_fee_configs</code>, <code>extra_subject_fee_configs</code>, <code>fee_payments</code>, <code>student_fee_summary</code>, <code>payment_info_config</code>, <code>admin_audit_logs</code> as per architecture.
+- [ ] Add indexes for common access patterns (by student_id, grade, academic_year, status, dates).
+- [ ] Integrate migrations into CI/CD and local dev workflows.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 1.4 — Shared contracts for Admin APIs in @mindforge/shared</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Shared</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> cross-app integrator<br />
+- <strong>I want</strong> Admin DTOs and enums in <code>@mindforge/shared</code><br />
+- <strong>So that</strong> Student/Teacher/Parent backends and the gateway can call Admin APIs without tight coupling.<br />
+- <strong>Dependencies</strong>: Task 1.2.<br />
+- <strong>Risks</strong>: Contract churn creating breaking changes.</p>
+<p><strong>Checklist</strong>:
+- [ ] Add Admin-related DTOs (e.g., <code>AdminUserApprovalDto</code>, <code>AdminFeeConfigDto</code>, <code>AdminPaymentRecordDto</code>, <code>AdminPaymentInfoDto</code>) under <code>shared/src/interfaces/admin</code>.
+- [ ] Expose relevant enums/constants such as <code>UserStatus</code>, fee/subject codes, and payment modes in <code>shared/src/constants</code>.
+- [ ] Ensure Admin frontend and backend both consume these shared types.</p>
+<p><strong>Estimate</strong>: 1 SP</p>
+<hr />
+<p><strong>Sprint 1 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 2 — User Approval &amp; Account Lifecycle</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 2.1 — User approval APIs (pending → active/disabled)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Backend — User Management</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to approve or reject pending student/teacher/parent accounts<br />
+- <strong>So that</strong> only authorised users can access the system.<br />
+- <strong>Dependencies</strong>: Task 1.3.<br />
+- <strong>Risks</strong>: Incorrect status transitions.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement APIs to list pending users by role and status.
+- [ ] Implement approve/reject/activate/deactivate endpoints that update <code>status</code> and write audit logs.
+- [ ] Ensure business rules: only <code>PENDING_APPROVAL</code> can be approved; disabled users cannot log in.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 2.2 — Default MPIN and first-login change flagging</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Backend — User Management</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> approved users to get a default MPIN and be forced to change it on first login<br />
+- <strong>So that</strong> access is both simple and secure.<br />
+- <strong>Dependencies</strong>: Task 2.1.<br />
+- <strong>Risks</strong>: Weak default MPIN if flag not enforced downstream.</p>
+<p><strong>Checklist</strong>:
+- [ ] On approval, set MPIN hash for default <code>000000</code> and <code>must_change_mpin_on_first_login = true</code>.
+- [ ] Expose read API for other services to check <code>mustChangeMpinOnFirstLogin</code> and <code>status</code>.
+- [ ] Coordinate with Student/Teacher/Parent auth flows (via shared contracts) to enforce first-login MPIN change.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 2.3 — User account status &amp; audit logging</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Admin Backend — Audit Trail</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform owner<br />
+- <strong>I want</strong> all admin operations on user accounts to be audit-logged<br />
+- <strong>So that</strong> we can trace who changed what and when.<br />
+- <strong>Dependencies</strong>: Task 2.1.<br />
+- <strong>Risks</strong>: Missing logs for critical changes.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement <code>admin_audit_logs</code> writes for approval, rejection, activation, deactivation and deletion actions.
+- [ ] Include actor, target, action type, timestamp and before/after snapshot or references.
+- [ ] Provide basic read API for Audit Logs module (v1 simple view).</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 2 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 3 — Fees Configuration &amp; Payment Info Backend</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 3.1 — Grade fee configuration APIs</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Backend — Fees</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to configure annual grade fees for Grades 8/9/10<br />
+- <strong>So that</strong> student fee summaries reflect the correct base fee.<br />
+- <strong>Dependencies</strong>: Task 1.3.<br />
+- <strong>Risks</strong>: Retroactive changes and propagation logic.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement CRUD APIs for <code>grade_fee_configs</code> with academic year and total annual fee.
+- [ ] Implement propagation logic to update student fee summaries when grade fees change, per architecture.
+- [ ] Audit-log all grade fee changes.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 3.2 — Extra subject fee configuration APIs</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Backend — Fees</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to configure extra subject fees per student<br />
+- <strong>So that</strong> fees reflect optional subjects like Computer, AI, Economics.<br />
+- <strong>Dependencies</strong>: Task 1.3.<br />
+- <strong>Risks</strong>: Data drift if subjects or amounts are inconsistent.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement CRUD APIs for <code>extra_subject_fee_configs</code> per student and subject.
+- [ ] Ensure integration with <code>student_fee_summary</code> or equivalent to recalc totals.
+- [ ] Audit-log all extra subject fee changes.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 3.3 — Payment Info configuration APIs (QR, UPI, bank details)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Backend — Payment Info</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to configure payment info (QR, UPI, bank details)<br />
+- <strong>So that</strong> Parent app can show correct Pay Info read-only.<br />
+- <strong>Dependencies</strong>: Task 1.3.<br />
+- <strong>Risks</strong>: None (read API for parents is informational only).</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement APIs to create/update <code>payment_info_config</code> (QR image URL, UPI ID, bank details).
+- [ ] Expose read API consumed by Parent backend to feed <code>/parent/child/fees/pay-info</code>.
+- [ ] Audit-log all payment info changes.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 3 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 4 — Payment Entry &amp; Fee Ledger Backend</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 4.1 — Fee payment entry APIs (create &amp; edit)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Backend — Payments</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to record and correct fee payments per student<br />
+- <strong>So that</strong> fee ledgers and Parent fee summaries remain accurate.<br />
+- <strong>Dependencies</strong>: Task 1.3, 3.1, 3.2.<br />
+- <strong>Risks</strong>: Misapplied edits causing reconciliation issues.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement APIs to record new payments into <code>fee_payments</code> with date, amount, mode and reference.
+- [ ] Implement APIs to edit existing payments with audit notes (where feasible) and propagate changes into <code>student_fee_summary</code>.
+- [ ] Audit-log all payment create/edit actions.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 4.2 — Fee summary and history APIs for Admin &amp; Parent</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Backend — Payments</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> per-student fee summary and history APIs<br />
+- <strong>So that</strong> Admin and Parent apps share the same view of fees.<br />
+- <strong>Dependencies</strong>: Task 4.1.<br />
+- <strong>Risks</strong>: Cross-app data drift.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement read APIs returning <code>student_fee_summary</code> plus payment history for a student/academic year.
+- [ ] Ensure Parent backend can reuse or proxy these APIs for Parent fees summary/history.
+- [ ] Add indexes to keep queries performant on expected dataset.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 4.3 — Admin fee KPIs &amp; collection reports (backend only)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Backend — Analytics</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> API endpoints for fee KPIs and collection charts<br />
+- <strong>So that</strong> the Admin dashboard can visualise outstanding fees and payments over time.<br />
+- <strong>Dependencies</strong>: Task 4.2.<br />
+- <strong>Risks</strong>: Expensive aggregate queries.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement APIs for total outstanding fees, payments recorded this month/term, and collection over time per architecture.
+- [ ] Consider pre-aggregated snapshots or efficient group-by queries.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 4 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 5 — Admin Frontend: Shell, Dashboard &amp; Users</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 5.1 — Admin frontend app shell &amp; sidebar navigation</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Frontend</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> a web app with clear sidebar navigation<br />
+- <strong>So that</strong> I can access Dashboard, Users, Fees, Payments, Payment Info and Audit Logs.<br />
+- <strong>Dependencies</strong>: Task 1.1, 1.4.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Create <code>apps/admin/frontend</code> React app with routes and sidebar items per UX.
+- [ ] Integrate auth with Admin JWT via gateway; ensure only Admin role can access.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 5.2 — Dashboard screen</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Frontend — Dashboard</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> a dashboard showing pending approvals, active users and fee KPIs<br />
+- <strong>So that</strong> I see system state at a glance.<br />
+- <strong>Dependencies</strong>: Tasks 2.1, 4.3.<br />
+- <strong>Risks</strong>: Cluttered UI.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Dashboard per UX (<code>admin-dashboard.png</code>): KPI cards, pending approvals table, fee collection chart, recent payments.
+- [ ] Wire to backend APIs for user counts, outstanding fees, payments this month and recent payment list.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 5.3 — Users screen (approvals &amp; account statuses)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Frontend — Users</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to review and approve users and manage account statuses<br />
+- <strong>So that</strong> system access is controlled.<br />
+- <strong>Dependencies</strong>: Tasks 2.1, 2.2, 2.3.<br />
+- <strong>Risks</strong>: Misleading UI if status mappings are wrong.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Users screen per UX (<code>admin-users.png</code>): filters by role/status, table of users, detail panel, approve/reject/activate/deactivate actions.
+- [ ] Integrate with user approval/status APIs and show confirmation dialogs for high-impact actions.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 5 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 6 — Admin Frontend: Fees &amp; Payments</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 6.1 — Fees configuration screen (grade &amp; extra subject)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Frontend — Fees</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> to configure grade fees and per-student extra subject fees<br />
+- <strong>So that</strong> fee summaries are accurate.<br />
+- <strong>Dependencies</strong>: Tasks 3.1, 3.2, 5.1.<br />
+- <strong>Risks</strong>: Confusing warnings about propagation.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Fees screen per UX (<code>admin-fees.png</code>): Grade fees table (edit inline with warning), entry point for per-student extra subject fees.
+- [ ] Wire to grade and extra subject fee APIs; show confirmations and audit messages where needed.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 6.2 — Payments ledger &amp; entry screen</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Medium | Area: Admin Frontend — Payments</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> a per-student fee ledger with payment history and record/edit flows<br />
+- <strong>So that</strong> I can keep accurate fee records.<br />
+- <strong>Dependencies</strong>: Tasks 4.1, 4.2, 5.1.<br />
+- <strong>Risks</strong>: UX mistakes leading to wrong student selection.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Payments screen per UX (<code>admin-payments.png</code>): student search, fee summary card, payment history table, Record new payment modal, Edit payment modal with audit note.
+- [ ] Wire to payment entry, edit and summary/history APIs; handle loading, error and confirmation states.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 6.3 — Basic accessibility &amp; table performance tuning</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Admin Frontend — Accessibility</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> tables and modals to be usable for long sessions<br />
+- <strong>So that</strong> I can manage data without fatigue.<br />
+- <strong>Dependencies</strong>: Tasks 5.2, 5.3, 6.1, 6.2.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Ensure tables and forms follow accessibility and keyboard navigation best practices.
+- [ ] Add pagination or virtualisation if lists get large.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<p><strong>Sprint 6 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 7 — Admin Frontend: Payment Info &amp; Audit Logs</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 7.1 — Payment Info configuration screen</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Frontend — Payment Info</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> a Payment Info configuration screen<br />
+- <strong>So that</strong> I can update QR/UPI/bank details that Parents see.<br />
+- <strong>Dependencies</strong>: Task 3.3, 5.1.<br />
+- <strong>Risks</strong>: Misleading if changes not clearly saved.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Payment Info screen per UX (<code>admin-payment-info.png</code>): QR preview + upload, fields for UPI ID and bank details, info banner, Save changes action.
+- [ ] Wire to payment info configuration APIs; show success/failure and last-updated metadata.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 7.2 — Audit Logs screen (simple v1)</h3>
+<p><strong>Labels</strong>: Type: Feature | AI: Non-AI | Risk: Low | Area: Admin Frontend — Audit Logs</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> a basic view of audit logs<br />
+- <strong>So that</strong> I can see who changed what recently.<br />
+- <strong>Dependencies</strong>: Tasks 2.3, 3.1–3.3, 4.1, 4.3.<br />
+- <strong>Risks</strong>: Large volumes of logs.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement Audit Logs screen: table with actor, target, action, timestamp and short description.
+- [ ] Wire to audit logs read API; include filters (date range, action type).</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 7.3 — Empty/error/offline states across Admin screens</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: Admin Frontend — UX Polish</p>
+<p><strong>Notes</strong>:
+- <strong>As an</strong> admin<br />
+- <strong>I want</strong> clear messages when data is unavailable or offline<br />
+- <strong>So that</strong> I can understand issues without guessing.<br />
+- <strong>Dependencies</strong>: Sprints 5–7 screens.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Implement consistent loading, error, empty and offline patterns on Dashboard, Users, Fees, Payments, Payment Info and Audit Logs.
+- [ ] Ensure destructive actions have clear confirmation and undo/rollback pathways where supported.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 7 total</strong>: 8 SP</p>
+<hr />
+<h2>Sprint 8 — Hardening, Observability &amp; Cross-App Validation</h2>
+<p><strong>Capacity</strong>: 10 SP · Buffer 20% → 8 SP target</p>
+<hr />
+<h3>Task 8.1 — Admin service observability (logs, metrics, tracing)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Low | Area: DevOps / Admin Backend</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> team<br />
+- <strong>I want</strong> logs, metrics and basic tracing for Admin backend<br />
+- <strong>So that</strong> we can monitor performance and errors in production.<br />
+- <strong>Dependencies</strong>: Sprints 1–4.<br />
+- <strong>Risks</strong>: None.</p>
+<p><strong>Checklist</strong>:
+- [ ] Integrate Admin backend with platform logging/monitoring stack.
+- [ ] Add health checks and readiness probes for Admin backend and gateway routes.</p>
+<p><strong>Estimate</strong>: 2 SP</p>
+<hr />
+<h3>Task 8.2 — Security review: RBAC, approval states &amp; fee/payment changes</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Admin Backend — Security</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform owner<br />
+- <strong>I want</strong> to ensure admin operations are secure and correctly authorised<br />
+- <strong>So that</strong> approvals, fees and payments cannot be misused.<br />
+- <strong>Dependencies</strong>: Sprints 2–4.<br />
+- <strong>Risks</strong>: Data misuse or privilege escalation.</p>
+<p><strong>Checklist</strong>:
+- [ ] Review RBAC rules and permissions for all Admin APIs.
+- [ ] Validate that only Admin role can change approvals, fees, payments and payment info.
+- [ ] Run targeted security tests for common abuse scenarios.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<h3>Task 8.3 — Cross-app integration validation (Student/Teacher/Parent)</h3>
+<p><strong>Labels</strong>: Type: Hardening | AI: Non-AI | Risk: Medium | Area: Integration</p>
+<p><strong>Notes</strong>:
+- <strong>As a</strong> platform<br />
+- <strong>I want</strong> to validate that Admin-owned approvals and fees align with Student/Teacher/Parent views<br />
+- <strong>So that</strong> data appears consistent across apps.<br />
+- <strong>Dependencies</strong>: Sprints 2–4, and other apps.<br />
+- <strong>Risks</strong>: Cross-app data drift.</p>
+<p><strong>Checklist</strong>:
+- [ ] Cross-check sample users’ approval statuses between Admin and login behaviour in other apps.
+- [ ] Cross-check sample students’ fee summaries between Admin and Parent apps.</p>
+<p><strong>Estimate</strong>: 3 SP</p>
+<hr />
+<p><strong>Sprint 8 total</strong>: 8 SP</p>
+<hr />
+<h2>Risk Register (Planner — Admin App)</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Risk</th>
+<th>Mitigation</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AR1</td>
+<td>Cross-app data drift (fees and approvals)</td>
+<td>Shared contracts in <code>@mindforge/shared</code>; Sprint 8 validation</td>
+<td>Backend + Gateway</td>
+</tr>
+<tr>
+<td>AR2</td>
+<td>Incorrect approval or fee changes by admins</td>
+<td>Confirmation dialogs, audit logging, limited Admin access</td>
+<td>Admin Backend + Frontend</td>
+</tr>
+<tr>
+<td>AR3</td>
+<td>Performance issues on large ledgers</td>
+<td>Indexing, pagination, and efficient queries</td>
+<td>Admin Backend</td>
+</tr>
+<tr>
+<td>AR4</td>
+<td>Confusing propagation of grade fee changes</td>
+<td>Clear UI warnings; backend documentation; audit logs</td>
+<td>Admin Frontend + Backend</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Forecast Summary (Admin App)</h2>
+<table>
+<thead>
+<tr>
+<th>Sprint</th>
+<th>Focus</th>
+<th>SP</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Workspace integration &amp; Admin service foundation</td>
+<td>8</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>User approval &amp; account lifecycle</td>
+<td>8</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Fees configuration &amp; payment info backend</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Payment entry &amp; fee ledger backend</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Admin frontend — Shell, Dashboard &amp; Users</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Admin frontend — Fees &amp; Payments</td>
+<td>8</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Admin frontend — Payment Info &amp; Audit Logs</td>
+<td>8</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Hardening, observability &amp; cross-app validation</td>
+<td>8</td>
+<td>90%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total</strong>: ~64 SP over 8 sprints. <strong>No scope expansion</strong>; all items trace to Admin Architecture + UX + Workspace docs only.</p>
+<hr />
+<h2>STANDARD HANDOFF – To Dev Agent (Admin App)</h2>
+<pre><code>============================================
+HANDOFF: Planner / Scrum Master AI Agent → Dev Agent (Admin App)
+============================================
+
+PROJECT: Mindforge Admin App
+
+ARTIFACT SOURCE: docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md
+PLANNING SOURCE: docs/planning/Mindforge_Admin_App_Planner_Backlog.md
+
+PLANNING STATUS: Backlog and sprints defined for Admin app; no architecture or UX changes.
+
+WHAT THE DEV RECEIVES:
+- Plan: Mindforge Admin App — Release 1
+- Buckets: Sprints 1–8 (Workspace &amp; Admin service foundation → User approval &amp; lifecycle → Fees config &amp; payment info → Payment entry &amp; ledger → Frontend Shell/Dashboard/Users → Frontend Fees/Payments → Frontend Payment Info/Audit Logs → Hardening &amp; validation)
+- Tasks: Each task has Title, User story (As/I want/So that), Acceptance criteria (Checklist), Dependencies, Risks, Labels (Type | AI/Non-AI | Risk | Area)
+- Notes: Full details in each task's Notes block
+- Capacity: 1 engineer = 8–10 SP/sprint; 20% buffer; AI work minimal (mostly Non-AI)
+- Risk register: AR1–AR4 with mitigations and owner area
+
+CONSTRAINTS (DO NOT BREAK):
+- Admin Architecture v1 is locked (docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md).
+- Admin UX Spec v1 is locked (docs/architecture/admin/Mindforge_Admin_App_UX_Design_Specification_v1.md). No screen, flow, or feature changes.
+- Workspace architecture is locked (docs/architecture/workspace-architecture.md). Apps remain decoupled; traffic via gateway; shared types in @mindforge/shared.
+- Admin is the authoritative source for approvals, fees, payments and payment info; other apps are consumers only.
+- No scope expansion; only implement approved design.
+
+DEV NEXT STEPS:
+1. Implement in sprint order (Sprint 1 → 2 → … → 8) or as directed by PM; respect dependencies in task Notes.
+2. Use Checklist per task as acceptance criteria; satisfy all items before marking done.
+3. Ensure admin actions are guarded with confirmations and fully audit-logged.
+4. Run tests and migrations per CI/CD; adhere to workspace coding standards and security (auth, RBAC, secrets).
+
+BLOCKERS: None.
+
+DEPENDENCIES:
+- Reads: docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md
+- Reads: docs/architecture/admin/Mindforge_Admin_App_UX_Design_Specification_v1.md
+- Reads: docs/architecture/workspace-architecture.md
+
+============================================
+Signature: Planner / Scrum Master AI Agent – Mindforge Admin App
+============================================
+</code></pre>
+</body>
+</html>

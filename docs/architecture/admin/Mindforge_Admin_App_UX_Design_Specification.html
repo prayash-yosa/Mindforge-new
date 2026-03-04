@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mindforge Admin App — UX Design Specification (v1)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5fbef;
+        --panel: #ffffff;
+        --border: #d2dacb;
+        --text: #503d42;
+        --muted: #6b5a5e;
+        --accent: #748b75;
+        --accent-soft: #e2ebe0;
+        --accent-dark: #5a6b5a;
+        --code-bg: #111827;
+        --code-border: #1f2937;
+        --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem 1rem 3rem;
+        font-family: var(--sans);
+        background: radial-gradient(circle at top, #e2ebe0 0, #f5fbef 40%, #f0f5ec 100%);
+        color: var(--text);
+      }
+
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        background: var(--panel);
+        border-radius: 16px;
+        box-shadow:
+          0 18px 40px rgba(15, 23, 42, 0.12),
+          0 0 0 1px rgba(148, 163, 184, 0.25);
+        padding: 2.2rem 2.3rem 2.6rem;
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.4rem;
+        margin-bottom: 1.6rem;
+      }
+
+      h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.9rem;
+        letter-spacing: -0.03em;
+        color: var(--accent-dark);
+      }
+
+      h2 {
+        margin-top: 2.1rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        border-bottom: 2px solid var(--accent-soft);
+        padding-bottom: 0.45rem;
+      }
+
+      h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.4rem;
+        font-size: 1.05rem;
+      }
+
+      p {
+        margin: 0.35rem 0 0.8rem;
+        line-height: 1.6;
+      }
+
+      ul,
+      ol {
+        margin: 0.35rem 0 0.9rem 1.4rem;
+        padding: 0;
+      }
+
+      li {
+        margin: 0.2rem 0;
+        line-height: 1.55;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.15rem 0.7rem;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .meta {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .toc {
+        background: #f7faf7;
+        border-radius: 10px;
+        padding: 0.9rem 1.2rem;
+        margin-bottom: 1.4rem;
+        border: 1px solid var(--border);
+      }
+
+      .toc h4 {
+        margin: 0 0 0.4rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .toc ul {
+        margin: 0;
+        padding-left: 1.1rem;
+      }
+
+      .toc a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .toc a:hover {
+        text-decoration: underline;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 2.1fr) minmax(0, 2fr);
+        gap: 1.4rem;
+        align-items: flex-start;
+        margin: 0.8rem 0 1.6rem;
+      }
+
+      .screen-card {
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, #ffffff 0, #f7faf7 100%);
+        padding: 1rem 1.2rem 1.1rem;
+      }
+
+      .screen-title {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .screen-meta {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 0.6rem;
+      }
+
+      .screenshot-frame {
+        border-radius: 18px;
+        padding: 0.7rem;
+        background: radial-gradient(circle at top, #e2ebe0 0, #cbd5c5 35%, #9ca89a 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .screenshot-inner {
+        border-radius: 18px;
+        overflow: hidden;
+        background: #000;
+        box-shadow:
+          0 18px 35px rgba(15, 23, 42, 0.45),
+          0 0 0 1px rgba(15, 23, 42, 0.4);
+        max-width: 360px;
+      }
+
+      .screenshot-inner img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
+
+      .handoff {
+        margin-top: 2.1rem;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        border: 1px dashed #cbd5c5;
+        background: #f7faf7;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        white-space: pre-wrap;
+      }
+
+      @media (max-width: 768px) {
+        .page {
+          padding: 1.6rem 1.3rem 2.1rem;
+        }
+        .grid-2 {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div class="tag">UX Design Spec</div>
+        <h1>Mindforge Admin App — UX (v1)</h1>
+        <div class="meta">
+          Architecture: <code>docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md</code><br />
+          Images: <code>docs/architecture/admin/images/</code>
+        </div>
+      </header>
+
+      <nav class="toc">
+        <h4>Contents</h4>
+        <ul>
+          <li><a href="#overview">1. UX System Overview</a></li>
+          <li><a href="#flows">2. Key Admin Flows</a></li>
+          <li><a href="#navigation">3. Navigation Map</a></li>
+          <li><a href="#screens">4. Screen Reference</a></li>
+          <li><a href="#handoff">Standard Handoff</a></li>
+        </ul>
+      </nav>
+
+      <section id="overview">
+        <h2>1. UX System Overview</h2>
+        <p>
+          Admin app is the control plane for user approvals, fees, payments, and Parent app payment info. It is web-first,
+          desktop-oriented, and optimised for high-safety, high-trust operations.
+        </p>
+        <h3>UX Principles</h3>
+        <ul>
+          <li><strong>Control-plane clarity</strong> – KPIs and lists show current system state at a glance.</li>
+          <li><strong>Safety over speed</strong> – confirms high-impact actions like approvals and fee changes.</li>
+          <li><strong>Bulk-friendly</strong> – tables and filters support high-volume admin work.</li>
+          <li><strong>Single source of truth</strong> – reflect Admin’s authority for approvals and fees.</li>
+          <li><strong>Consistent branding</strong> – same Mindforge palette as Teacher/Parent apps.</li>
+        </ul>
+      </section>
+
+      <section id="flows">
+        <h2>2. Key Admin Flows</h2>
+
+        <h3>2.1 Review &amp; Approve Users</h3>
+        <pre><code>Sidebar → Users
+
+1. Filter by role (All / Students / Teachers / Parents) and status (Pending / Active / Disabled).
+2. See table of users with status badges and Approve / Reject / Activate / Deactivate actions.
+3. Open User details panel to view profile and (for parents) linked student information.
+4. Approve:
+   - Confirmation modal explains default MPIN = 000000 and first-login change requirement.
+   - On confirm, status becomes Active and audit log is written.
+5. Reject or Disable with confirmation and optional reason.</code></pre>
+
+        <h3>2.2 Configure Grade Fees &amp; Extra Subject Fees</h3>
+        <pre><code>Sidebar → Fees → Grade fees tab
+
+1. Table shows grade, academic year, total annual fee, last updated, updated by.
+2. Click Edit on a grade row:
+   - Fee cell becomes editable.
+   - Warning banner: "Changes affect fee summaries for all students in this grade."
+3. Save and confirm; audit log records change.
+4. "Extra subject fees" section links to per-student configuration screen.</code></pre>
+
+        <h3>2.3 Record &amp; Correct Fee Payments</h3>
+        <pre><code>Sidebar → Payments
+
+1. Search for student, select academic year.
+2. See Student fee summary card + Payment history table.
+3. Click "Record new payment":
+   - Modal with Date, Amount, Mode, Reference.
+   - Note: "Admin-only manual entry. Please verify details before saving."
+4. Save → payment added to history; summary recalculated.
+5. Edit payment:
+   - Modal lets admin adjust fields; audit note recommended for future versions.</code></pre>
+
+        <h3>2.4 Configure Payment Info (Parent App)</h3>
+        <pre><code>Sidebar → Payment Info
+
+1. Card shows QR code preview + text fields for UPI and bank details.
+2. Info banner: "This information appears read-only in the Parent app. No payments are processed here."
+3. Upload new QR, change UPI/bank/account details.
+4. Save changes → last-updated footer refreshed; audit log entry created.</code></pre>
+      </section>
+
+      <section id="navigation">
+        <h2>3. Navigation Map</h2>
+        <pre><code>Sidebar:
+  Dashboard
+  Users
+  Fees
+  Payments
+  Payment Info
+  Audit Logs
+
+Dashboard:
+  - KPIs: Pending approvals, Active students, Outstanding fees, Payments this month
+  - Shortcut tables to Users and Payments</code></pre>
+      </section>
+
+      <section id="screens">
+        <h2>4. Screen Reference (Desktop)</h2>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.1 Dashboard</h3>
+            <p>
+              Overview of pending approvals, active users, outstanding fees, and payments recorded this month, with quick
+              links into Users and Payments.
+            </p>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Dashboard</div>
+            <div class="screen-meta">KPIs plus pending approvals, fee collection, and recent payments.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/admin-dashboard.png" alt="Admin dashboard showing KPIs and pending approvals" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/admin-dashboard.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.2 Users — Approvals &amp; Accounts</h3>
+            <p>
+              Filterable table of users with approval and status actions, plus detail panel and strong confirmation copy
+              around MPIN and login rights.
+            </p>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Users</div>
+            <div class="screen-meta">Review, approve, and manage user accounts.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/admin-users.png" alt="Admin users approvals and accounts screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/admin-users.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.3 Fees Configuration</h3>
+            <p>
+              Grade fee table with inline editing and clear warnings, plus entry point to per-student extra subject fee
+              management.
+            </p>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Fees</div>
+            <div class="screen-meta">Grade and extra subject fee setup.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/admin-fees.png" alt="Admin fees configuration screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/admin-fees.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.4 Payments Ledger</h3>
+            <p>
+              Per-student summary and payment history with manual entry form. Emphasises admin-only recording and
+              correction.
+            </p>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Payments</div>
+            <div class="screen-meta">Fee ledger and manual entry screen.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/admin-payments.png" alt="Admin payments ledger screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/admin-payments.png</code></p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>4.5 Payment Info Configuration</h3>
+            <p>
+              Configuration for QR code, UPI, and bank details used by the Parent app’s Pay Info screen, with clear
+              statement that no payments are processed here.
+            </p>
+          </div>
+          <div class="screen-card">
+            <div class="screen-title">Payment Info</div>
+            <div class="screen-meta">Parent app pay configuration.</div>
+            <div class="screenshot-frame">
+              <div class="screenshot-inner">
+                <img src="images/admin-payment-info.png" alt="Admin payment info configuration screen" />
+              </div>
+            </div>
+            <p class="hint">Image: <code>images/admin-payment-info.png</code></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="handoff">
+        <h2>STANDARD HANDOFF</h2>
+        <div class="handoff">============================================
+HANDOFF: UX/UI Designer Agent → Planner Agent → Developer Agent
+============================================
+
+PROJECT: Mindforge Admin App
+
+SCREENS:
+- admin-dashboard.png
+- admin-users.png
+- admin-fees.png
+- admin-payments.png
+- admin-payment-info.png
+
+SCOPE:
+- Dashboard (KPIs, pending approvals, fee collection, recent payments)
+- Users (approvals & account statuses)
+- Fees (grade & extra subject fee configuration)
+- Payments (per-student ledger and manual entry)
+- Payment Info (Parent app config)
+
+CONSTRAINTS:
+- Admin is the single source of truth for approvals, fees, payments, and payment info
+- High-impact operations (approvals, fee changes, payment edits) require confirmations
+- No payment gateways; Admin only records and configures information
+
+NEXT STEPS:
+- Planner Agent: break this UX into epics and stories for apps/admin/frontend
+- Developer Agent: implement React/Vite admin UI according to this spec and the Admin architecture v1
+
+============================================</div>
+      </section>
+    </main>
+  </body>
+</html>
+

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mindforge Admin App – Architecture (v1)</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+      max-width: 960px;
+      color: #111827;
+      background: #f9fafb;
+    }
+    h1, h2, h3, h4 {
+      color: #111827;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.25rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      margin-top: 1.25rem;
+    }
+    p {
+      margin: 0.4rem 0;
+    }
+    ul {
+      padding-left: 1.5rem;
+    }
+    li {
+      margin: 0.25rem 0;
+    }
+    strong {
+      font-weight: 600;
+    }
+    .meta {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 1rem;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #374151;
+      padding: 0.75rem 1rem;
+      background: #e5e7eb;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      background: #e5e7eb;
+      padding: 0.05rem 0.25rem;
+      border-radius: 0.25rem;
+    }
+    pre {
+      background: #111827;
+      color: #e5e7eb;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid #e5e7eb;
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mindforge Admin App – Architecture (v1)</h1>
+  <p class="meta">
+    <strong>Artifact name:</strong> Mindforge_Admin_App_Architecture_v1<br />
+    <strong>Path:</strong> docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md
+  </p>
+  <p class="note">
+    Scope: Architecture for the <strong>Admin application</strong> (frontend + backend) within the Mindforge monorepo. Admin is the control plane for user approval, account lifecycle, and fee/payment configuration used by Student, Teacher, and Parent apps.
+  </p>
+
+  <h2>1. Goals &amp; Non-Goals</h2>
+  <h3>1.1 Goals</h3>
+  <ul>
+    <li>Provide a dedicated <strong>Admin app</strong> to:
+      <ul>
+        <li>Approve/block student, teacher, and parent accounts, with default MPIN <code>000000</code> on approval and mandatory first-login MPIN change.</li>
+        <li>Configure and update payment details (QR, UPI, bank account) for the Parent app.</li>
+        <li>Define and modify annual grade fees (8/9/10) and extra subject fees per student.</li>
+        <li>Record and correct fee payments, with automatic reflection in Parent app.</li>
+        <li>Edit, activate/deactivate, and soft-delete user accounts with full audit trail.</li>
+      </ul>
+    </li>
+  </ul>
+  <h3>1.2 Non-Goals (v1)</h3>
+  <ul>
+    <li>No classroom content management (Teacher domain).</li>
+    <li>No Student/Parent/Teacher UX redesign.</li>
+    <li>No payment gateway integration (Admin only records payments and configures static payment info).</li>
+    <li>No multi-school/tenant admin in v1.</li>
+  </ul>
+
+  <h2>2. Placement in Workspace Architecture</h2>
+  <pre><code>Mindforge/
+├── apps/
+│   ├── student/
+│   ├── parent/
+│   ├── teacher/
+│   └── admin/
+│       ├── frontend/   # React 19 + Vite — Admin UI
+│       └── backend/    # NestJS — Admin microservice
+├── services/
+│   └── gateway/        # API Gateway — JWT + RBAC
+├── shared/             # @mindforge/shared
+└── docs/</code></pre>
+  <p>Admin frontend → <strong>Gateway</strong> → Admin backend. Admin backend owns approval state, MPIN flags, fee configuration, fee ledger, payment info, and audit logs; other services call Admin for status/fee/payment info.</p>
+
+  <h2>3. High-Level Architecture</h2>
+  <h3>3.1 Components</h3>
+  <p><strong>Admin Frontend:</strong> Sections for Users (approval &amp; account management), Fees (grade &amp; extra subject), Payments (entry &amp; history), Payment Info (QR/UPI/bank), and basic Audit/Settings.</p>
+  <p><strong>Admin Backend:</strong> User Management &amp; Approval, Fee Configuration, Payment Entry &amp; Ledger, Payment Info Configuration, Audit Trail, and Integration module; backed by PostgreSQL and optional Redis.</p>
+  <h3>3.2 Communication Patterns</h3>
+  <p>Admin UI calls Admin backend via Gateway (HTTPS/JSON, JWT with <code>role = admin</code>); Admin backend exposes internal read APIs for Student/Teacher/Parent services to check approval, MPIN flags, fees, and payment info.</p>
+
+  <h2>4. Data Model (High-Level)</h2>
+  <p><strong>User &amp; Approval:</strong> <code>user_accounts</code> with role, mobile, status, <code>must_change_mpin_on_first_login</code>, etc., plus parent/student link table.</p>
+  <p><strong>Fees configuration:</strong> <code>grade_fee_configs</code> (per grade/year) and <code>extra_subject_fee_configs</code> (per student/subject).</p>
+  <p><strong>Fee payments &amp; summaries:</strong> <code>fee_payments</code> (per transaction) and optional <code>student_fee_summary</code> (denormalised per student/year).</p>
+  <p><strong>Payment info config:</strong> <code>payment_info_config</code> with QR URL, UPI, and bank details.</p>
+  <p><strong>Audit:</strong> <code>admin_audit_logs</code> capturing who changed what, where, and when.</p>
+
+  <h2>5. API Contracts (Logical)</h2>
+  <ul>
+    <li><strong>User approval &amp; account management:</strong> list pending users; approve/reject; edit; activate/deactivate; soft delete; internal status lookup for other services.</li>
+    <li><strong>Fees &amp; payments:</strong> CRUD grade fee configs; manage extra subject fees; record/edit payments; compute per-student summaries; internal summary/payment-info APIs for Parent backend.</li>
+    <li><strong>Payment info:</strong> Admin UI APIs to get/update QR/UPI/bank details; internal read for Parent backend.</li>
+  </ul>
+
+  <h2>6. Security &amp; Compliance</h2>
+  <p><strong>AuthN:</strong> Dedicated admin login with JWT and <code>role = admin</code>. <strong>AuthZ:</strong> Gateway enforces role; Admin backend may extend with finer permissions later.</p>
+  <p><strong>Data sensitivity:</strong> Minors’ PII, fee/payment data, and bank details treated as sensitive; HTTPS + encryption at rest + strict DB access. <strong>Audit:</strong> all changes to users, fees, payments, and payment info logged.</p>
+
+  <h2>7. Error Handling &amp; Consistency</h2>
+  <p>Standard error shape <code>{ code, message, details? }</code>, with 400/401/403/404/409/500 codes; grade/extras/summary updates are transactional or clearly labelled with last-updated timestamps; downstream apps treat Admin as source of truth for fees and payment info.</p>
+
+  <h2>8. Key Risks &amp; Mitigations</h2>
+  <ul>
+    <li><strong>Incorrect fee configuration:</strong> strong context and confirmations; audit trail.</li>
+    <li><strong>Misrecorded payments:</strong> edit + audit; clear separation of configured vs paid.</li>
+    <li><strong>Unapproved/disabled users logging in:</strong> login flows call Admin status APIs and enforce <code>status = ACTIVE</code> and approved.</li>
+    <li><strong>Admin misuse/accidental deletes:</strong> soft delete, confirmations.</li>
+    <li><strong>Stale payment info in Parent app:</strong> Parent always reads from Admin; optional short cache.</li>
+  </ul>
+
+  <h2>9. Implementation Order (Architecture-Aligned)</h2>
+  <p>Admin auth → user approval &amp; MPIN flags → grade &amp; extra fee config → payment entry &amp; summaries → payment info config → internal service APIs → Admin UI screens → observability &amp; audit views.</p>
+
+  <h2>STANDARD HANDOFF – To UX / UI Agent (Admin App)</h2>
+  <p><strong>PROJECT:</strong> Mindforge Admin App</p>
+  <p><strong>PHASE:</strong> Architecture → UX / UI (navigation-first)</p>
+  <p><strong>ARTIFACT SOURCE:</strong> docs/architecture/admin/Mindforge_Admin_App_Architecture_v1.md</p>
+
+  <h3>Context summary (for UX)</h3>
+  <p>Admin app is the control plane: approves/blocks users, configures grade/extra fees, records/corrects payments, and manages payment info that drives Parent app views. Admin operations directly affect login access and fee data shown to parents.</p>
+
+  <h3>What UX SHOULD design now</h3>
+  <ul>
+    <li>Navigation with sections for Dashboard, Users, Fees, Payments, Payment Info, Audit/Settings.</li>
+    <li>User approval flows with pending lists, detail views, approve/reject/activate/deactivate/delete actions, and clear messaging about default MPIN and first-login change.</li>
+    <li>Grade &amp; extra fee configuration screens with strong context (grade, academic year, student).</li>
+    <li>Payment entry/history screens with per-student fee summary and editable payments (with notes).</li>
+    <li>Payment Info screen with QR upload, UPI/bank fields, and last-updated indicators.</li>
+    <li>Basic audit/log view filtered by entity.</li>
+  </ul>
+
+  <h3>UX constraints &amp; rules</h3>
+  <ul>
+    <li>Admin actions are high-impact: destructive or wide-scope actions require confirmations.</li>
+    <li>Default MPIN is <code>000000</code>; copy should clearly state that users must change it on first login.</li>
+    <li>Parent app remains view-only; all fee and payment configuration/editing is Admin-only.</li>
+    <li>Workflows should be efficient for handling many records (tables, filters, bulk patterns if added).</li>
+  </ul>
+
+  <h3>Open questions for UX / Product</h3>
+  <ul>
+    <li>Need for bulk approval/activation/deactivation in v1?</li>
+    <li>Required filters/exports for high-volume payment management?</li>
+    <li>Strength of confirmation patterns for destructive actions (typed confirms, etc.)?</li>
+  </ul>
+
+  <h3>Handoff status</h3>
+  <p>Admin app architecture and boundaries are defined and aligned with Student/Teacher/Parent architectures and workspace architecture. Admin backend is authoritative for approval, fees, payments, and payment info and exposes read APIs to other apps. UX / UI may now proceed using this document and the Admin App Product Requirements as constraints.</p>
+
+  <p><strong>Signature:</strong> Architect AI Agent – Mindforge Admin App (v1)</p>
+</body>
+</html>
+
