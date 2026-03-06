@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import * as path from 'path';
 import {
@@ -10,7 +11,7 @@ import {
   AdminAuditLogEntity,
 } from './entities';
 
-export const AppDataSource = new DataSource({
+const AppDataSource = new DataSource({
   type: 'postgres',
   ...(process.env.DATABASE_URL
     ? { url: process.env.DATABASE_URL }
@@ -30,7 +31,7 @@ export const AppDataSource = new DataSource({
     PaymentInfoConfigEntity,
     AdminAuditLogEntity,
   ],
-  migrations: [path.join(__dirname, 'migrations', '*{.ts,.js}')],
+  migrations: [path.join(__dirname, 'migrations', '*.{ts,js}').replace(/\\/g, '/')],
   synchronize: false,
 });
 

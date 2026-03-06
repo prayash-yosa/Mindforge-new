@@ -34,10 +34,9 @@ export default () => ({
     url: process.env.DATABASE_URL,
     host: process.env.DB_HOST ?? 'localhost',
     port: parseInt(process.env.DB_PORT ?? '5432', 10),
-    username: process.env.DB_USERNAME ?? 'mindforge',
-    password: process.env.DB_PASSWORD ?? '',
+    username: process.env.DB_USERNAME ?? 'postgres',
+    password: process.env.DB_PASSWORD ?? 'postgres',
     name: process.env.DB_NAME ?? 'mindforge_teacher',
-    sqlitePath: process.env.SQLITE_PATH ?? ':memory:',
   },
 
   storage: {

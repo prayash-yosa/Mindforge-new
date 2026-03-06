@@ -57,7 +57,7 @@ export class TestDefinitionEntity {
   @JoinColumn({ name: 'lesson_session_id' })
   lessonSession: LessonSessionEntity;
 
-  @Column({ name: 'scheduled_at', type: 'datetime', nullable: true })
+  @Column({ name: 'scheduled_at', type: 'timestamp', nullable: true })
   scheduledAt: Date;
 
   @Column({ name: 'created_by' })

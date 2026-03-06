@@ -6,7 +6,6 @@
   "workspaces": [
     "apps/*/frontend",
     "apps/*/backend",
-    "apps/mobile",
     "services/*",
     "shared"
   ],

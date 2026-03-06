@@ -13,10 +13,11 @@
 
 import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } from 'typeorm';
 
-export class InitialSchema20260211001 implements MigrationInterface {
-  name = 'InitialSchema20260211001';
+export class InitialStudentSchema1739232000000 implements MigrationInterface {
+  name = 'InitialStudentSchema1739232000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
     // ── students ────────────────────────────────────────────────
     await queryRunner.createTable(
       new Table({

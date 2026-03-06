@@ -11,8 +11,8 @@
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "clean": "rm -rf dist",
     "typeorm": "typeorm-ts-node-commonjs",
-    "migration:run": "npm run typeorm migration:run -- -d src/database/data-source.ts",
-    "migration:revert": "npm run typeorm migration:revert -- -d src/database/data-source.ts"
+    "migration:run": "npm run build && typeorm migration:run -d dist/database/data-source.js",
+    "migration:revert": "typeorm migration:revert -d dist/database/data-source.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",
@@ -24,7 +24,8 @@
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/typeorm": "^10.0.2",
     "@mindforge/shared": "*",
-    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "helmet": "^8.0.0",
@@ -36,7 +37,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",
-    "@types/better-sqlite3": "^7.6.12",
+    "@types/pg": "^8.11.10",
     "@types/express": "^5.0.0",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.13.1",

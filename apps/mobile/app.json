@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
     "scheme": "mindforge",
     "splash": {
       "image": "./assets/splash.png",
@@ -24,6 +23,13 @@
       },
       "package": "com.mindforge.app"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "./app"
+        }
+      ]
+    ]
   }
 }

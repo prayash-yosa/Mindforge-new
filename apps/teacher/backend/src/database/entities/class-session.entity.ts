@@ -35,14 +35,14 @@ export class ClassSessionEntity {
   @Column()
   subject: string;
 
-  @Column({ name: 'scheduled_at', type: 'datetime' })
+  @Column({ name: 'scheduled_at', type: 'timestamp' })
   @Index()
   scheduledAt: Date;
 
   @Column({ name: 'duration_minutes', type: 'integer', default: 60 })
   durationMinutes: number;
 
-  @Column({ name: 'editable_until', type: 'datetime' })
+  @Column({ name: 'editable_until', type: 'timestamp' })
   editableUntil: Date;
 
   @Column({ name: 'is_attendance_taken', default: false })

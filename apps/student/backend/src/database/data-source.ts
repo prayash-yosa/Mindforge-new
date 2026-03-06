@@ -1,20 +1,28 @@
 /**
- * Mindforge Backend — TypeORM Data Source (Task 2.1)
- *
- * Used by TypeORM CLI for migration generation and execution.
- * Usage: npx typeorm migration:generate -d src/database/data-source.ts
- *
- * For production PostgreSQL. Dev uses in-memory SQLite via DatabaseModule.
+ * Mindforge Backend — TypeORM Data Source (PostgreSQL only)
+ * Usage: npm run migration:run (after build)
  */
 
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
+import * as path from 'path';
 import { ALL_ENTITIES } from './database.module';
 
-export default new DataSource({
+const AppDataSource = new DataSource({
   type: 'postgres',
-  url: process.env.DATABASE_URL ?? 'postgres://mindforge:mindforge@localhost:5432/mindforge',
-  entities: ALL_ENTITIES,
-  migrations: ['src/database/migrations/*.ts'],
+  ...(process.env.DATABASE_URL
+    ? { url: process.env.DATABASE_URL }
+    : {
+        host: process.env.DB_HOST ?? 'localhost',
+        port: parseInt(process.env.DB_PORT ?? '5432', 10),
+        username: process.env.DB_USERNAME ?? 'postgres',
+        password: process.env.DB_PASSWORD ?? 'postgres',
+        database: process.env.DB_NAME ?? 'mindforge',
+      }),
+  entities: ALL_ENTITIES as never[],
+  migrations: [path.join(__dirname, 'migrations', '*.js').replace(/\\/g, '/')],
   synchronize: false,
   logging: ['error', 'warn', 'schema', 'migration'],
 });
+
+export default AppDataSource;

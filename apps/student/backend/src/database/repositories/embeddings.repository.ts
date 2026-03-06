@@ -3,8 +3,8 @@
  *
  * CRUD for teacher_material_chunks. Vector similarity search scoped by class/subject.
  *
- * In dev/SQLite mode, cosine similarity is computed in application code.
- * In production/PostgreSQL with pgvector, this would use SQL-level similarity operators.
+ * Cosine similarity is computed in application code.
+ * Can be upgraded to pgvector SQL-level similarity operators for production scale.
  */
 
 import { Injectable } from '@nestjs/common';
@@ -60,9 +60,9 @@ export class EmbeddingsRepository extends BaseRepository {
 
   /**
    * Vector similarity search. Retrieves all chunks matching class/subject scope,
-   * then computes cosine similarity in-memory (for SQLite dev mode).
+   * then computes cosine similarity in-memory.
    *
-   * For production PostgreSQL + pgvector, replace with SQL-level similarity.
+   * For production scale with pgvector, replace with SQL-level similarity.
    */
   async searchSimilar(
     queryEmbedding: number[],

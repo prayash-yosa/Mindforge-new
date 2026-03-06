@@ -18,6 +18,5 @@ export default () => ({
     username: process.env.DB_USERNAME ?? 'mindforge',
     password: process.env.DB_PASSWORD ?? '',
     name: process.env.DB_NAME ?? 'mindforge_admin',
-    sqlitePath: process.env.SQLITE_PATH ?? './admin-dev.sqlite',
   },
 });

@@ -77,15 +77,15 @@ export class ActivityEntity {
   estimatedMinutes: number;
 
   /** Due date/time (nullable for practice activities) */
-  @Column({ name: 'due_at', type: 'datetime', nullable: true })
+  @Column({ name: 'due_at', type: 'timestamp', nullable: true })
   dueAt: Date;
 
   /** When the student started working on it */
-  @Column({ name: 'started_at', type: 'datetime', nullable: true })
+  @Column({ name: 'started_at', type: 'timestamp', nullable: true })
   startedAt: Date;
 
   /** When the student completed it */
-  @Column({ name: 'completed_at', type: 'datetime', nullable: true })
+  @Column({ name: 'completed_at', type: 'timestamp', nullable: true })
   completedAt: Date;
 
   /** Score (0–100) after completion */

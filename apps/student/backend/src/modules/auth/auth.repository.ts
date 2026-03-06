@@ -6,8 +6,7 @@
  * but now delegates to the global StudentRepository and SessionRepository.
  *
  * Lockout state remains in-memory until Redis is integrated (Task 8.3).
- * When PostgreSQL is running, student and session data comes from DB.
- * When using SQLite dev mode, seeds a test student on startup.
+ * Student and session data is stored in PostgreSQL.
  *
  * Architecture ref: §5.1 Database — students, sessions
  */

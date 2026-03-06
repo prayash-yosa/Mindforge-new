@@ -1,19 +1,48 @@
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { ALL_ENTITIES } from './database.module';
+import * as path from 'path';
+import {
+  TeacherEntity,
+  ClassEntity,
+  ClassSessionEntity,
+  ClassStudentEntity,
+  AttendanceRecordEntity,
+  SyllabusDocumentEntity,
+  LessonSessionEntity,
+  TestDefinitionEntity,
+  TestQuestionEntity,
+  TestAttemptEntity,
+  OfflineMarkEntryEntity,
+  NotificationEventEntity,
+} from './entities';
 
-/**
- * TypeORM CLI data source for running migrations outside NestJS.
- * Usage: npx typeorm migration:run -d dist/database/data-source.js
- */
-export default new DataSource({
+const AppDataSource = new DataSource({
   type: 'postgres',
-  url: process.env.DATABASE_URL,
-  host: process.env.DB_HOST ?? 'localhost',
-  port: parseInt(process.env.DB_PORT ?? '5432', 10),
-  username: process.env.DB_USERNAME ?? 'mindforge',
-  password: process.env.DB_PASSWORD ?? '',
-  database: process.env.DB_NAME ?? 'mindforge_teacher',
-  entities: ALL_ENTITIES,
-  migrations: ['dist/database/migrations/*.js'],
-  logging: ['error', 'warn', 'schema'],
+  ...(process.env.DATABASE_URL
+    ? { url: process.env.DATABASE_URL }
+    : {
+        host: process.env.DB_HOST ?? 'localhost',
+        port: parseInt(process.env.DB_PORT ?? '5432', 10),
+        username: process.env.DB_USERNAME ?? 'postgres',
+        password: process.env.DB_PASSWORD ?? 'postgres',
+        database: process.env.DB_NAME ?? 'mindforge_teacher',
+      }),
+  entities: [
+    TeacherEntity,
+    ClassEntity,
+    ClassSessionEntity,
+    ClassStudentEntity,
+    AttendanceRecordEntity,
+    SyllabusDocumentEntity,
+    LessonSessionEntity,
+    TestDefinitionEntity,
+    TestQuestionEntity,
+    TestAttemptEntity,
+    OfflineMarkEntryEntity,
+    NotificationEventEntity,
+  ],
+  migrations: [path.join(__dirname, 'migrations', '*.js').replace(/\\/g, '/')],
+  synchronize: false,
 });
+
+export default AppDataSource;

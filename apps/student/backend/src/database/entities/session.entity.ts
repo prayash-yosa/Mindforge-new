@@ -44,7 +44,7 @@ export class SessionEntity {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ name: 'expires_at', type: 'datetime' })
+  @Column({ name: 'expires_at', type: 'timestamp' })
   expiresAt: Date;
 
   /** Whether the session has been explicitly invalidated */

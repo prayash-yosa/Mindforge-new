@@ -32,17 +32,23 @@ const ALL_ENTITIES = [
         const dbUrl = config.get<string>('database.url');
 
         return {
-          type: 'postgres' as const,
-          ...(dbUrl ? { url: dbUrl } : {
-            host: config.get<string>('database.host') ?? 'localhost',
-            port: config.get<number>('database.port') ?? 5432,
-            username: config.get<string>('database.username') ?? 'mindforge',
-            password: config.get<string>('database.password') ?? '',
-            database: config.get<string>('database.name') ?? 'mindforge_admin',
-          }),
+          type: 'postgres',
+          ...(dbUrl
+            ? { url: dbUrl }
+            : {
+                host: config.get<string>('database.host') ?? 'localhost',
+                port: config.get<number>('database.port') ?? 5432,
+                username: config.get<string>('database.username') ?? 'mindforge',
+                password: config.get<string>('database.password') ?? '',
+                database: config.get<string>('database.name') ?? 'mindforge_admin',
+              }),
           entities: ALL_ENTITIES,
           synchronize: false,
+          migrations: ['dist/database/migrations/*.js'],
+          migrationsRun: true,
           logging: isProduction ? ['error'] : ['error', 'warn'],
+          retryAttempts: 3,
+          retryDelay: 3000,
         };
       },
     }),

@@ -8,24 +8,28 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useServer } from '../../src/ServerContext';
+import { PORTS } from '../../src/config';
 
-const COLORS = {
+const C = {
   sage: '#748B75',
   sageDark: '#5A7A4E',
   cream: '#F5FBEF',
   brown: '#503D42',
   surface: '#FFFFFF',
   border: '#E0D6CC',
+  muted: '#8A7A6E',
   error: '#E53935',
 };
 
-const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3004';
-
 export default function AdminLoginScreen() {
+  const { getApiUrl } = useServer();
+  const apiBase = getApiUrl(PORTS.admin);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,18 +43,21 @@ export default function AdminLoginScreen() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/v1/admin/auth/login`, {
+      const res = await fetch(`${apiBase}/v1/admin/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.message || 'Login failed');
-      // Store token (in production use SecureStore)
-      // For now we just navigate - token would go in AsyncStorage/SecureStore
       router.replace('/admin/(tabs)/dashboard');
     } catch (err: any) {
-      setError(err?.message || 'Login failed. Please try again.');
+      const msg = err?.message || '';
+      setError(
+        msg.includes('Network') || msg.includes('fetch') || msg.includes('Failed')
+          ? `Cannot reach Admin API at ${apiBase}. Check server settings.`
+          : msg || 'Login failed. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -60,7 +67,7 @@ export default function AdminLoginScreen() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/v1/admin/auth/demo-login`, {
+      const res = await fetch(`${apiBase}/v1/admin/auth/demo-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
@@ -69,33 +76,44 @@ export default function AdminLoginScreen() {
       if (!res.ok) throw new Error(data.message || 'Demo login failed');
       router.replace('/admin/(tabs)/dashboard');
     } catch (err: any) {
-      setError(err?.message || 'Demo login failed.');
+      const msg = err?.message || '';
+      setError(
+        msg.includes('Network') || msg.includes('fetch') || msg.includes('Failed')
+          ? `Cannot reach Admin API at ${apiBase}. Check server settings.`
+          : msg || 'Demo login failed.'
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={s.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboard}
+        style={s.keyboard}
       >
-        <TouchableOpacity
-          style={styles.back}
-          onPress={() => router.back()}
-        >
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
+        <View style={s.topBar}>
+          <TouchableOpacity style={s.backBtn} onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={22} color={C.sageDark} />
+          </TouchableOpacity>
+          <View style={s.topBarCenter}>
+            <View style={s.topIcon}>
+              <Ionicons name="shield-checkmark" size={18} color="#C17817" />
+            </View>
+            <Text style={s.topTitle}>Admin Portal</Text>
+          </View>
+          <View style={{ width: 34 }} />
+        </View>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>Admin Portal</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
+        <View style={s.content}>
+          <Text style={s.title}>Sign in</Text>
+          <Text style={s.subtitle}>Enter your admin credentials to continue</Text>
 
           <TextInput
-            style={styles.input}
+            style={s.input}
             placeholder="Email"
-            placeholderTextColor="#8A7A6E"
+            placeholderTextColor="#B0A8A0"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -103,70 +121,85 @@ export default function AdminLoginScreen() {
             editable={!loading}
           />
           <TextInput
-            style={styles.input}
+            style={s.input}
             placeholder="Password"
-            placeholderTextColor="#8A7A6E"
+            placeholderTextColor="#B0A8A0"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
             editable={!loading}
           />
 
-          {error && <Text style={styles.error}>{error}</Text>}
+          {error && (
+            <View style={s.errorRow}>
+              <Ionicons name="alert-circle" size={16} color={C.error} />
+              <Text style={s.errorText}>{error}</Text>
+            </View>
+          )}
 
           <TouchableOpacity
-            style={[styles.btn, styles.btnPrimary]}
+            style={s.btnPrimary}
             onPress={handleLogin}
             disabled={loading}
+            activeOpacity={0.8}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.btnPrimaryText}>Sign in</Text>
+              <Text style={s.btnPrimaryText}>Sign in</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.demoBtn}
+            style={s.demoBtn}
             onPress={handleDemoLogin}
             disabled={loading}
           >
-            <Text style={styles.demoBtnText}>Demo login</Text>
+            <Text style={s.demoBtnText}>Demo login</Text>
           </TouchableOpacity>
+
+          <Text style={s.apiHint}>Server: {apiBase}</Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.cream },
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: C.cream },
   keyboard: { flex: 1 },
-  back: { padding: 16 },
-  backText: { fontSize: 16, color: COLORS.sageDark, fontWeight: '500' },
-  content: { flex: 1, padding: 24, paddingTop: 16 },
-  title: { fontSize: 24, fontWeight: '700', color: COLORS.sageDark, marginBottom: 4 },
-  subtitle: { fontSize: 14, color: '#8A7A6E', marginBottom: 24 },
+  topBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: C.border },
+  backBtn: { padding: 6 },
+  topBarCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 8 },
+  topIcon: { width: 32, height: 32, borderRadius: 8, backgroundColor: '#FDF3E3', alignItems: 'center', justifyContent: 'center' },
+  topTitle: { fontSize: 18, fontWeight: '700', color: C.brown },
+  content: { flex: 1, padding: 24, paddingTop: 24 },
+  title: { fontSize: 24, fontWeight: '700', color: C.sageDark, marginBottom: 4 },
+  subtitle: { fontSize: 14, color: C.muted, marginBottom: 28 },
   input: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: C.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 8,
+    borderColor: C.border,
+    borderRadius: 10,
     padding: 16,
     fontSize: 16,
-    marginBottom: 16,
-    minHeight: 48,
+    marginBottom: 14,
+    minHeight: 50,
+    color: C.brown,
   },
-  error: { color: COLORS.error, fontSize: 14, marginBottom: 16 },
-  btn: {
+  errorRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 14 },
+  errorText: { color: C.error, fontSize: 13, flex: 1, lineHeight: 18 },
+  btnPrimary: {
+    backgroundColor: C.sageDark,
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 10,
     alignItems: 'center',
-    minHeight: 48,
+    minHeight: 50,
     justifyContent: 'center',
+    marginBottom: 12,
   },
-  btnPrimary: { backgroundColor: COLORS.sage, marginBottom: 12 },
   btnPrimaryText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   demoBtn: { padding: 12, alignItems: 'center' },
-  demoBtnText: { color: COLORS.sageDark, fontSize: 14 },
+  demoBtnText: { color: C.sageDark, fontSize: 14, fontWeight: '500' },
+  apiHint: { textAlign: 'center', fontSize: 11, color: C.muted, marginTop: 'auto', fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
 });

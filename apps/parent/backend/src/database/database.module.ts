@@ -17,28 +17,24 @@ const ALL_REPOSITORIES = [ParentRepository, LoginAttemptRepository];
       useFactory: (config: ConfigService) => {
         const isProduction = config.get<boolean>('isProduction');
         const dbUrl = config.get<string>('database.url');
-
-        if (dbUrl || isProduction) {
-          return {
-            type: 'postgres' as const,
-            url: dbUrl,
-            host: config.get<string>('database.host') ?? 'localhost',
-            port: config.get<number>('database.port') ?? 5432,
-            username: config.get<string>('database.username') ?? 'mindforge',
-            password: config.get<string>('database.password') ?? '',
-            database: config.get<string>('database.name') ?? 'mindforge_parent',
-            entities: ALL_ENTITIES,
-            synchronize: false,
-            logging: isProduction ? ['error'] : ['error', 'warn'],
-          };
-        }
-
         return {
-          type: 'better-sqlite3' as const,
-          database: config.get<string>('database.sqlitePath') ?? ':memory:',
+          type: 'postgres' as const,
+          ...(dbUrl
+            ? { url: dbUrl }
+            : {
+                host: config.get<string>('database.host') ?? 'localhost',
+                port: config.get<number>('database.port') ?? 5432,
+                username: config.get<string>('database.username') ?? 'postgres',
+                password: config.get<string>('database.password') ?? 'postgres',
+                database: config.get<string>('database.name') ?? 'mindforge_parent',
+              }),
           entities: ALL_ENTITIES,
-          synchronize: true,
-          logging: ['error', 'warn'],
+          synchronize: false,
+          migrations: ['dist/database/migrations/*.js'],
+          migrationsRun: true,
+          logging: isProduction ? ['error'] : ['error', 'warn'],
+          retryAttempts: 3,
+          retryDelay: 3000,
         };
       },
     }),

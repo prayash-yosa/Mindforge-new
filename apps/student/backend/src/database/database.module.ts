@@ -1,16 +1,8 @@
 /**
  * Mindforge Backend — Database Module (Task 2.1)
  *
- * Configures TypeORM with:
- *   - PostgreSQL for production
- *   - SQLite (better-sqlite3) for development (no external DB needed)
- *
- * Architecture ref: §4 Technology Stack — "PostgreSQL (primary)"
- * Architecture ref: §5.1 Database — all entity tables
- *
- * Migrations are versioned and idempotent. In dev, synchronize is enabled
- * for rapid iteration. In production, synchronize is OFF and migrations
- * are applied via CI/deploy.
+ * PostgreSQL only. All data (students, activities, sessions, etc.) is stored
+ * in PostgreSQL. Migrations are versioned and run on startup.
  */
 
 import { Global, Module } from '@nestjs/common';
@@ -92,34 +84,24 @@ export const ALL_REPOSITORIES = [
       useFactory: (config: ConfigService) => {
         const isProduction = config.get<boolean>('isProduction');
         const dbUrl = config.get<string>('database.url');
-
-        // ── PostgreSQL (production / when DATABASE_URL is set) ───
-        if (dbUrl || isProduction) {
-          return {
-            type: 'postgres' as const,
-            url: dbUrl,
-            host: config.get<string>('database.host') ?? 'localhost',
-            port: config.get<number>('database.port') ?? 5432,
-            username: config.get<string>('database.username') ?? 'mindforge',
-            password: config.get<string>('database.password') ?? '',
-            database: config.get<string>('database.name') ?? 'mindforge',
-            entities: ALL_ENTITIES,
-            synchronize: false, // NEVER synchronize in production
-            migrations: ['dist/database/migrations/*.js'],
-            migrationsRun: true, // Auto-run pending migrations on startup
-            logging: isProduction ? ['error'] : ['error', 'warn', 'schema'],
-            retryAttempts: 3,
-            retryDelay: 3000,
-          };
-        }
-
-        // ── SQLite (development — no external DB needed) ──────────
         return {
-          type: 'better-sqlite3' as const,
-          database: config.get<string>('database.sqlitePath') ?? ':memory:',
+          type: 'postgres' as const,
+          ...(dbUrl
+            ? { url: dbUrl }
+            : {
+                host: config.get<string>('database.host') ?? 'localhost',
+                port: config.get<number>('database.port') ?? 5432,
+                username: config.get<string>('database.username') ?? 'postgres',
+                password: config.get<string>('database.password') ?? 'postgres',
+                database: config.get<string>('database.name') ?? 'mindforge',
+              }),
           entities: ALL_ENTITIES,
-          synchronize: true, // Auto-create tables in dev
-          logging: ['error', 'warn'],
+          synchronize: false,
+          migrations: ['dist/database/migrations/*.js'],
+          migrationsRun: true,
+          logging: isProduction ? ['error'] : ['error', 'warn', 'schema'],
+          retryAttempts: 3,
+          retryDelay: 3000,
         };
       },
     }),

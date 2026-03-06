@@ -25,7 +25,7 @@ async function bootstrap() {
   app.use(helmet());
 
   app.enableCors({
-    origin: corsOrigins,
+    origin: isProduction ? corsOrigins : true, // Allow mobile (Expo, emulator) in dev
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
     credentials: true,
@@ -77,9 +77,7 @@ async function bootstrap() {
   logger.log(`Environment: ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
   logger.log(`Port: ${port}`);
   logger.log(`CORS Origins: ${corsOrigins.join(', ')}`);
-  logger.log(
-    `Database: ${config.get('database.url') ? 'PostgreSQL (URL configured)' : 'SQLite (dev mode)'}`,
-  );
+  logger.log('Database: PostgreSQL');
   logger.log(
     `AI Provider: ${config.get('ai.apiKey') ? 'Configured' : 'Not configured (fallback mode)'}`,
   );

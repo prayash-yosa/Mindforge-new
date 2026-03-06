@@ -1,18 +1,17 @@
 import { Tabs } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const COLORS = { sage: '#748B75', sageDark: '#5A7A4E', muted: '#8A7A6E' };
+const COLORS = { sage: '#748B75', sageDark: '#5A7A4E', muted: '#8A7A6E', cream: '#F5FBEF', brown: '#503D42', border: '#E0D6CC' };
 
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  return (
-    <Text style={{ fontSize: 20, color: focused ? COLORS.sageDark : COLORS.muted }}>
-      {name === 'dashboard' && '📊'}
-      {name === 'users' && '👥'}
-      {name === 'fees' && '💰'}
-      {name === 'payments' && '💳'}
-      {name === 'more' && '⋯'}
-    </Text>
-  );
+  const iconMap: Record<string, 'grid' | 'people' | 'wallet' | 'card' | 'ellipsis-horizontal'> = {
+    dashboard: 'grid',
+    users: 'people',
+    fees: 'wallet',
+    payments: 'card',
+    more: 'ellipsis-horizontal',
+  };
+  return <Ionicons name={iconMap[name] ?? 'ellipsis-horizontal'} size={22} color={focused ? COLORS.sageDark : COLORS.muted} />;
 }
 
 export default function AdminTabsLayout() {

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mindforge — Local Server Deployment Guide</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F5FBEF; color: #503D42; line-height: 1.7; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 32px; color: #5A7A4E; margin-bottom: 8px; }
+  h2 { font-size: 22px; color: #5A7A4E; margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #E0D6CC; }
+  h3 { font-size: 17px; color: #748B75; margin-top: 28px; margin-bottom: 10px; }
+  p, li { font-size: 15px; margin-bottom: 10px; }
+  ul, ol { padding-left: 24px; }
+  code { background: #EDE8E3; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: 'SF Mono', 'Menlo', 'Consolas', monospace; color: #503D42; }
+  pre { background: #2D2926; color: #E8DED4; border-radius: 10px; padding: 18px 20px; overflow-x: auto; margin: 12px 0 20px; font-size: 13px; line-height: 1.6; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 13px; }
+  .comment { color: #8A7A6E; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+  th, td { padding: 10px 14px; text-align: left; border: 1px solid #E0D6CC; font-size: 14px; }
+  th { background: #748B75; color: #fff; font-weight: 600; }
+  td { background: #fff; }
+  .arch { background: #2D2926; color: #E8DED4; border-radius: 10px; padding: 20px; overflow-x: auto; margin: 16px 0 24px; font-family: 'SF Mono', 'Menlo', monospace; font-size: 12px; white-space: pre; line-height: 1.5; }
+  .note { background: #FFF9EB; border-left: 4px solid #E8B544; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
+  .warn { background: #FFF0F0; border-left: 4px solid #D64545; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
+  .badge { display: inline-block; background: #5A7A4E; color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .sub { color: #8A7A6E; font-size: 16px; margin-bottom: 32px; }
+  a { color: #5A7A4E; }
+  hr { border: none; border-top: 1px solid #E0D6CC; margin: 32px 0; }
+  .toc { background: #fff; border: 1px solid #E0D6CC; border-radius: 10px; padding: 20px 28px; margin: 24px 0; }
+  .toc h3 { margin-top: 0; color: #503D42; }
+  .toc ol { margin-bottom: 0; }
+  .toc li { margin-bottom: 4px; }
+  .toc a { text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .card-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0 24px; }
+  .card { background: #fff; border: 1px solid #E0D6CC; border-radius: 10px; padding: 16px; text-align: center; }
+  .card .port { font-family: monospace; font-size: 24px; color: #5A7A4E; font-weight: 700; }
+  .card .label { font-size: 13px; color: #8A7A6E; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Mindforge — Local Server Deployment</h1>
+<p class="sub">Deploy all 4 web apps + backends + PostgreSQL on a local server, accessible via IP from any device on the network.</p>
+
+<div class="toc">
+<h3>Table of Contents</h3>
+<ol>
+  <li><a href="#arch">Architecture Overview</a></li>
+  <li><a href="#prereq">Prerequisites</a></li>
+  <li><a href="#pg">PostgreSQL Setup</a></li>
+  <li><a href="#env">Backend Environment Config</a></li>
+  <li><a href="#build">Build Everything</a></li>
+  <li><a href="#pm2">Start Backends with PM2</a></li>
+  <li><a href="#apache">Configure Apache HTTP Server</a></li>
+  <li><a href="#access">Access From Any Device</a></li>
+  <li><a href="#ports">Port Reference</a></li>
+  <li><a href="#mgmt">Management Commands</a></li>
+  <li><a href="#trouble">Troubleshooting</a></li>
+  <li><a href="#tldr">Quick Start (TL;DR)</a></li>
+</ol>
+</div>
+
+<h2 id="arch">1. Architecture Overview</h2>
+<div class="arch">┌─────────────────────────────────────────────────────────────────┐
+│                     LOCAL SERVER (your machine)                  │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Apache HTTP Server (httpd)                               │   │
+│  │  Serves static frontend files + proxies API requests      │   │
+│  │                                                           │   │
+│  │  :8080  → Landing Page                                    │   │
+│  │  :8001  → Student frontend  ──→ /v1/* → :3000 backend     │   │
+│  │  :8002  → Parent frontend   ──→ /v1/* → :3002 backend     │   │
+│  │  :8003  → Teacher frontend  ──→ /v1/* → :3003 backend     │   │
+│  │  :8004  → Admin frontend    ──→ /v1/* → :3004 backend     │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  PM2 Process Manager                                      │   │
+│  │  :3000  mindforge-student  (NestJS)                       │   │
+│  │  :3002  mindforge-parent   (NestJS)                       │   │
+│  │  :3003  mindforge-teacher  (NestJS)                       │   │
+│  │  :3004  mindforge-admin    (NestJS)                       │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  PostgreSQL 16              :5432                         │   │
+│  │  mindforge | mindforge_admin | mindforge_teacher          │   │
+│  │  mindforge_parent                                         │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+
+     Client devices on the same network connect via:
+     http://192.168.x.x:8080  (landing page)
+     http://192.168.x.x:8001  (student app)
+     http://192.168.x.x:8002  (parent app)
+     http://192.168.x.x:8003  (teacher app)
+     http://192.168.x.x:8004  (admin app)</div>
+
+<h2 id="prereq">2. Prerequisites</h2>
+<table>
+  <tr><th>Software</th><th>Version</th><th>Install (macOS)</th><th>Install (Ubuntu)</th></tr>
+  <tr><td>Node.js</td><td>&ge; 18</td><td><code>brew install node</code></td><td><a href="https://nodejs.org">nodejs.org</a></td></tr>
+  <tr><td>npm</td><td>&ge; 10</td><td>Comes with Node.js</td><td>Comes with Node.js</td></tr>
+  <tr><td>PostgreSQL</td><td>&ge; 14</td><td><code>brew install postgresql@16</code></td><td><code>sudo apt install postgresql</code></td></tr>
+  <tr><td>PM2</td><td>latest</td><td colspan="2"><code>npm install -g pm2</code></td></tr>
+  <tr><td>Apache httpd</td><td>&ge; 2.4</td><td><code>brew install httpd</code></td><td><code>sudo apt install apache2</code></td></tr>
+</table>
+
+<h2 id="pg">3. PostgreSQL Setup</h2>
+
+<h3>Install &amp; Start</h3>
+<pre><code><span class="comment"># macOS</span>
+brew install postgresql@16
+brew services start postgresql@16
+
+<span class="comment"># Ubuntu</span>
+sudo apt update &amp;&amp; sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql</code></pre>
+
+<h3>Create Databases</h3>
+<pre><code><span class="comment"># Replace 'prayash' with your PostgreSQL username</span>
+createdb -U prayash mindforge
+createdb -U prayash mindforge_admin
+createdb -U prayash mindforge_teacher
+createdb -U prayash mindforge_parent
+
+<span class="comment"># Verify</span>
+psql -U prayash -l</code></pre>
+
+<div class="note"><strong>macOS Homebrew PostgreSQL:</strong> Default user is your OS username with no password.</div>
+
+<h2 id="env">4. Backend Environment Config</h2>
+<p>Each backend needs a <code>.env</code> file in its directory. Create or update:</p>
+
+<table>
+  <tr><th>Backend</th><th>Path</th><th>Port Env Var</th><th>Port</th><th>DB Name</th></tr>
+  <tr><td>Student</td><td><code>apps/student/backend/.env</code></td><td><code>PORT</code></td><td>3000</td><td>mindforge</td></tr>
+  <tr><td>Parent</td><td><code>apps/parent/backend/.env</code></td><td><code>PORT</code></td><td>3002</td><td>mindforge_parent</td></tr>
+  <tr><td>Teacher</td><td><code>apps/teacher/backend/.env</code></td><td><code>TEACHER_SERVICE_PORT</code></td><td>3003</td><td>mindforge_teacher</td></tr>
+  <tr><td>Admin</td><td><code>apps/admin/backend/.env</code></td><td><code>ADMIN_SERVICE_PORT</code></td><td>3004</td><td>mindforge_admin</td></tr>
+</table>
+
+<p>Example <code>.env</code> for Student backend:</p>
+<pre><code>NODE_ENV=production
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=prayash
+DB_PASSWORD=
+DB_NAME=mindforge</code></pre>
+
+<h2 id="build">5. Build Everything</h2>
+
+<h3>Automated (recommended)</h3>
+<pre><code>cd /Users/prayash/Project/Mindforge
+chmod +x scripts/build-and-deploy.sh
+./scripts/build-and-deploy.sh</code></pre>
+<p>This builds all frontends and backends, starts PM2, and runs health checks.</p>
+
+<h3>Manual</h3>
+<pre><code><span class="comment"># Install dependencies</span>
+npm install
+
+<span class="comment"># Build each frontend</span>
+cd apps/student/frontend &amp;&amp; npm run build &amp;&amp; cd ../../..
+cd apps/parent/frontend  &amp;&amp; npm run build &amp;&amp; cd ../../..
+cd apps/teacher/frontend &amp;&amp; npm run build &amp;&amp; cd ../../..
+cd apps/admin/frontend   &amp;&amp; npm run build &amp;&amp; cd ../../..
+
+<span class="comment"># Build each backend</span>
+cd apps/student/backend &amp;&amp; npx nest build &amp;&amp; cd ../../..
+cd apps/parent/backend  &amp;&amp; npx nest build &amp;&amp; cd ../../..
+cd apps/teacher/backend &amp;&amp; npx nest build &amp;&amp; cd ../../..
+cd apps/admin/backend   &amp;&amp; npx nest build &amp;&amp; cd ../../..</code></pre>
+
+<h2 id="pm2">6. Start Backends with PM2</h2>
+<pre><code><span class="comment"># Start all 4 backends</span>
+pm2 start ecosystem.config.js
+
+<span class="comment"># Check status</span>
+pm2 status
+
+<span class="comment"># Enable auto-start on reboot</span>
+pm2 save
+pm2 startup   <span class="comment"># Follow the printed command</span></code></pre>
+
+<h3>Verify</h3>
+<pre><code>curl http://localhost:3000/health   <span class="comment"># Student</span>
+curl http://localhost:3002/health   <span class="comment"># Parent</span>
+curl http://localhost:3003/health   <span class="comment"># Teacher</span>
+curl http://localhost:3004/health   <span class="comment"># Admin</span></code></pre>
+
+<h2 id="apache">7. Configure Apache HTTP Server</h2>
+
+<div class="warn"><strong>Important:</strong> You need <strong>Apache HTTP Server (httpd)</strong>, not Apache Tomcat. Tomcat is a Java servlet container. Apache httpd is the general-purpose web server for serving static files and proxying API requests.</div>
+
+<h3>Enable Required Modules</h3>
+
+<p><strong>macOS:</strong> Edit <code>/opt/homebrew/etc/httpd/httpd.conf</code> — uncomment:</p>
+<pre><code>LoadModule proxy_module lib/httpd/modules/mod_proxy.so
+LoadModule proxy_http_module lib/httpd/modules/mod_proxy_http.so
+LoadModule rewrite_module lib/httpd/modules/mod_rewrite.so
+LoadModule headers_module lib/httpd/modules/mod_headers.so</code></pre>
+
+<p><strong>Ubuntu:</strong></p>
+<pre><code>sudo a2enmod proxy proxy_http rewrite headers</code></pre>
+
+<h3>Install Config</h3>
+
+<p><strong>macOS:</strong></p>
+<pre><code><span class="comment"># Copy the Mindforge Apache config</span>
+cp deploy/apache/mindforge.conf /opt/homebrew/etc/httpd/extra/
+
+<span class="comment"># Include it in the main httpd.conf (add this line at the end)</span>
+echo 'Include /opt/homebrew/etc/httpd/extra/mindforge.conf' >> /opt/homebrew/etc/httpd/httpd.conf
+
+<span class="comment"># Restart Apache</span>
+brew services restart httpd</code></pre>
+
+<p><strong>Ubuntu:</strong></p>
+<pre><code>sudo cp deploy/apache/mindforge.conf /etc/apache2/sites-available/
+<span class="comment"># Update MINDFORGE_ROOT path in the file</span>
+sudo nano /etc/apache2/sites-available/mindforge.conf
+sudo a2ensite mindforge
+sudo a2dissite 000-default
+sudo systemctl restart apache2</code></pre>
+
+<h2 id="access">8. Access From Any Device</h2>
+
+<p>Find your server IP:</p>
+<pre><code><span class="comment"># macOS</span>
+ipconfig getifaddr en0
+
+<span class="comment"># Linux</span>
+hostname -I | awk '{print $1}'</code></pre>
+
+<p>Then from any browser on the same network:</p>
+
+<div class="card-row">
+  <div class="card"><div class="port">:8080</div><div class="label">Landing Page</div></div>
+  <div class="card"><div class="port">:8001</div><div class="label">Student App</div></div>
+  <div class="card"><div class="port">:8002</div><div class="label">Parent App</div></div>
+  <div class="card"><div class="port">:8003</div><div class="label">Teacher App</div></div>
+  <div class="card"><div class="port">:8004</div><div class="label">Admin App</div></div>
+</div>
+
+<p>Example: If your server IP is <code>192.168.1.100</code>, open <code>http://192.168.1.100:8080</code> to see the landing page.</p>
+
+<h2 id="ports">9. Port Reference</h2>
+<table>
+  <tr><th>Port</th><th>Service</th><th>Type</th></tr>
+  <tr><td>5432</td><td>PostgreSQL</td><td>Database</td></tr>
+  <tr><td>3000</td><td>Student Backend (NestJS)</td><td>API</td></tr>
+  <tr><td>3002</td><td>Parent Backend (NestJS)</td><td>API</td></tr>
+  <tr><td>3003</td><td>Teacher Backend (NestJS)</td><td>API</td></tr>
+  <tr><td>3004</td><td>Admin Backend (NestJS)</td><td>API</td></tr>
+  <tr><td>8001</td><td>Student Web App (Apache)</td><td>Frontend + API Proxy</td></tr>
+  <tr><td>8002</td><td>Parent Web App (Apache)</td><td>Frontend + API Proxy</td></tr>
+  <tr><td>8003</td><td>Teacher Web App (Apache)</td><td>Frontend + API Proxy</td></tr>
+  <tr><td>8004</td><td>Admin Web App (Apache)</td><td>Frontend + API Proxy</td></tr>
+  <tr><td>8080</td><td>Landing Page (Apache)</td><td>Static HTML</td></tr>
+</table>
+
+<h2 id="mgmt">10. Management Commands</h2>
+
+<h3>PM2</h3>
+<pre><code>pm2 status                       <span class="comment"># Process status</span>
+pm2 logs                         <span class="comment"># All logs (live)</span>
+pm2 logs mindforge-student       <span class="comment"># Student logs only</span>
+pm2 restart all                  <span class="comment"># Restart all</span>
+pm2 stop all                     <span class="comment"># Stop all</span>
+pm2 monit                        <span class="comment"># Real-time dashboard</span></code></pre>
+
+<h3>Apache httpd</h3>
+<pre><code><span class="comment"># macOS</span>
+brew services restart httpd
+httpd -t                         <span class="comment"># Test config syntax</span>
+
+<span class="comment"># Ubuntu</span>
+sudo systemctl restart apache2
+sudo apache2ctl configtest</code></pre>
+
+<h3>PostgreSQL</h3>
+<pre><code><span class="comment"># macOS</span>
+brew services restart postgresql@16
+psql -U prayash -l               <span class="comment"># List databases</span>
+
+<span class="comment"># Ubuntu</span>
+sudo systemctl restart postgresql
+sudo -u postgres psql -l</code></pre>
+
+<h2 id="trouble">11. Troubleshooting</h2>
+
+<h3>ECONNREFUSED on port 5432</h3>
+<p>PostgreSQL is not running. Start it:</p>
+<pre><code>brew services start postgresql@16    <span class="comment"># macOS</span>
+sudo systemctl start postgresql      <span class="comment"># Ubuntu</span></code></pre>
+
+<h3>Apache — "Address already in use"</h3>
+<pre><code>lsof -i :8080    <span class="comment"># Find process on port</span>
+kill &lt;PID&gt;</code></pre>
+
+<h3>502 Bad Gateway on API calls</h3>
+<p>Backend is not running. Check: <code>pm2 status</code> and <code>pm2 logs</code></p>
+
+<h3>Blank page / "Cannot GET /"</h3>
+<p>Frontend wasn't built. Run <code>npm run build</code> in the frontend directory.</p>
+
+<h3>Devices on network can't connect</h3>
+<ol>
+  <li>Check firewall (open ports 8001-8004, 8080)</li>
+  <li>Verify IP: <code>ipconfig getifaddr en0</code></li>
+  <li>Ensure same network/subnet</li>
+</ol>
+
+<h2 id="tldr">12. Quick Start (TL;DR)</h2>
+<pre><code><span class="comment"># 1. Install</span>
+brew install node postgresql@16 httpd
+npm install -g pm2
+brew services start postgresql@16
+
+<span class="comment"># 2. Create databases</span>
+createdb mindforge &amp;&amp; createdb mindforge_admin
+createdb mindforge_teacher &amp;&amp; createdb mindforge_parent
+
+<span class="comment"># 3. Build and deploy</span>
+cd /Users/prayash/Project/Mindforge
+./scripts/build-and-deploy.sh
+
+<span class="comment"># 4. Configure Apache (one-time)</span>
+cp deploy/apache/mindforge.conf /opt/homebrew/etc/httpd/extra/
+echo 'Include /opt/homebrew/etc/httpd/extra/mindforge.conf' \
+  >> /opt/homebrew/etc/httpd/httpd.conf
+<span class="comment"># Uncomment proxy modules in httpd.conf</span>
+brew services restart httpd
+
+<span class="comment"># 5. Open http://YOUR_IP:8080</span></code></pre>
+
+<hr>
+<p style="text-align:center;color:#8A7A6E;font-size:13px;margin-top:32px;">Mindforge v1.0.0 &middot; Local Server Deployment Guide</p>
+
+</div>
+</body>
+</html>

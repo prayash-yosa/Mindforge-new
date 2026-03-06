@@ -1,8 +1,22 @@
 # Mindforge Admin Backend
 
-## PostgreSQL Setup
+PostgreSQL backend for the Admin app.
 
-The admin backend uses **PostgreSQL** (no longer SQLite).
+## Quick Start (Docker)
+
+```bash
+# From project root: start PostgreSQL
+docker compose up -d
+
+# Configure and run migrations
+cd apps/admin/backend
+cp .env.example .env
+npm run build
+npm run migration:run
+npm run start:dev
+```
+
+## Manual PostgreSQL Setup
 
 ### 1. Install PostgreSQL
 
@@ -14,37 +28,20 @@ The admin backend uses **PostgreSQL** (no longer SQLite).
 
 ```bash
 createdb mindforge_admin
-# Or with psql:
-# psql -c "CREATE DATABASE mindforge_admin;"
+# Or: psql -c "CREATE DATABASE mindforge_admin;"
 ```
 
 ### 3. Configure environment
 
-Copy `.env.example` to `.env` and set:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-DB_NAME=mindforge_admin
+```bash
+cp .env.example .env
+# Edit .env with your DB_USERNAME, DB_PASSWORD
 ```
 
-Or use a connection URL:
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/mindforge_admin
-```
-
-### 4. Run migrations
+### 4. Run migrations & start
 
 ```bash
 npm run build
 npm run migration:run
-```
-
-### 5. Start server
-
-```bash
 npm run start:dev
 ```

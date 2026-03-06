@@ -4,8 +4,8 @@
  * Architecture ref: §5.1 — "teacher_material_chunks: id, material_id (FK),
  * chunk_text, chunk_index, embedding_vector (pgvector), syllabus_ref, created_at."
  *
- * In dev/SQLite mode, embedding_vector is stored as JSON text.
- * In production/PostgreSQL, this column uses pgvector.
+ * embedding_vector is stored as JSON text.
+ * Can be upgraded to pgvector column type for production scale.
  */
 
 import {
@@ -40,7 +40,7 @@ export class TeacherMaterialChunkEntity {
   @Column({ name: 'chunk_index', type: 'integer' })
   chunkIndex: number;
 
-  /** Embedding stored as JSON text (SQLite) or pgvector (PostgreSQL) */
+  /** Embedding stored as JSON text; upgrade to pgvector for production */
   @Column({ name: 'embedding_vector', type: 'text', nullable: true })
   embeddingVector: string;
 

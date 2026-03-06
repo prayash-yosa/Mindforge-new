@@ -59,14 +59,13 @@ export default () => ({
     retryCount: parseInt(process.env.TEACHER_SYNC_RETRY_COUNT ?? '1', 10),
   },
 
-  /** Database configuration (Task 2.1) */
+  /** Database configuration (PostgreSQL only) */
   database: {
     url: process.env.DATABASE_URL,
     host: process.env.DB_HOST ?? 'localhost',
     port: parseInt(process.env.DB_PORT ?? '5432', 10),
-    username: process.env.DB_USERNAME ?? 'mindforge',
-    password: process.env.DB_PASSWORD ?? '',
+    username: process.env.DB_USERNAME ?? 'postgres',
+    password: process.env.DB_PASSWORD ?? 'postgres',
     name: process.env.DB_NAME ?? 'mindforge',
-    sqlitePath: process.env.SQLITE_PATH ?? ':memory:',
   },
 });

@@ -34,10 +34,10 @@ export class TestAttemptEntity {
   @Column({ type: 'varchar', default: 'in_progress' })
   status: string;
 
-  @Column({ name: 'started_at', type: 'datetime' })
+  @Column({ name: 'started_at', type: 'timestamp' })
   startedAt: Date;
 
-  @Column({ name: 'submitted_at', type: 'datetime', nullable: true })
+  @Column({ name: 'submitted_at', type: 'timestamp', nullable: true })
   submittedAt: Date;
 
   @Column({ name: 'total_marks', type: 'integer', default: 0 })

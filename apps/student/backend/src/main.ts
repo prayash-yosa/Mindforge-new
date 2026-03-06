@@ -43,7 +43,7 @@ async function bootstrap() {
 
   // ── CORS ──────────────────────────────────────────────────────
   app.enableCors({
-    origin: corsOrigins,
+    origin: isProduction ? corsOrigins : true, // Allow mobile (Expo, emulator) in dev
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id', 'X-Teacher-Id'],
     credentials: true,

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mindforge — Portal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F5FBEF; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .container { max-width: 480px; width: 100%; padding: 32px 24px; }
+  h1 { font-size: 32px; color: #5A7A4E; margin-bottom: 8px; }
+  .sub { color: #8A7A6E; margin-bottom: 40px; }
+  .cards { display: flex; flex-direction: column; gap: 16px; }
+  a { text-decoration: none; }
+  .card { background: #fff; border: 1px solid #E0D6CC; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; transition: transform 0.15s, box-shadow 0.15s; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; flex-shrink: 0; }
+  .icon-student { background: #5A7A4E; }
+  .icon-teacher { background: #748B75; }
+  .icon-parent { background: #503D42; }
+  .icon-admin { background: #8A7A6E; }
+  .info h3 { font-size: 17px; color: #503D42; margin-bottom: 2px; }
+  .info p { font-size: 13px; color: #8A7A6E; }
+  .port { font-size: 11px; color: #748B75; margin-top: 4px; font-family: monospace; }
+  footer { text-align: center; margin-top: 40px; color: #8A7A6E; font-size: 12px; }
+</style>
+<script>
+  const host = window.location.hostname;
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-port]').forEach(el => {
+      const port = el.getAttribute('data-port');
+      el.href = `http://${host}:${port}`;
+      el.querySelector('.port').textContent = `${host}:${port}`;
+    });
+  });
+</script>
+</head>
+<body>
+<div class="container">
+  <h1>Mindforge</h1>
+  <p class="sub">Select an application to open</p>
+  <div class="cards">
+    <a class="card" data-port="8001">
+      <div class="icon icon-student">S</div>
+      <div class="info">
+        <h3>Student</h3>
+        <p>Activities, results &amp; attendance</p>
+        <div class="port"></div>
+      </div>
+    </a>
+    <a class="card" data-port="8003">
+      <div class="icon icon-teacher">T</div>
+      <div class="info">
+        <h3>Teacher</h3>
+        <p>Classes, syllabus &amp; tests</p>
+        <div class="port"></div>
+      </div>
+    </a>
+    <a class="card" data-port="8002">
+      <div class="icon icon-parent">P</div>
+      <div class="info">
+        <h3>Parent</h3>
+        <p>Child progress &amp; fees</p>
+        <div class="port"></div>
+      </div>
+    </a>
+    <a class="card" data-port="8004">
+      <div class="icon icon-admin">A</div>
+      <div class="info">
+        <h3>Admin</h3>
+        <p>User management, fees &amp; payments</p>
+        <div class="port"></div>
+      </div>
+    </a>
+  </div>
+  <footer>Mindforge v1.0.0 &middot; Local Server</footer>
+</div>
+</body>
+</html>

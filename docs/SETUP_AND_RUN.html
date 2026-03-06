@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mindforge — Setup &amp; Run Guide</title>
+<style>
+  :root { --sage: #748B75; --sage-dark: #5A7A4E; --cream: #F5FBEF; --brown: #503D42; --border: #E0D6CC; --muted: #8A7A6E; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--cream); color: var(--brown); line-height: 1.6; }
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+  h1 { font-size: 32px; color: var(--sage-dark); margin-bottom: 8px; }
+  h1 + p { color: var(--muted); margin-bottom: 32px; }
+  h2 { font-size: 22px; color: var(--brown); margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+  h3 { font-size: 17px; color: var(--sage-dark); margin: 24px 0 8px; }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 8px 0 16px 24px; }
+  li { margin-bottom: 6px; }
+  code { background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 14px; font-family: 'SF Mono', Menlo, Monaco, monospace; }
+  pre { background: var(--brown); color: #f0f0f0; border-radius: 8px; padding: 16px; overflow-x: auto; margin: 12px 0 20px; font-size: 13px; line-height: 1.5; }
+  pre code { background: none; border: none; color: inherit; padding: 0; }
+  .comment { color: #8a8a8a; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+  th, td { padding: 10px 14px; text-align: left; border: 1px solid var(--border); font-size: 14px; }
+  th { background: var(--sage); color: #fff; font-weight: 600; }
+  td { background: #fff; }
+  tr:nth-child(even) td { background: var(--cream); }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0; }
+  .card-title { font-weight: 600; color: var(--sage-dark); margin-bottom: 8px; }
+  .badge { display: inline-block; background: var(--sage); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .note { background: #fff8e1; border-left: 4px solid #ffa000; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .grid-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .grid-card h4 { color: var(--sage-dark); margin-bottom: 4px; font-size: 15px; }
+  .grid-card p { color: var(--muted); font-size: 13px; margin: 0; }
+  .toc { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 24px 0; }
+  .toc h3 { margin: 0 0 12px; color: var(--brown); }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc a { color: var(--sage-dark); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .tldr { background: var(--sage-dark); color: #fff; border-radius: 12px; padding: 24px; margin: 32px 0; }
+  .tldr h2 { color: #fff; border-bottom-color: rgba(255,255,255,0.3); margin-top: 0; }
+  .tldr pre { background: rgba(0,0,0,0.3); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Mindforge</h1>
+<p>Complete setup &amp; run guide for the mobile app and all backend services.</p>
+
+<div class="toc">
+<h3>Contents</h3>
+<ol>
+  <li><a href="#prerequisites">Prerequisites</a></li>
+  <li><a href="#database">Database Setup</a></li>
+  <li><a href="#backends">Backend Setup</a></li>
+  <li><a href="#mobile">Mobile App</a></li>
+  <li><a href="#architecture">App Architecture</a></li>
+  <li><a href="#ports">Ports &amp; Databases</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#quickstart">Quick Start</a></li>
+</ol>
+</div>
+
+<h2 id="prerequisites">1. Prerequisites</h2>
+<table>
+  <tr><th>Tool</th><th>Version</th><th>Check Command</th></tr>
+  <tr><td>Node.js</td><td>&gt;= 18.x</td><td><code>node -v</code></td></tr>
+  <tr><td>npm</td><td>&gt;= 9.x</td><td><code>npm -v</code></td></tr>
+  <tr><td>PostgreSQL</td><td>14+</td><td><code>psql --version</code></td></tr>
+  <tr><td>Android Studio</td><td>Latest</td><td>Required for emulator/device</td></tr>
+  <tr><td>Expo CLI</td><td>Bundled</td><td><code>npx expo --version</code></td></tr>
+</table>
+
+<div class="note">
+  <strong>Homebrew PostgreSQL:</strong> If <code>psql</code> isn't in your PATH, add: <code>export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"</code>
+</div>
+
+<h2 id="database">2. Database Setup (PostgreSQL)</h2>
+
+<h3>Start PostgreSQL</h3>
+<pre><code><span class="comment"># macOS (Homebrew)</span>
+brew services start postgresql@16
+
+<span class="comment"># Verify</span>
+pg_isready</code></pre>
+
+<h3>Create Databases</h3>
+<pre><code>createdb mindforge
+createdb mindforge_admin
+createdb mindforge_teacher
+createdb mindforge_parent</code></pre>
+
+<h3>Enable UUID Extension</h3>
+<pre><code>psql -d mindforge        -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+psql -d mindforge_admin  -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+psql -d mindforge_teacher -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+psql -d mindforge_parent  -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'</code></pre>
+
+<h2 id="backends">3. Backend Setup</h2>
+
+<h3>Configure Environment</h3>
+<pre><code>cd apps/student/backend &amp;&amp; cp .env.example .env
+cd apps/teacher/backend &amp;&amp; cp .env.example .env
+cd apps/parent/backend  &amp;&amp; cp .env.example .env
+cd apps/admin/backend   &amp;&amp; cp .env.example .env</code></pre>
+
+<div class="note">
+  Update <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> in each <code>.env</code> to match your PostgreSQL credentials.
+</div>
+
+<h3>Build &amp; Run Migrations</h3>
+<pre><code><span class="comment"># Student (port 3000)</span>
+cd apps/student/backend &amp;&amp; npm install &amp;&amp; npm run build &amp;&amp; npm run migration:run
+
+<span class="comment"># Teacher (port 3003)</span>
+cd apps/teacher/backend &amp;&amp; npm install &amp;&amp; npm run build &amp;&amp; npm run migration:run
+
+<span class="comment"># Parent (port 3002)</span>
+cd apps/parent/backend &amp;&amp; npm install &amp;&amp; npm run build &amp;&amp; npm run migration:run
+
+<span class="comment"># Admin (port 3004)</span>
+cd apps/admin/backend &amp;&amp; npm install &amp;&amp; npm run build &amp;&amp; npm run migration:run</code></pre>
+
+<h3>Start All Backends (4 terminals)</h3>
+<pre><code>cd apps/student/backend &amp;&amp; npm run start:dev  <span class="comment"># port 3000</span>
+cd apps/parent/backend  &amp;&amp; npm run start:dev  <span class="comment"># port 3002</span>
+cd apps/teacher/backend &amp;&amp; npm run start:dev  <span class="comment"># port 3003</span>
+cd apps/admin/backend   &amp;&amp; npm run start:dev  <span class="comment"># port 3004</span></code></pre>
+
+<h3>Verify</h3>
+<pre><code>curl http://localhost:3000/health     <span class="comment"># Student</span>
+curl http://localhost:3002/v1/health  <span class="comment"># Parent</span>
+curl http://localhost:3003/v1/health  <span class="comment"># Teacher</span>
+curl http://localhost:3004/health     <span class="comment"># Admin</span></code></pre>
+
+<h2 id="mobile">4. Mobile App</h2>
+
+<h3>Install Dependencies</h3>
+<pre><code>cd apps/mobile
+npm install</code></pre>
+
+<h3>Run on Android Emulator</h3>
+<pre><code>cd apps/mobile
+npx expo start
+<span class="comment"># Press 'a' to open on Android emulator</span></code></pre>
+
+<h3>Run on Physical Device</h3>
+<ol>
+  <li>Enable <strong>USB Debugging</strong> on your phone</li>
+  <li>Connect via USB</li>
+  <li>Run: <code>npx expo run:android</code></li>
+</ol>
+<p>Or use <strong>Expo Go</strong>: scan the QR code from <code>npx expo start</code>. Set your machine's IP:</p>
+<pre><code>EXPO_PUBLIC_API_URL=http://YOUR_IP npx expo start</code></pre>
+
+<h3>Build Standalone APK</h3>
+
+<div class="card">
+  <div class="card-title">Option A: Local Build</div>
+  <pre><code>cd apps/mobile
+npx expo run:android --variant release</code></pre>
+  <p>APK: <code>android/app/build/outputs/apk/release/app-release.apk</code></p>
+</div>
+
+<div class="card">
+  <div class="card-title">Option B: EAS Cloud Build</div>
+  <pre><code>cd apps/mobile
+npx eas build --platform android --profile preview</code></pre>
+  <p>Download link provided after build completes.</p>
+</div>
+
+<h2 id="architecture">5. App Architecture</h2>
+
+<h3>Role Selection</h3>
+<p>The app opens with a role selector. Each role opens a native screen (no WebViews):</p>
+
+<div class="grid">
+  <div class="grid-card">
+    <h4>Student</h4>
+    <p>Dashboard with activities, results &amp; attendance</p>
+  </div>
+  <div class="grid-card">
+    <h4>Teacher</h4>
+    <p>Classes, syllabus &amp; test management</p>
+  </div>
+  <div class="grid-card">
+    <h4>Parent</h4>
+    <p>Child progress, attendance &amp; fees</p>
+  </div>
+  <div class="grid-card">
+    <h4>Admin</h4>
+    <p>Login → Dashboard, Users, Fees, Payments, More</p>
+  </div>
+</div>
+
+<h3>Tech Stack</h3>
+<table>
+  <tr><th>Layer</th><th>Technology</th></tr>
+  <tr><td>Mobile</td><td>React Native + Expo (SDK 52)</td></tr>
+  <tr><td>Navigation</td><td>Expo Router (file-based, native stack/tabs)</td></tr>
+  <tr><td>Backend</td><td>NestJS (TypeScript)</td></tr>
+  <tr><td>Database</td><td>PostgreSQL 16</td></tr>
+  <tr><td>ORM</td><td>TypeORM</td></tr>
+  <tr><td>Icons</td><td>@expo/vector-icons (Ionicons)</td></tr>
+</table>
+
+<h2 id="ports">6. Ports &amp; Databases</h2>
+<table>
+  <tr><th>Service</th><th>Port</th><th>Database</th><th>Health Check</th></tr>
+  <tr><td>Student</td><td>3000</td><td><code>mindforge</code></td><td><code>/health</code></td></tr>
+  <tr><td>Parent</td><td>3002</td><td><code>mindforge_parent</code></td><td><code>/v1/health</code></td></tr>
+  <tr><td>Teacher</td><td>3003</td><td><code>mindforge_teacher</code></td><td><code>/v1/health</code></td></tr>
+  <tr><td>Admin</td><td>3004</td><td><code>mindforge_admin</code></td><td><code>/health</code></td></tr>
+</table>
+
+<h2 id="troubleshooting">7. Troubleshooting</h2>
+
+<div class="card">
+  <div class="card-title">ECONNREFUSED when starting backend</div>
+  <p>PostgreSQL not running. Run: <code>brew services start postgresql@16</code></p>
+</div>
+
+<div class="card">
+  <div class="card-title">Android emulator can't reach backend</div>
+  <p>Android emulator uses <code>10.0.2.2</code> for host's localhost. This is auto-configured. Ensure backends are running.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Metro bundler errors</div>
+  <p>Clear cache: <code>cd apps/mobile &amp;&amp; npx expo start -c</code></p>
+</div>
+
+<div class="card">
+  <div class="card-title">Module not found</div>
+  <p>Reinstall: <code>cd apps/mobile &amp;&amp; rm -rf node_modules &amp;&amp; npm install</code></p>
+</div>
+
+<div class="tldr">
+<h2 id="quickstart">8. Quick Start (TL;DR)</h2>
+<pre><code><span class="comment"># 1. Start PostgreSQL</span>
+brew services start postgresql@16
+
+<span class="comment"># 2. Start all backends (4 terminals)</span>
+cd apps/student/backend &amp;&amp; npm run start:dev
+cd apps/parent/backend  &amp;&amp; npm run start:dev
+cd apps/teacher/backend &amp;&amp; npm run start:dev
+cd apps/admin/backend   &amp;&amp; npm run start:dev
+
+<span class="comment"># 3. Run mobile app</span>
+cd apps/mobile &amp;&amp; npx expo start
+<span class="comment"># Press 'a' for Android emulator</span></code></pre>
+</div>
+
+</div>
+</body>
+</html>
